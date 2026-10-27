@@ -46,12 +46,73 @@ public class PallierNiveau {
 
 	///_________________________________________________________________________________________________________
 	
+	/* >> permet de renvoyer la quantité exigée pour une ressource donnée*/
+	
+	public static int getCoutRessource(Ressource ressourceRecherchee, Royaume royaume, List<PallierNiveau> paliers) {
+		
+		int niveauActuel = royaume.getNiveau();
+		
+		PallierNiveau palierSuivant = paliers.stream().filter(p -> p.getNiveau() == niveauActuel + 1).findFirst().orElse(null);
+	    if (palierSuivant == null) {
+	        return 0;
+	    }
+	  
+	      Ressource type = ressourceRecherchee;
+	      int quantiteNecessaire = palierSuivant.getPrerequis().stream()
+		    		.filter(r->r.getRessource()== ressourceRecherchee)
+		    		.mapToInt(QuantiteRessource::getQuantite)
+		    		.findFirst()
+		    		.orElse(0);
+	      
+	      System.out.println("Ressource : " + type + " | Quantité nécessaire : " + quantiteNecessaire);
+	      
+	      
+	      return quantiteNecessaire;
+	  
+	         }
+	   
+	
+	public static int getRessourceManquante(Ressource ressourceRecherchee, Royaume royaume, List<PallierNiveau> paliers) {
+		
+		int niveauActuel = royaume.getNiveau();
+		
+		PallierNiveau palierSuivant = paliers.stream().filter(p -> p.getNiveau() == niveauActuel + 1).findFirst().orElse(null);
+	    if (palierSuivant == null) {
+	        return 0;
+	    }
+	  
+	      Ressource type = ressourceRecherchee;
+	      
+	      int quantiteNecessaire = palierSuivant.getPrerequis().stream()
+		    		.filter(r->r.getRessource()== ressourceRecherchee)
+		    		.mapToInt(QuantiteRessource::getQuantite)
+		    		.findFirst()
+		    		.orElse(0);
+	      
+	      int quantitePossedee = royaume.getRessources().stream()
+		    		.filter(r->r.getRessource()== ressourceRecherchee)
+		    		.mapToInt(QuantiteRessource::getQuantite)
+		    		.sum();
+	      
+	      int quantiteManquante = Math.max(0,  quantiteNecessaire - quantitePossedee);
+	      
+	      System.out.println("Ressource : " + type + " | Quantité manquante : " + quantiteManquante);
+	      
+	      
+	      return quantiteManquante;
+	  
+		
+	}
+	    
+	    
+	
 	
 	
 	/* >> vérifie que la population totale et le stock de ressources satisfont le palier du niveau supérieur  */
 
 	public static boolean peutMonterDeNiveau(Royaume royaume, List<PallierNiveau> paliers) {
 	
+		
 		 int niveauActuel = royaume.getNiveau();
 		 
 		 
@@ -88,13 +149,37 @@ public class PallierNiveau {
 	public static void ameliorerNiveau(Royaume royaume, List<PallierNiveau> paliers) {
 
 	    if (peutMonterDeNiveau(royaume, paliers)) {
-	        System.out.println( "Le royaume peut passer au niveau " + (royaume.getNiveau() + 1));
+	    	
+	    	int niveauSuivant = royaume.getNiveau() + 1;
 
-	        royaume.setNiveau(royaume.getNiveau()+1);
-	        System.out.println("Le royaume atteint le  niveau  " +  royaume.getNiveau());
-	        // débiter les ressources 
+	        PallierNiveau palierSuivant = paliers.stream()
+	            .filter(p -> p.getNiveau() == niveauSuivant)
+	            .findFirst()
+	            .orElse(null);
+	    	
+	    	//System.out.println( "Le royaume peut passer au niveau " + niveauSuivant);
 	        
-	      //  royaume.setRessources(royaume.getRessources().retirer())
+	        // débiter les ressources 
+	       
+	        for (QuantiteRessource requis : palierSuivant.getPrerequis()) {
+
+	            for (QuantiteRessource ressource : royaume.getRessources()) {
+
+	                if (ressource.getRessource() == requis.getRessource()) {
+
+	                    ressource.setQuantite(
+	                        ressource.getQuantite() - requis.getQuantite()
+	                    );
+
+	                    break;
+	                }
+	            }
+	        }
+	        
+	       royaume.setNiveau(niveauSuivant);
+
+	       System.out.println("Le royaume atteint le niveau " + royaume.getNiveau());
+	        
 	        
 	    } else {
 	        System.out.println(

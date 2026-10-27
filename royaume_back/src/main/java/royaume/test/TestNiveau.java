@@ -124,19 +124,52 @@ public class TestNiveau {
 		
 		List<PallierNiveau> paliers = List.of(Niveau2, Niveau3, Niveau4, Niveau5, Niveau6, Niveau7, Niveau8, Niveau9, Niveau10);
 		
+		
+		
   ////////////
   /// TEST ///
   ////////////
+ 
+		
+		
+		
 		while (PallierNiveau.peutMonterDeNiveau(royaume, paliers)) {
 
 			boolean evolutionPossible = PallierNiveau.peutMonterDeNiveau(royaume, paliers);
-	  		System.out.println(evolutionPossible ? "Le royaume peut passer au niveau " + (royaume.getNiveau() + 1) : "Le royaume n'est pas prêt pour une évolution de niveau."
+	  		
+			int coutBois =  PallierNiveau.getCoutRessource(Ressource.BOIS,royaume,paliers);
+			int coutOr =  PallierNiveau.getCoutRessource(Ressource.OR,royaume,paliers);
+			int coutPierre =  PallierNiveau.getCoutRessource(Ressource.PIERRE,royaume,paliers);
+			int coutNourriture =  PallierNiveau.getCoutRessource(Ressource.NOURRITURE,royaume,paliers);
+			
+			
+			System.out.println(evolutionPossible ? "Le royaume peut passer au niveau " + (royaume.getNiveau() + 1) : "Le royaume n'est pas prêt pour une évolution de niveau."
 	  		);
 	  		
-	  		PallierNiveau.ameliorerNiveau(royaume, paliers); }
+	  		PallierNiveau.ameliorerNiveau(royaume, paliers); 
+	  		
+	  		}
 	
-			System.out.println( "Le royaume n'est plus prêt pour une évolution. Niveau final : " + royaume.getNiveau()
-			);
-  		
-	  	}
+			System.out.println( "Le royaume n'est plus prêt pour une évolution. Niveau final : " + royaume.getNiveau());
+	
+			int coutBois =  PallierNiveau.getCoutRessource(Ressource.BOIS,royaume,paliers);
+			int coutOr =  PallierNiveau.getCoutRessource(Ressource.OR,royaume,paliers);
+			int coutPierre =  PallierNiveau.getCoutRessource(Ressource.PIERRE,royaume,paliers);
+			int coutNourriture =  PallierNiveau.getCoutRessource(Ressource.NOURRITURE,royaume,paliers);
+			
+			
+			int manqueBois = PallierNiveau.getRessourceManquante(Ressource.BOIS,royaume,paliers);
+			int manqueOr = PallierNiveau.getRessourceManquante(Ressource.OR,royaume,paliers);
+			int manquePierre = PallierNiveau.getRessourceManquante(Ressource.PIERRE,royaume,paliers);
+			int manqueNourriture = PallierNiveau.getRessourceManquante(Ressource.NOURRITURE,royaume,paliers);
+			
+	  
+			System.out.println(royaume.getNiveau());
+	  		}
+	  
+	  		
+	  
+	  
+	  
+	  
 	 }
