@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class PropositionEchange {
 	private Integer id;
 	private LocalDateTime dateCreation;
-	private StatutEchange statut;
+	private StatutEchange statut= StatutEchange.EN_ATTENTE;
 
 	private Royaume expediteur;
 	private Royaume destinataire;
