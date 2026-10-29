@@ -1,5 +1,6 @@
 package royaume.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Royaume {
@@ -12,18 +13,18 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
-	
-	private List<QuantiteRessource> ressources;
-	
+
+	private List<QuantiteRessource> ressources = new ArrayList<>(); // final ou pas final ? 
+
 	public Royaume() {}
-	
-	
+
+
 	public Royaume(Integer id, String nom) {
 		this.id = id;
 		this.nom = nom;
 	}
-	
-	
+
+
 	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
@@ -138,7 +139,48 @@ public class Royaume {
 				+ populationEnEntrainement + ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine
 				+ ", ressources=" + ressources + "]";
 	}
-	
-	
-	
+
+
+	public void crediterRessource(Ressource ressource, int quantite) {
+		if (ressource == null || quantite <= 0) {
+			return;
+		}
+
+		for (QuantiteRessource qr : ressources) {
+			if (qr.getRessource() == ressource) {
+				qr.ajouter(quantite);
+				return;
+			}
+		}
+	}
+
+	public boolean aAssezRessource(Ressource ressource, int quantite) {
+		if (ressource == null || quantite <= 0) {
+			return false;
+		}
+		for (QuantiteRessource qr : ressources) {
+			if (qr.getRessource() == ressource) {
+				return qr.getQuantite() >= quantite; }
+		}
+		return false;
+	}
+
+
+	public boolean debiterRessource(Ressource ressource, int quantite) {
+		if (ressource == null || quantite <= 0) {
+			return false;}
+
+		if (!aAssezRessource(ressource, quantite)) {
+			return false;}
+
+		for (QuantiteRessource qr : ressources) {
+			if (qr.getRessource() == ressource) {
+				qr.retirer(quantite);
+				return true;}
+		}
+		return false;
+	}
+
+
+
 }
