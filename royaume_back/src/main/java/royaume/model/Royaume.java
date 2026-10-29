@@ -1,5 +1,6 @@
 package royaume.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Royaume {
@@ -12,21 +13,21 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
-	
-	private List<QuantiteRessource> ressources;
+
+	private List<QuantiteRessource> ressources = new ArrayList<>();
 
 
 	// ---------------- CONSTRUCTEURS --------------------------
-	
+
 	public Royaume() {}
-	
-	
+
+
 	public Royaume(Integer id, String nom) {
 		this.id = id;
 		this.nom = nom;
 	}
-	
-	
+
+
 	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
@@ -179,7 +180,5 @@ public class Royaume {
 				+ populationEnEntrainement + ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine
 				+ ", ressources=" + ressources + "]";
 	}
-	
-	
-	
+
 }
