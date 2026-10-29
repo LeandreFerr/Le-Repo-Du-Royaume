@@ -16,16 +16,21 @@ public class QuantiteRessource {
 	
 	
 	public void ajouter(int montant) {
-		if (montant > 0) {
-			quantite += montant;
+		if (montant <= 0) {
+        throw new IllegalArgumentException("Le montant à ajouter doit être strictement positif.");
 		}
+		quantite += montant;
 		
 	}
 	
 	public void retirer(int montant) {
-		if (montant > 0) {
-			quantite -= montant;
+		if (montant <= 0) {
+        	throw new IllegalArgumentException("Le montant à retirer doit être strictement positif.");
 		}
+		if (montant > quantite) {
+			throw new IllegalArgumentException("Fonds insuffisants : impossible d'avoir un solde négatif.");
+		}
+		quantite -= montant;
 	}
 	
 	

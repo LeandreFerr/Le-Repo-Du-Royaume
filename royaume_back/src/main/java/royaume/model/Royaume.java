@@ -51,17 +51,23 @@ public class Royaume {
 			.ifPresent(r -> r.ajouter(quantite));
 	}
 
-	public void debiterRessources(Ressource ressource, int quantite) {
-		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresent(r -> r.retirer(quantite));
-	}
 
 	public boolean aAssezDeRessources(Ressource ressource, int quantite) {
 		return ressources.stream()
 			.filter(r -> r.getRessource() == ressource)
 			.anyMatch(r -> r.getQuantite()>= quantite);
+	}
+
+	public boolean debiterRessources(Ressource ressource, int quantite) {
+		if (!aAssezDeRessources(ressource, quantite)) {
+			return false;
+		}
+
+		ressources.stream()
+			.filter(r -> r.getRessource() == ressource)
+			.findFirst()
+			.ifPresent(r -> r.retirer(quantite));
+		return true;
 	}
 
 	public void appliquerCroissance(double taux) {
