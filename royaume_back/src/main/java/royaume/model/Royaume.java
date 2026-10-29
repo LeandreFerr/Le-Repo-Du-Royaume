@@ -14,6 +14,9 @@ public class Royaume {
 	private boolean enRuine = false;
 	
 	private List<QuantiteRessource> ressources;
+
+
+	// ---------------- CONSTRUCTEURS --------------------------
 	
 	public Royaume() {}
 	
@@ -37,6 +40,38 @@ public class Royaume {
 		this.enRuine = enRuine;
 		this.ressources = ressources;
 	}
+
+	// ------------------------- Méthodes métier -------------------------------
+
+
+	public void crediterRessources(Ressource ressource, int quantite) {
+		ressources.stream()
+			.filter(r -> r.getRessource() == ressource)
+			.findFirst()
+			.ifPresent(r -> r.ajouter(quantite));
+	}
+
+	public void debiterRessources(Ressource ressource, int quantite) {
+		ressources.stream()
+			.filter(r -> r.getRessource() == ressource)
+			.findFirst()
+			.ifPresent(r -> r.retirer(quantite));
+	}
+
+	public boolean aAssezDeRessources(Ressource ressource, int quantite) {
+		return ressources.stream()
+			.filter(r -> r.getRessource() == ressource)
+			.anyMatch(r -> r.getQuantite()>= quantite);
+	}
+
+	public void appliquerCroissance(double taux) {
+		// A voir si on l'utilise étant donné qu'on a le bâtiment "maison"
+		populationDisponible = (int) Math.round(populationDisponible * (1 + taux));
+	}
+
+
+
+	// -------------------------Getters / Setters ------------------------------
 
 
 
