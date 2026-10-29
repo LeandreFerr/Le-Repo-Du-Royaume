@@ -1,18 +1,18 @@
 package royaume.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Marche {
 
 	private Integer id;
 	private String nom;
-	private static List<OffreMarche> offres;
+	private static final List<OffreMarche> offres = new ArrayList<>();
 
-	public Marche(Integer id, String nom, List<OffreMarche> offres) {
+	public Marche(Integer id, String nom) {
 		this.id = id;
 		this.nom = nom;
-		this.offres = offres;
 	}
 
 	public Marche() {}
@@ -32,10 +32,7 @@ public class Marche {
 	public List<OffreMarche> getOffres() {
 		return offres;
 	}
-	public void setOffres(List<OffreMarche> offres) {
-		this.offres = offres;
-	}
-
+	
 
 	// Methode publier offre qui va débiter le sock du vendeur pour consigner la marchandise et ajoute l'offre à la liste
 
@@ -51,7 +48,7 @@ public class Marche {
 
 		OffreMarche annonce = new OffreMarche(id, LocalDateTime.now(), StatutOffre.DISPONIBLE, vendeur, aVendre, aRecevoir);
 		
-		this.offres.add(annonce);
+		Marche.offres.add(annonce);
 
 		return annonce;
 	}
