@@ -12,6 +12,9 @@ public class Teuteus extends Population {
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les Teuteus mangent leur crottes de nez!");
+        // booste la production de nourriture 
+        // Et
+        // + 1ou2 en population
     }
 
 
