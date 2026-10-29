@@ -12,6 +12,7 @@ public class Licornes extends Population {
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les licornes font des pets arc-en-ciel !");
+        // Stat attaque et defense ennemis * 0.90
     }
 
 

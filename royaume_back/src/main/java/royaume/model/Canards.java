@@ -12,6 +12,7 @@ public class Canards extends Population {
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les Canards dansent sous la pluie !");
+        // Bonus d'attaque *1.25
 
     }
 

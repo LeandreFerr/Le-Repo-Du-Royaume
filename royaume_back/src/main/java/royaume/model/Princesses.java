@@ -12,6 +12,7 @@ public class Princesses extends Population {
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les Princesses rotent des flammes !");
+        // vise un royaume, incendie, production *0.7 pendant x temps
     }
 
 

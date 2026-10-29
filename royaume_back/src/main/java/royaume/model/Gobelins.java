@@ -12,6 +12,9 @@ public class Gobelins extends Population {
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les Gobelins lancent des fleches !");
+        // choisi un royaume, vole 5% des ressources
+        // que or ?  choisir une ressource precise ?
+        // 10% ressource unique OU 2% all ressource
     }
 
 
