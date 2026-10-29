@@ -108,7 +108,7 @@ public class PallierNiveau {
 	
 	
 	
-	/* >> vérifie que la population totale et le stock de ressources satisfont le palier du niveau supérieur  */
+	/*// >> vérifie que la population totale et le stock de ressources satisfont le palier du niveau supérieur  
 
 	public static boolean peutMonterDeNiveau(Royaume royaume, List<PallierNiveau> paliers) {
 	
@@ -142,9 +142,9 @@ public class PallierNiveau {
 		    return true;
 		 
 	}
+	*/
 	
-	
-	/* >>débite les ressources du palier et incrémente le niveau du royaume */
+	/*//>>débite les ressources du palier et incrémente le niveau du royaume 
 	
 	public static void ameliorerNiveau(Royaume royaume, List<PallierNiveau> paliers) {
 
@@ -186,6 +186,6 @@ public class PallierNiveau {
 	            "Ressources ou population insuffisantes pour monter de niveau."
 	        );
 	    }
-	}
+	}*/
 }
 

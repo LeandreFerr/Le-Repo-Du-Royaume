@@ -118,7 +118,7 @@ public class PropositionEchange {
 		boolean debitDestinataire = destinataire.debiterRessources(demandee.getRessource(), demandee.getQuantite());
 
 		// Si un débit échoue, annule le débit déjà effectué 
-		//   (au cas où une autre opération aurait changer les choses entre temps) 
+		//   (au cas où une autre opération aurait changé les choses entre temps) 
 
 		if (!debitExpediteur || !debitDestinataire) {
 			if (debitExpediteur) {

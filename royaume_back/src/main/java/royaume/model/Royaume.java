@@ -76,6 +76,55 @@ public class Royaume {
 		populationDisponible = (int) Math.round(populationDisponible * (1 + taux));
 	}
 
+	
+	public boolean peutMonterDeNiveau(List<PallierNiveau> paliers) {
+
+	    PallierNiveau palierSuivant = paliers.stream().filter(p -> p.getNiveau() == this.niveau + 1).findFirst().orElse(null);
+
+	    if (palierSuivant == null) {
+	        return false;}
+
+	    int popTotale = populationDisponible + populationOuvriere + populationMilitaire + populationEnEntrainement;
+
+	    if (popTotale < palierSuivant.getPopulationRequise()) {
+	        return false;}
+
+	    for (QuantiteRessource requis : palierSuivant.getPrerequis()) {
+	        if (!aAssezDeRessources(
+	                requis.getRessource(),
+	                requis.getQuantite())) {
+	            return false;}
+	    }
+	    return true;
+	}
+
+	
+	public void ameliorerNiveau(List<PallierNiveau> paliers) {
+
+	    if (!peutMonterDeNiveau(paliers)) {
+	        System.out.println(
+	                "Ressources ou population insuffisantes pour monter de niveau.");
+	        return;}
+
+	    int niveauSuivant = this.niveau + 1;
+
+	    PallierNiveau palierSuivant = paliers.stream().filter(p -> p.getNiveau() == niveauSuivant).findFirst().orElse(null);
+
+	    // Débiter les ressources
+	    
+	    for (QuantiteRessource requis : palierSuivant.getPrerequis()) {
+	        boolean debitReussi = debiterRessources(
+	                requis.getRessource(),
+	                requis.getQuantite());
+
+	        if (!debitReussi) {
+	            throw new IllegalStateException("Impossible de débiter les ressources requises.");}}
+
+	    this.niveau = niveauSuivant;
+	    System.out.println("Le royaume atteint le niveau " + this.niveau);
+	}
+	
+	
 
 
 	// -------------------------Getters / Setters ------------------------------

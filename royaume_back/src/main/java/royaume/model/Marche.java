@@ -33,7 +33,66 @@ public class Marche {
 		return offres;
 	}
 	
+								//_______________________________________________________//
+								//_______________________________________________________//
+	
+	public OffreMarche publierOffre(Royaume vendeur, QuantiteRessource aVendre, QuantiteRessource aRecevoir) {
 
+	    if (!vendeur.aAssezDeRessources(aVendre.getRessource(), aVendre.getQuantite())) {
+	        throw new IllegalStateException(
+	            "Le vendeur n'a pas assez de ressources pour publier cette offre.");}
+	    
+	    vendeur.debiterRessources(aVendre.getRessource(), aVendre.getQuantite());
+
+	    OffreMarche annonce = new OffreMarche(id, LocalDateTime.now(), StatutOffre.DISPONIBLE, vendeur, aVendre, aRecevoir);
+	    Marche.offres.add(annonce);
+	    return annonce;
+	}
+	
+	
+	public void retirerOffre(OffreMarche offre) {
+
+	    QuantiteRessource quantiteProposee = offre.getPropose();
+
+	    int quantite = quantiteProposee.getQuantite();
+	    Royaume vendeur = offre.getVendeur();
+	    Ressource type = quantiteProposee.getRessource();
+
+	    vendeur.crediterRessources(type, quantite); 
+	    offre.setStatut(StatutOffre.ANNULEE);
+	}
+	
+	
+	public void executerEchange(OffreMarche offre, Royaume acheteur) {
+
+	    if (offre.getStatut() != StatutOffre.DISPONIBLE) {
+	        throw new IllegalStateException(
+	            "Cette offre n'est plus disponible.");}
+
+	    QuantiteRessource quantiteProposee = offre.getPropose();
+	    int qteProposee = quantiteProposee.getQuantite();
+	    Ressource typePropose = quantiteProposee.getRessource();
+
+	    QuantiteRessource quantiteDemandee = offre.getDemande();
+	    int qteDemandee = quantiteDemandee.getQuantite();
+	    Ressource typeDemande = quantiteDemandee.getRessource();
+
+	    Royaume vendeur = offre.getVendeur();
+	    
+	    if (!acheteur.aAssezDeRessources(typeDemande, qteDemandee)) {
+	        throw new IllegalStateException(
+	            "L'acheteur n'a pas assez de ressources pour cet échange.");}
+
+	    acheteur.debiterRessources(typeDemande, qteDemandee);
+	    vendeur.crediterRessources(typeDemande, qteDemandee);
+
+	    acheteur.crediterRessources(typePropose, qteProposee);
+
+	    offre.setStatut(StatutOffre.CONCLUE);
+	}
+	//_________________________
+	/// Avant avec les streams : ///
+/*
 	// Methode publier offre qui va débiter le sock du vendeur pour consigner la marchandise et ajoute l'offre à la liste
 
 	public OffreMarche publierOffre(Royaume vendeur, QuantiteRessource aVendre, QuantiteRessource aRecevoir){
@@ -130,7 +189,7 @@ public class Marche {
 		offre.setStatut(StatutOffre.CONCLUE);
 		
 		
-	}
+	}*/
 
 }
 
