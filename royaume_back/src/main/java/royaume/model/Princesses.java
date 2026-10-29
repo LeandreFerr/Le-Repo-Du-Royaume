@@ -4,9 +4,9 @@ public class Princesses extends Population {
 
     public String capaciteSpeciale;
 
-    public Princesses(Integer id, String nom, String titreSouverain, Double attraction, String capaciteSpeciale) {
+    public Princesses(Integer id, String nom, String titreSouverain, Double attraction) {
         super(id, nom, titreSouverain, attraction);
-        this.capaciteSpeciale = capaciteSpeciale;
+        this.capaciteSpeciale = "roter";
     }
 
     @Override

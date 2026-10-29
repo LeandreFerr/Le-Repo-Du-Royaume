@@ -6,13 +6,13 @@ public class Canards extends Population {
 
     public Canards(Integer id, String nom, String titreSouverain, Double attraction) {
         super(id, nom, titreSouverain, attraction);
-        this.capaciteSpeciale = "danse";
+        this.capaciteSpeciale = "danser";
     }
 
     @Override
     public void activerCapaciteSpecial() {
         System.out.println("Les Canards dansent sous la pluie !");
-        
+
     }
 
 

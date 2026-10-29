@@ -4,9 +4,9 @@ public class Teuteus extends Population {
 
     public String capaciteSpeciale;
 
-    public Teuteus(Integer id, String nom, String titreSouverain, Double attraction, String capaciteSpeciale) {
+    public Teuteus(Integer id, String nom, String titreSouverain, Double attraction) {
         super(id, nom, titreSouverain, attraction);
-        this.capaciteSpeciale = capaciteSpeciale;
+        this.capaciteSpeciale = "manger";
     }
 
     @Override
