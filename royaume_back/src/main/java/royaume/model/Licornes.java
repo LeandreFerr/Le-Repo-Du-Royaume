@@ -4,9 +4,9 @@ public class Licornes extends Population {
 
     public String capaciteSpeciale;
 
-    public Licornes(Integer id, String nom, String titreSouverain, Double attraction, String capaciteSpeciale) {
+    public Licornes(Integer id, String nom, String titreSouverain, Double attraction) {
         super(id, nom, titreSouverain, attraction);
-        this.capaciteSpeciale = capaciteSpeciale;
+        this.capaciteSpeciale = "peter";
     }
 
     @Override
