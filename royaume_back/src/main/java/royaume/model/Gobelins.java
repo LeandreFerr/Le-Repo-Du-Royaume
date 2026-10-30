@@ -6,12 +6,12 @@ public class Gobelins extends Population {
 
     public Gobelins(Integer id, String nom, String titreSouverain, Double attraction) {
         super(id, nom, titreSouverain, attraction);
-        this.capaciteSpeciale = "tirer";
+        this.capaciteSpeciale = "voler";
     }
 
     @Override
     public void activerCapaciteSpecial() {
-        System.out.println("Les Gobelins lancent des fleches !");
+        System.out.println("Les Gobelins volent des ressources !");
         // choisi un royaume, vole 5% des ressources
         // que or ?  choisir une ressource precise ?
         // 10% ressource unique OU 2% all ressource
