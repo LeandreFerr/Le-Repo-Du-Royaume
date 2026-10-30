@@ -6,6 +6,9 @@ public class Royaume {
 
 	private Integer id;
 	private String nom;
+
+	private Population population;
+
 	private int niveau = 1;
 	private int populationDisponible = 100;
 	private int populationOuvriere = 0;
@@ -27,11 +30,12 @@ public class Royaume {
 	}
 	
 	
-	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
+	public Royaume(Integer id, String nom, Population population, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
 		this.id = id;
 		this.nom = nom;
+		this.population = population;
 		this.niveau = niveau;
 		this.populationDisponible = populationDisponible;
 		this.populationOuvriere = populationOuvriere;
@@ -100,6 +104,17 @@ public class Royaume {
 	public void setNom(String nom) {
 		this.nom = nom;
 	}
+
+	
+
+	public Population getPopulation() {
+		return population;
+	}
+
+	public void setPopulation(Population population) {
+		this.population = population;
+	}
+
 
 
 	public int getNiveau() {
@@ -179,6 +194,8 @@ public class Royaume {
 				+ populationEnEntrainement + ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine
 				+ ", ressources=" + ressources + "]";
 	}
+
+
 	
 	
 	

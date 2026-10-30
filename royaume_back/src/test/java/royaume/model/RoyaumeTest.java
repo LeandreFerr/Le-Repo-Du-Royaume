@@ -16,15 +16,18 @@ public class RoyaumeTest {
     private Royaume royaume;
     private QuantiteRessource bois;
     private QuantiteRessource pierre;
+    private Population peuple;
 
     @BeforeEach
     void setUp() {
         
         pierre = new QuantiteRessource(50, Ressource.PIERRE);
         bois = new QuantiteRessource(100,Ressource.BOIS);
+        
+        peuple = new Canards(1, "Corentin", "seigneur", 1.0);
 
         List<QuantiteRessource> listeRessources = new ArrayList<>(List.of(bois, pierre));
-        royaume = new Royaume(1, "TPT", 1, 100, 0, 0, 0, false, listeRessources);
+        royaume = new Royaume(1, "TPT", peuple, 1, 100, 0, 0, 0, false, listeRessources);
     }
 
     @Test
