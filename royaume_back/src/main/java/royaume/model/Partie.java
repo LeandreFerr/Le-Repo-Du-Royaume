@@ -9,7 +9,7 @@ public class Partie {
     private Integer id;
     private String nom;
     private LocalDateTime dateCreation;
-    private double vitesseJeu;
+    private double vitesseJeu = 1.0;
     private int maxJoueurs = 10;
 
     private Utilisateur vainqueur;
@@ -35,9 +35,9 @@ public class Partie {
         this.maxJoueurs = maxJoueurs;
         this.vainqueur = vainqueur;
         this.typeVictoire = typeVictoire;
-        this.messages = messages;
-        this.royaumes = royaumes;
-        this.statut = statut;
+        this.messages = (messages != null) ? messages : new ArrayList<>();
+        this.royaumes = (royaumes != null) ? royaumes : new ArrayList<>();
+        this.statut = (statut != null) ? statut : StatutPartie.EN_ATTENTE;
     }
 
     // Méthodes métier
@@ -52,7 +52,7 @@ public class Partie {
 
     public void terminer(Utilisateur vainqueur, TypeVictoire typeVictoire) {
 
-        if (statut == StatutPartie.EN_COURS && vainqueur != null && getNJoueurs() > 1) {
+        if (statut == StatutPartie.EN_COURS && vainqueur != null && getNJoueurs() >= 1 && typeVictoire != null) {
 
             this.vainqueur = vainqueur;
             this.typeVictoire = typeVictoire;
@@ -62,7 +62,9 @@ public class Partie {
     }
 
     public boolean inscrireRoyaume(Royaume royaume) {
-
+        if (royaume == null) {
+            return false;
+        }
         if (statut != StatutPartie.EN_ATTENTE) {
             return false;
         }
@@ -87,7 +89,7 @@ public class Partie {
     }
 
     public void declarerForfait(Royaume royaume) {
-        if (statut == StatutPartie.EN_COURS) {
+        if (statut == StatutPartie.EN_COURS && royaume != null && royaumes.contains(royaume)) {
             royaume.setEnRuine(true);
             // royaume.setPropriétaire(null);
         }
@@ -95,11 +97,14 @@ public class Partie {
 
     public long getNJoueurs() {
         return royaumes.stream()
-                .filter(r -> r.isEnRuine())
+                .filter(r -> !r.isEnRuine())
                 .count();
     }
 
     public boolean ajouterMessage(Message message) {
+        if (message == null || messages.contains(message)) {
+            return false;
+        }
         message.setPartie(this);
         messages.add(message);
         return true;
@@ -152,7 +157,7 @@ public class Partie {
     }
 
     public void setStatut(StatutPartie statut) {
-        this.statut = statut;
+        this.statut = (statut != null) ? statut : StatutPartie.EN_ATTENTE;
     }
 
     public List<Royaume> getRoyaumes() {
@@ -160,7 +165,7 @@ public class Partie {
     }
 
     public void setRoyaumes(List<Royaume> royaumes) {
-        this.royaumes = royaumes;
+        this.royaumes = (royaumes != null) ? royaumes : new ArrayList<>();
     }
 
     public Utilisateur getVainqueur() {
@@ -184,7 +189,7 @@ public class Partie {
     }
 
     public void setMessages(List<Message> messages) {
-        this.messages = messages;
+        this.messages = (messages != null) ? messages : new ArrayList<>();
     }
 
     // toString
