@@ -15,20 +15,16 @@ public class Partie {
     private Utilisateur vainqueur;
     private TypeVictoire typeVictoire;
 
-    private List <Utilisateur> joueurs = new ArrayList<>();
-    private List <Message> messages = new ArrayList<>();
-    private List <Royaume> royaumes = new ArrayList<>();
-    
+    private List<Utilisateur> joueurs = new ArrayList<>();
+    private List<Message> messages = new ArrayList<>();
+    private List<Royaume> royaumes = new ArrayList<>();
+
     private StatutPartie statut = StatutPartie.EN_ATTENTE;
 
+    // Constructeurs
 
-    //constructeur
-
-    public Partie(){}
-
-    
-
-    
+    public Partie() {
+    }
 
     public Partie(Integer id, String nom, LocalDateTime dateCreation, double vitesseJeu, int maxJoueurs,
             Utilisateur vainqueur, TypeVictoire typeVictoire, List<Utilisateur> joueurs, List<Message> messages,
@@ -46,37 +42,36 @@ public class Partie {
         this.statut = statut;
     }
 
-        //methode metier
+    // Méthodes métier
 
-    public void demarrer(){
+    public void demarrer() {
 
-        if(statut == StatutPartie.EN_ATTENTE && royaumes.size() >=2){
+        if (statut == StatutPartie.EN_ATTENTE && royaumes.size() >= 2) {
 
             statut = StatutPartie.EN_COURS;
         }
     }
 
-    public void terminer(Utilisateur vainqueur, TypeVictoire typeVictoire){
+    public void terminer(Utilisateur vainqueur, TypeVictoire typeVictoire) {
 
-        if (statut == StatutPartie.EN_COURS && vainqueur != null && joueurs.size() > 1){
-        
+        if (statut == StatutPartie.EN_COURS && vainqueur != null && joueurs.size() > 1) {
 
-        this.vainqueur = vainqueur;
-        this.typeVictoire  = typeVictoire;
-        this.statut = StatutPartie.TERMINEE;
+            this.vainqueur = vainqueur;
+            this.typeVictoire = typeVictoire;
+            this.statut = StatutPartie.TERMINEE;
 
         }
     }
 
-    public boolean ajouterJoueur(Utilisateur joueur){
+    public boolean ajouterJoueur(Utilisateur joueur) {
 
-        if (statut != StatutPartie.EN_ATTENTE){
+        if (statut != StatutPartie.EN_ATTENTE) {
             return false;
         }
-        if (joueurs.contains(joueur)){
+        if (joueurs.contains(joueur)) {
             return false;
         }
-        if (joueurs.size() >=maxJoueurs){
+        if (joueurs.size() >= maxJoueurs) {
             return false;
         }
 
@@ -84,19 +79,18 @@ public class Partie {
         return true;
     }
 
-    public void retirerJoueur(Utilisateur joueur){
+    public void retirerJoueur(Utilisateur joueur) {
 
         joueurs.remove(joueur);
-    
-      
-      if(statut == StatutPartie.EN_COURS && joueurs.size() ==1 ){
+
+        if (statut == StatutPartie.EN_COURS && joueurs.size() == 1) {
 
             terminer(joueurs.get(0), TypeVictoire.ABANDON_ADVERSAIRES);
         }
-            
+
     }
 
-    //getters setters 
+    // getters setters
 
     public Integer getId() {
         return id;
@@ -154,68 +148,46 @@ public class Partie {
         this.royaumes = royaumes;
     }
 
-
     public Utilisateur getVainqueur() {
         return vainqueur;
     }
-
-
 
     public void setVainqueur(Utilisateur vainqueur) {
         this.vainqueur = vainqueur;
     }
 
-
-
     public TypeVictoire getTypeVictoire() {
         return typeVictoire;
     }
-
-
 
     public void setTypeVictoire(TypeVictoire typeVictoire) {
         this.typeVictoire = typeVictoire;
     }
 
-
-
     public List<Utilisateur> getJoueurs() {
         return joueurs;
     }
-
-
 
     public void setJoueurs(List<Utilisateur> joueurs) {
         this.joueurs = joueurs;
     }
 
-
-
     public List<Message> getMessages() {
         return messages;
     }
-
-
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
 
-
-
-    //toString
-
+    // toString
 
     @Override
     public String toString() {
         return "Partie [id=" + id + ", nom=" + nom + ", dateCreation=" + dateCreation + ", vitesseJeu=" + vitesseJeu
                 + ", maxJoueurs=" + maxJoueurs + ", vainqueur=" + vainqueur + ", typeVictoire=" + typeVictoire
-                + ", joueurs=" + joueurs + ", messages=" + messages + ", royaumes=" + royaumes + ", statut=" + statut
+                + ", joueurs=" + joueurs + ", royaumes=" + royaumes + ", statut=" + statut
                 + "]";
     }
 
-
-
-
-  
 }

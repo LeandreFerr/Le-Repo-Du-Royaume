@@ -12,139 +12,93 @@ public class Message {
     private Partie partie;
     private Utilisateur expediteur;
     private Utilisateur destinataire;
-    
 
-//constructeur
-public Message(){}
-
-
-
-
-//methode metier
-
-
-public Message(Integer id, String contenu, LocalDateTime dateEnvoi, boolean lu, Partie partie, Utilisateur expediteur,
-        Utilisateur destinataire) {
-    this.id = id;
-    this.contenu = contenu;
-    this.dateEnvoi = dateEnvoi;
-    this.lu = lu;
-    this.partie = partie;
-    this.expediteur = expediteur;
-    this.destinataire = destinataire;
-}
-
-
-
-public boolean estGlobal(){
-
-    if (destinataire == null){
-        return true;
+    // Constructeurs
+    public Message() {
     }
 
-    return false;
+    public Message(Integer id, String contenu, LocalDateTime dateEnvoi, boolean lu, Partie partie,
+            Utilisateur expediteur,
+            Utilisateur destinataire) {
+        this.id = id;
+        this.contenu = contenu;
+        this.dateEnvoi = dateEnvoi;
+        this.lu = lu;
+        this.partie = partie;
+        this.expediteur = expediteur;
+        this.destinataire = destinataire;
+    }
 
-}
+    // Méthodes métier
 
+    public boolean estGlobal() {
+        return destinataire == null;
+    }
 
+    // getters setters
 
-//getter setter
+    public Integer getId() {
+        return id;
+    }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-public Integer getId() {
-    return id;
-}
+    public String getContenu() {
+        return contenu;
+    }
 
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
 
-public void setId(Integer id) {
-    this.id = id;
-}
+    public LocalDateTime getDateEnvoi() {
+        return dateEnvoi;
+    }
 
+    public void setDateEnvoi(LocalDateTime dateEnvoi) {
+        this.dateEnvoi = dateEnvoi;
+    }
 
-public String getContenu() {
-    return contenu;
-}
+    public boolean isLu() {
+        return lu;
+    }
 
+    public void setLu(boolean lu) {
+        this.lu = lu;
+    }
 
-public void setContenu(String contenu) {
-    this.contenu = contenu;
-}
+    public Partie getPartie() {
+        return partie;
+    }
 
+    public void setPartie(Partie partie) {
+        this.partie = partie;
+    }
 
-public LocalDateTime getDateEnvoi() {
-    return dateEnvoi;
-}
+    public Utilisateur getExpediteur() {
+        return expediteur;
+    }
 
+    public void setExpediteur(Utilisateur expediteur) {
+        this.expediteur = expediteur;
+    }
 
-public void setDateEnvoi(LocalDateTime dateEnvoi) {
-    this.dateEnvoi = dateEnvoi;
-}
+    public Utilisateur getDestinataire() {
+        return destinataire;
+    }
 
+    public void setDestinataire(Utilisateur destinataire) {
+        this.destinataire = destinataire;
+    }
 
-public boolean isLu() {
-    return lu;
-}
+    // toString
 
-
-public void setLu(boolean lu) {
-    this.lu = lu;
-}
-
-
-
-
-
- public Partie getPartie() {
-    return partie;
-}
-
-
-
-
-public void setPartie(Partie partie) {
-    this.partie = partie;
-}
-
-
-
-
-public Utilisateur getExpediteur() {
-    return expediteur;
-}
-
-
-
-
-public void setExpediteur(Utilisateur expediteur) {
-    this.expediteur = expediteur;
-}
-
-
-
-
-public Utilisateur getDestinataire() {
-    return destinataire;
-}
-
-
-
-public void setDestinataire(Utilisateur destinataire) {
-    this.destinataire = destinataire;
-}
-
-
-//toString
-
-@Override
-public String toString() {
-    return "Message [id=" + id + ", contenu=" + contenu + ", dateEnvoi=" + dateEnvoi + ", lu=" + lu + ", partie="
-            + partie + ", expediteur=" + expediteur + ", destinataire=" + destinataire + ", estGlobal()=" + estGlobal()
-            + ", getId()=" + getId() + ", getContenu()=" + getContenu() + ", getDateEnvoi()=" + getDateEnvoi()
-            + ", isLu()=" + isLu() + ", getPartie()=" + getPartie() + ", getClass()=" + getClass()
-            + ", getExpediteur()=" + getExpediteur() + ", getDestinataire()=" + getDestinataire() + ", hashCode()="
-            + hashCode() + ", toString()=" + super.toString() + "]";
-}
-
-
+    @Override
+    public String toString() {
+        return "Message [id=" + id + ", contenu=" + contenu + ", dateEnvoi=" + dateEnvoi + ", lu=" + lu + ", partie="
+                + partie + ", expediteur=" + expediteur + ", destinataire=" + destinataire + "]";
+    }
 
 }
