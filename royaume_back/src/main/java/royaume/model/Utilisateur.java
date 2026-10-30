@@ -9,8 +9,9 @@ public class Utilisateur {
     private boolean online = false;
     private boolean admin = false;
 
+    // Le lien vers partie se fera via le royaume.
+    // Un joueur ne peut pas avoir plusieurs royaumes.
     private Royaume royaume;
-    private Partie partieActuelle;
 
     // Constructeurs
 
@@ -18,7 +19,7 @@ public class Utilisateur {
     }
 
     public Utilisateur(Integer id, String pseudo, String email, String password, boolean online, boolean admin,
-            Royaume royaume, Partie partieActuelle) {
+            Royaume royaume) {
         this.id = id;
         this.pseudo = pseudo;
         this.email = email;
@@ -26,7 +27,6 @@ public class Utilisateur {
         this.online = online;
         this.admin = admin;
         this.royaume = royaume;
-        this.partieActuelle = partieActuelle;
     }
 
     // Méthodes métier
@@ -113,21 +113,13 @@ public class Utilisateur {
         this.royaume = royaume;
     }
 
-    public Partie getPartieActuelle() {
-        return partieActuelle;
-    }
-
-    public void setPartieActuelle(Partie partieActuelle) {
-        this.partieActuelle = partieActuelle;
-    }
-
     // toString
 
     @Override
     public String toString() {
         return "Utilisateur [id=" + id + ", pseudo=" + pseudo + ", email=" + email + ", password=" + password
                 + ", online="
-                + online + ", admin=" + admin + ", royaume=" + royaume + ", partieActuelle=" + partieActuelle + "]";
+                + online + ", admin=" + admin + ", royaume=" + royaume + "]";
     }
 
 }

@@ -15,7 +15,6 @@ public class Partie {
     private Utilisateur vainqueur;
     private TypeVictoire typeVictoire;
 
-    private List<Utilisateur> joueurs = new ArrayList<>();
     private List<Message> messages = new ArrayList<>();
     private List<Royaume> royaumes = new ArrayList<>();
 
@@ -27,7 +26,7 @@ public class Partie {
     }
 
     public Partie(Integer id, String nom, LocalDateTime dateCreation, double vitesseJeu, int maxJoueurs,
-            Utilisateur vainqueur, TypeVictoire typeVictoire, List<Utilisateur> joueurs, List<Message> messages,
+            Utilisateur vainqueur, TypeVictoire typeVictoire, List<Message> messages,
             List<Royaume> royaumes, StatutPartie statut) {
         this.id = id;
         this.nom = nom;
@@ -36,7 +35,6 @@ public class Partie {
         this.maxJoueurs = maxJoueurs;
         this.vainqueur = vainqueur;
         this.typeVictoire = typeVictoire;
-        this.joueurs = joueurs;
         this.messages = messages;
         this.royaumes = royaumes;
         this.statut = statut;
@@ -54,7 +52,7 @@ public class Partie {
 
     public void terminer(Utilisateur vainqueur, TypeVictoire typeVictoire) {
 
-        if (statut == StatutPartie.EN_COURS && vainqueur != null && joueurs.size() > 1) {
+        if (statut == StatutPartie.EN_COURS && vainqueur != null && getNJoueurs() > 1) {
 
             this.vainqueur = vainqueur;
             this.typeVictoire = typeVictoire;
@@ -63,31 +61,48 @@ public class Partie {
         }
     }
 
-    public boolean ajouterJoueur(Utilisateur joueur) {
+    public boolean inscrireRoyaume(Royaume royaume) {
 
         if (statut != StatutPartie.EN_ATTENTE) {
             return false;
         }
-        if (joueurs.contains(joueur)) {
+        if (royaumes.contains(royaume)) {
             return false;
         }
-        if (joueurs.size() >= maxJoueurs) {
+        if (royaumes.size() >= maxJoueurs) {
             return false;
         }
 
-        joueurs.add(joueur);
+        royaumes.add(royaume);
         return true;
     }
 
-    public void retirerJoueur(Utilisateur joueur) {
+    public void desinscrireRoyaume(Royaume royaume) {
 
-        joueurs.remove(joueur);
-
-        if (statut == StatutPartie.EN_COURS && joueurs.size() == 1) {
-
-            terminer(joueurs.get(0), TypeVictoire.ABANDON_ADVERSAIRES);
+        if (statut == StatutPartie.EN_ATTENTE) {
+            royaumes.remove(royaume);
+            // Libérer emplacement carte
         }
 
+    }
+
+    public void declarerForfait(Royaume royaume) {
+        if (statut == StatutPartie.EN_COURS) {
+            royaume.setEnRuine(true);
+            // royaume.setPropriétaire(null);
+        }
+    }
+
+    public long getNJoueurs() {
+        return royaumes.stream()
+                .filter(r -> r.isEnRuine())
+                .count();
+    }
+
+    public boolean ajouterMessage(Message message) {
+        message.setPartie(this);
+        messages.add(message);
+        return true;
     }
 
     // getters setters
@@ -164,14 +179,6 @@ public class Partie {
         this.typeVictoire = typeVictoire;
     }
 
-    public List<Utilisateur> getJoueurs() {
-        return joueurs;
-    }
-
-    public void setJoueurs(List<Utilisateur> joueurs) {
-        this.joueurs = joueurs;
-    }
-
     public List<Message> getMessages() {
         return messages;
     }
@@ -186,7 +193,7 @@ public class Partie {
     public String toString() {
         return "Partie [id=" + id + ", nom=" + nom + ", dateCreation=" + dateCreation + ", vitesseJeu=" + vitesseJeu
                 + ", maxJoueurs=" + maxJoueurs + ", vainqueur=" + vainqueur + ", typeVictoire=" + typeVictoire
-                + ", joueurs=" + joueurs + ", royaumes=" + royaumes + ", statut=" + statut
+                + ", royaumes=" + royaumes + ", statut=" + statut
                 + "]";
     }
 
