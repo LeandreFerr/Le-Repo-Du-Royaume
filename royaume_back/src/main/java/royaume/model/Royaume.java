@@ -13,9 +13,15 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
-
-	private List<QuantiteRessource> ressources = new ArrayList<>();
-
+	
+	// Ressources automatiquement offerte à la création du Royaume (niveau1, début de partie) :
+	
+	private List<QuantiteRessource> ressources = new ArrayList<>(List.of(
+		    new QuantiteRessource(40, Ressource.BOIS),
+		    new QuantiteRessource(40, Ressource.PIERRE),
+		    new QuantiteRessource(20, Ressource.OR),
+		    new QuantiteRessource(100, Ressource.NOURRITURE)
+		));
 
 	// ---------------- CONSTRUCTEURS --------------------------
 
