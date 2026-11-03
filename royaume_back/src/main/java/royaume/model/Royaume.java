@@ -13,6 +13,7 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
+
 	
 	// Ressources automatiquement offerte à la création du Royaume (niveau1, début de partie) :
 	
@@ -22,6 +23,13 @@ public class Royaume {
 		    new QuantiteRessource(20, Ressource.OR),
 		    new QuantiteRessource(100, Ressource.NOURRITURE)
 		));
+	
+	// Batiments automatiquement offerte à la création ???  :
+	
+		private List<Batiment> batiments = new ArrayList<>(List.of(
+			    new Chateau(1, "chateau", 1, 50, 50, false) //pourrait être en construction -> true 
+			));
+
 
 	// ---------------- CONSTRUCTEURS --------------------------
 
@@ -36,7 +44,7 @@ public class Royaume {
 
 	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
-			List<QuantiteRessource> ressources) {
+			List<QuantiteRessource> ressources, List<Batiment> batiments) {
 		this.id = id;
 		this.nom = nom;
 		this.niveau = niveau;
@@ -46,6 +54,8 @@ public class Royaume {
 		this.populationMilitaire = populationMilitaire;
 		this.enRuine = enRuine;
 		this.ressources = ressources;
+		this.batiments = batiments;
+
 	}
 
 	// ------------------------- Méthodes métier -------------------------------
@@ -225,6 +235,16 @@ public class Royaume {
 
 	public void setRessources(List<QuantiteRessource> ressources) {
 		this.ressources = ressources;
+	}
+
+
+	public List<Batiment> getBatiments() {
+		return batiments;
+	}
+
+
+	public void setBatiments(List<Batiment> batiments) {
+		this.batiments = batiments;
 	}
 
 
