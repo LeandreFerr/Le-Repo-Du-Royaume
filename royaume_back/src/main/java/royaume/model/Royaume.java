@@ -1,7 +1,12 @@
 package royaume.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import royaume.model.batiment.Batiment;
+import royaume.model.batiment.BatimentFactory;
+import royaume.model.batiment.Maison;
 
 public class Royaume {
 
@@ -24,10 +29,10 @@ public class Royaume {
 		    new QuantiteRessource(100, Ressource.NOURRITURE)
 		));
 	
-	// Batiments automatiquement offerte à la création ???  :
+	// Batiments automatiquement offerte à la création -> Factory  :
 	
 		private List<Batiment> batiments = new ArrayList<>(List.of(
-			    new Chateau(1, "chateau", 1, 50, 50, false) //pourrait être en construction -> true 
+			    //new Chateau(1, "chateau", 1, 50, 50, false) //pourrait être en construction -> true 
 			));
 
 
@@ -39,6 +44,7 @@ public class Royaume {
 	public Royaume(Integer id, String nom) {
 		this.id = id;
 		this.nom = nom;
+		BatimentFactory.creerChateauInitial(this);
 	}
 
 
@@ -55,9 +61,25 @@ public class Royaume {
 		this.enRuine = enRuine;
 		this.ressources = ressources;
 		this.batiments = batiments;
+		BatimentFactory.creerChateauInitial(this);
 
 	}
 
+	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
+			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
+			List<QuantiteRessource> ressources) {
+		this.id = id;
+		this.nom = nom;
+		this.niveau = niveau;
+		this.populationDisponible = populationDisponible;
+		this.populationOuvriere = populationOuvriere;
+		this.populationEnEntrainement = populationEnEntrainement;
+		this.populationMilitaire = populationMilitaire;
+		this.enRuine = enRuine;
+		this.ressources = ressources;
+		BatimentFactory.creerChateauInitial(this);
+
+	}
 	// ------------------------- Méthodes métier -------------------------------
 
 
@@ -140,6 +162,32 @@ public class Royaume {
 	    System.out.println("Le royaume atteint le niveau " + this.niveau);
 	}
 	
+	//_____________________________________________________
+	
+	
+	public void ajouterBatiment(Batiment batiment) {
+
+	    if (batiment == null) {
+	        throw new IllegalArgumentException(
+	            "Le bâtiment ne peut pas être null"
+	        );
+	    }
+
+	    // Les maisons peuvent être présentes plusieurs fois
+	    if (!(batiment instanceof Maison)) {
+
+	        boolean existeDeja = batiments.stream()
+	            .anyMatch(b -> b.getClass().equals(batiment.getClass()));
+
+	        if (existeDeja) {
+	            throw new IllegalArgumentException(
+	                "Ce type de bâtiment existe déjà dans le royaume"
+	            );
+	        }
+	    }
+
+	    batiments.add(batiment);
+	}
 	
 
 
@@ -239,13 +287,13 @@ public class Royaume {
 
 
 	public List<Batiment> getBatiments() {
-		return batiments;
+        return Collections.unmodifiableList(batiments);
 	}
 
 
-	public void setBatiments(List<Batiment> batiments) {
+	/*public void setBatiments(List<Batiment> batiments) {
 		this.batiments = batiments;
-	}
+	}*/ // C'est FACTORY 
 
 
 	@Override

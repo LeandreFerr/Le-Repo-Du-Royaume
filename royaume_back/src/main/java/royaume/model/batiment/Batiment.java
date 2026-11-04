@@ -1,6 +1,8 @@
-package royaume.model;
+package royaume.model.batiment;
 
 import java.util.List;
+
+import royaume.model.QuantiteRessource;
 
 public abstract class Batiment {
 	
@@ -75,26 +77,50 @@ public abstract class Batiment {
 	
 	public void subirDegats(int degats) {
 		
-		// diminue les points de vie sans descendre sous 0
+		// diminue les points de vie sans descendre sous 0 :
+		
+		if (degats < 0) {
+            throw new IllegalArgumentException("Dégâts négatifs interdits");
+        }
+        pointsDeVie = Math.max(0, pointsDeVie - degats);
 	}
+	
 	
 	public void reparer(int montant) {
 		
-		// augmente les PV sans dépasser pointsDeVieMax
+		// augmente les PV sans dépasser pointsDeVieMax :
+		
+		if (montant < 0) {
+            throw new IllegalArgumentException("Réparation négative interdite");
+        }
+        pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);
 	}
 	
 	
 	public boolean estOperationnel() {
 		
-		// renvoie true si pointsDeVie > 0 et !enConstruction
-		return true;
+		// renvoie true si pointsDeVie > 0 AND !enConstruction : 
+		
+        return pointsDeVie > 0 && !enConstruction;
 	}
 	
+	//______________________
 	
 	public void ameliorer() {
 		
 		// augmente le niveau et recalcule les pointsDeVieMax
+		// Si amélioration : Retrouve le max de point de vie
+		
+		niveau++;
+        pointsDeVieMax = calculerPointsDeVieMax();
+        pointsDeVie = pointsDeVieMax;
 	}
+	
+	protected int calculerPointsDeVieMax() {
+        return 50 * niveau;
+    }
+	//______________________
+
 
 	
 	public abstract List<QuantiteRessource> getCoutAmelioration();

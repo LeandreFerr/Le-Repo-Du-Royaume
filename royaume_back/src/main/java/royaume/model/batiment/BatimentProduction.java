@@ -1,6 +1,9 @@
-package royaume.model;
+package royaume.model.batiment;
 
 import java.util.List;
+
+import royaume.model.QuantiteRessource;
+import royaume.model.Ressource;
 
 
 public class BatimentProduction extends Batiment{
@@ -13,7 +16,7 @@ public class BatimentProduction extends Batiment{
 	
 	
 	
-	public BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
+    BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
 			boolean enConstruction, Ressource typeRessource, int productionBaseHeure) {
 		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
 		this.typeRessource = typeRessource;
@@ -22,7 +25,7 @@ public class BatimentProduction extends Batiment{
 	
 	
 
-	public BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
+    BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
 			boolean enConstruction) {
 		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
 	}
@@ -55,20 +58,24 @@ public class BatimentProduction extends Batiment{
 
 	public int calculerProduction() {
 		// calcule le rendement effectif basé sur le niveau et renvoie 0 si non opérationnel
-		return 2;
+		 if (!estOperationnel()) {
+	            return 0;
+	        }
+
+	        return productionBaseHeure * niveau; //Production = ProductionBaseHeure * Niveau
 	}
 	
 	
 	@Override
 	public List<QuantiteRessource> getCoutAmelioration(){
 	// coût nécessaire pour lancer le niveau suivant 
-		
-		// return List<QuantiteRessource> ;
+	// 						>> retourne la List de <QuantiteRessource> nécessaire;
+        return List.of();
 	}
 	
 	@Override
 	public int getTempsConstructionBase() {
-	//  durée de base en secondes ou ticks
-		return 2;
+	//  durée de base en secondes 
+		 return 60;
 	}
 }
