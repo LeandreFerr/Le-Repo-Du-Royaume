@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 
 
-public class BatimentProduction extends Batiment{
+public abstract class BatimentProduction extends Batiment{
 
 	
 	private Ressource typeRessource;

@@ -1,6 +1,5 @@
 package royaume.model.batiment;
 
-import royaume.model.Ressource;
 import royaume.model.Royaume;
 
 public class BatimentFactory {
@@ -35,7 +34,7 @@ public class BatimentFactory {
 
         return maison;
     }
-
+/*
     public static BatimentProduction creerBatimentProduction(
             Royaume royaume,
             Integer id,
@@ -51,5 +50,70 @@ public class BatimentFactory {
         royaume.ajouterBatiment(batiment);
 
         return batiment;
+    }*/
+    
+
+    public static Mine creerMine(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionOrHeure) {
+
+        Mine mine = new Mine(
+            id, nom, 1, 50, 50, false,
+            productionOrHeure
+        );
+
+        royaume.ajouterBatiment(mine);
+
+        return mine;
+    }
+
+    public static Carriere creerCarriere(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionPierreHeure) {
+
+        Carriere carriere = new Carriere(
+            id, nom, 1, 50, 50, false,
+            productionPierreHeure
+        );
+
+        royaume.ajouterBatiment(carriere);
+
+        return carriere;
+    }
+
+    public static Scierie creerScierie(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionBoisHeure) {
+
+        Scierie scierie = new Scierie(
+            id, nom, 1, 50, 50, false,
+            productionBoisHeure
+        );
+
+        royaume.ajouterBatiment(scierie);
+
+        return scierie;
+    }
+
+    public static Taverne creerTaverne(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionNourritureHeure) {
+
+        Taverne taverne = new Taverne(
+            id, nom, 1, 50, 50, false,
+            productionNourritureHeure
+        );
+
+        royaume.ajouterBatiment(taverne);
+
+        return taverne;
     }
 }
