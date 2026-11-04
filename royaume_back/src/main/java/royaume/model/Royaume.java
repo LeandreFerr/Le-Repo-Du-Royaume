@@ -6,7 +6,8 @@ import java.util.List;
 
 import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentFactory;
-import royaume.model.batiment.Maison;
+import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.Chateau;
 
 public class Royaume {
 
@@ -173,15 +174,34 @@ public class Royaume {
 	        );
 	    }
 
-	    // Les maisons peuvent être présentes plusieurs fois
-	    if (!(batiment instanceof Maison)) {
+	    // Les maisons peuvent être présentes en plusieurs exemplaires
 
-	        boolean existeDeja = batiments.stream()
-	            .anyMatch(b -> b.getClass().equals(batiment.getClass()));
+	    // Un seul château par royaume
+	    if (batiment instanceof Chateau) {
 
-	        if (existeDeja) {
+	        boolean chateauExiste = batiments.stream()
+	            .anyMatch(b -> b instanceof Chateau);
+
+	        if (chateauExiste) {
 	            throw new IllegalArgumentException(
-	                "Ce type de bâtiment existe déjà dans le royaume"
+	                "Un château existe déjà dans ce royaume"
+	            );
+	        }
+	    }
+
+	    // Un seul bâtiment de production par ressource
+	    if (batiment instanceof BatimentProduction production) {
+
+	        boolean ressourceExiste = batiments.stream()
+	            .filter(BatimentProduction.class::isInstance)
+	            .map(BatimentProduction.class::cast)
+	            .anyMatch(b ->
+	                b.getTypeRessource() == production.getTypeRessource()
+	            );
+
+	        if (ressourceExiste) {
+	            throw new IllegalArgumentException(
+	                "Un bâtiment produit déjà cette ressource dans ce royaume"
 	            );
 	        }
 	    }
