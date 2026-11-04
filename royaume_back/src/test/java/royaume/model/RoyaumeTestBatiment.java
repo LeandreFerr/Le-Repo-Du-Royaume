@@ -1,7 +1,9 @@
 
 package royaume.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,11 +68,10 @@ class RoyaumeTestBatiment {
     void creerBatimentProduction_AjouteAutomatiquementLaMine() {
 
         BatimentProduction mine =
-            BatimentFactory.creerBatimentProduction(
+            BatimentFactory.creerMine(
                 royaume,
                 2,
                 "Mine d'or",
-                Ressource.OR,
                 100
             );
 
@@ -81,14 +82,14 @@ class RoyaumeTestBatiment {
     @Test
     void ajouterBatiment_RefuseUnDeuxiemeBatimentProductionDeMemeClasse() {
 
-        BatimentFactory.creerBatimentProduction(
-            royaume, 2, "Mine d'or", Ressource.OR, 100
+        BatimentFactory.creerMine(
+            royaume, 2, "Mine d'or", 100
         );
 
         assertThrows(
             IllegalArgumentException.class,
-            () -> BatimentFactory.creerBatimentProduction(
-                royaume, 3, "Mine d'or", Ressource.OR, 80
+            () -> BatimentFactory.creerMine(
+                royaume, 3, "Mine d'or", 80
             )
         );
     }

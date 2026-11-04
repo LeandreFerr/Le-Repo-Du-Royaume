@@ -1,12 +1,10 @@
 
 package royaume.model.batiment;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import royaume.model.Ressource;
 
 class BatimentProductionTest {
 
@@ -14,14 +12,13 @@ class BatimentProductionTest {
 
     @BeforeEach
     void setUp() {
-        mine = new BatimentProduction(
+        mine = new Mine(
             1,
             "Mine d'or",
             1,
             50,
             50,
             false,
-            Ressource.OR,
             100
         );
     }

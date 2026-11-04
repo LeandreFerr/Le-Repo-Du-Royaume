@@ -10,7 +10,7 @@ public class BatimentFactory {
     public static Chateau creerChateauInitial(Royaume royaume) {
 
         Chateau chateau = new Chateau(
-            1, "chateau", 1, 50, 50, false
+            1, "chateau", 1, 5000, 5000, false
         );
 
         royaume.ajouterBatiment(chateau);
@@ -26,7 +26,7 @@ public class BatimentFactory {
             double bonusCroissance) {
 
         Maison maison = new Maison(
-            id, nom, 1, 50, 50, true,
+            id, nom, 1, 400, 400, true,
             capaciteLogement, bonusCroissance
         );
 
@@ -60,7 +60,7 @@ public class BatimentFactory {
             int productionOrHeure) {
 
         Mine mine = new Mine(
-            id, nom, 1, 50, 50, false,
+            id, nom, 1, 2500, 2500, false,
             productionOrHeure
         );
 
@@ -76,7 +76,7 @@ public class BatimentFactory {
             int productionPierreHeure) {
 
         Carriere carriere = new Carriere(
-            id, nom, 1, 50, 50, false,
+            id, nom, 1, 4000, 4000, false,
             productionPierreHeure
         );
 
@@ -92,7 +92,7 @@ public class BatimentFactory {
             int productionBoisHeure) {
 
         Scierie scierie = new Scierie(
-            id, nom, 1, 50, 50, false,
+            id, nom, 1, 3500, 3500, false,
             productionBoisHeure
         );
 
@@ -108,7 +108,7 @@ public class BatimentFactory {
             int productionNourritureHeure) {
 
         Taverne taverne = new Taverne(
-            id, nom, 1, 50, 50, false,
+            id, nom, 1, 7000, 7000, false,
             productionNourritureHeure
         );
 
