@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 
 public class Scierie extends BatimentProduction {
 
-    private int productionBoisHeure;
+    private int productionBoisHeure = 24;
 
     Scierie(Integer id, String nom, int niveau,
             int pv, int pvMax, boolean construction,

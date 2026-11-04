@@ -10,7 +10,7 @@ public abstract class BatimentProduction extends Batiment{
 
 	
 	private Ressource typeRessource;
-	private int productionBaseHeure;
+	private int productionBaseHeure;  
 	
 	
 	
@@ -62,8 +62,8 @@ public abstract class BatimentProduction extends Batiment{
 	            return 0;
 	        }
 
-	        return productionBaseHeure * niveau; //Production = ProductionBaseHeure * Niveau
-	}
+	        return productionBaseHeure * niveau;   //Production = ProductionBaseHeure * Niveau
+	}												// Constante * niveau
 	
 	
 	@Override
@@ -76,6 +76,7 @@ public abstract class BatimentProduction extends Batiment{
 	@Override
 	public int getTempsConstructionBase() {
 	//  durée de base en secondes 
+		
 		 return 60;
 	}
 }

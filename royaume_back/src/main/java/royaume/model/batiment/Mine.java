@@ -5,7 +5,7 @@ import royaume.model.QuantiteRessource;
 
 public class Mine extends BatimentProduction {
 
-    private int productionOrHeure;
+    private int productionOrHeure = 2;
 
     Mine(Integer id, String nom, int niveau,
          int pv, int pvMax, boolean construction,

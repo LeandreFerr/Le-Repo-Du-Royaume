@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 
 public class Taverne extends BatimentProduction {
 
-    private int productionNourritureHeure;
+    private int productionNourritureHeure = 50;
 
     Taverne(Integer id, String nom, int niveau,
             int pv, int pvMax, boolean construction,

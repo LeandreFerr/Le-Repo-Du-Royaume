@@ -93,7 +93,7 @@ public abstract class Batiment {
 		if (montant < 0) {
             throw new IllegalArgumentException("Réparation négative interdite");
         }
-        pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);
+        pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);  // Es ce que ça a un cout (ex nombre ouvrier à mobiliser) ? 
 	}
 	
 	
@@ -117,7 +117,7 @@ public abstract class Batiment {
 	}
 	
 	protected int calculerPointsDeVieMax() {
-        return 50 * niveau;
+        return 50 * niveau;                        // PVmax = 50 * niveau du batiment
     }
 	//______________________
 

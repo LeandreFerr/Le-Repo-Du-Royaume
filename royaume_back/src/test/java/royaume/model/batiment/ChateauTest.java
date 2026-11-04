@@ -52,7 +52,7 @@ class ChateauTest {
 
         chateau.ameliorer();
 
-        chateau.debloquerPalier();
+        chateau.debloquerPalier();  // LA 
 
         assertEquals(2, chateau.getNiveauPalierDebloque());
     }

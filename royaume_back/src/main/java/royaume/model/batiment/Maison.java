@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 public class Maison extends Batiment {
 
     private int capaciteLogement;
-    private double bonusCroissance = 0.3; // ex: taux de croissance de la pop augmente ?
+    private double bonusCroissance = 0.12; // ex: taux de croissance de la pop augmente ?
 
     
     

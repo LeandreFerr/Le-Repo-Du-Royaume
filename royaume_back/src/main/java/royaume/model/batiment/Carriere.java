@@ -5,7 +5,7 @@ import royaume.model.QuantiteRessource;
 
 public class Carriere extends BatimentProduction {
 
-    private int productionPierreHeure;
+    private int productionPierreHeure = 30; // #nb. Pierre /heure
 
     Carriere(Integer id, String nom, int niveau,
              int pv, int pvMax, boolean construction,

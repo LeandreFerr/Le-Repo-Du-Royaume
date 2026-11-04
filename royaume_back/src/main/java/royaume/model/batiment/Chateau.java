@@ -49,21 +49,34 @@ public class Chateau extends Batiment{
 	public void setBonusDefenseRoyaume(double bonusDefenseRoyaume) {
 		this.bonusDefenseRoyaume = bonusDefenseRoyaume;
 	}
-	//__________________________________________________
+	//__________________________________________________   // Chateau passe au niveau 2 si on est au niveau 2 
+	
+	// Si pv du chateau arrive à zero ?  
+	
+	//Si on te detruit ton chateau quel que soit ton niveau de Royaume alors : enRuine = true; (et Chateau(PV) = 0)
+
+	
+	// si tu es en ruine alors les autres peuvent te piquer tes ressources + population  ?? 
+	
+	
+	
+	//____________________
+	
+	// FAIRE L'INVERSE : Si on passe au niveau 2 le chateau passe au niveau 2 automatiquement (ses PVmax n'augmente pas)
 	
 	
 	public void debloquerPalier() {
 		
-		// void (met à jour le niveau de technologie/palier accessible
+		//ex :  Si t'es niveau 2 bah tu débloque le niveau 2 pour tout les batiments (chateau inclu)
+		
 		  niveauPalierDebloque = niveau;
 		 
-	}
+	}    
 	
 	//__________________________
 	public boolean verifierConditionsVictoire() {
-		
-		//(renvoie true si le niveau atteint 10)
-        return niveau == 10;
+	
+        return niveau == 10;  	//(renvoie true si le niveau atteint 10)
 	}
 	
 	public void alerteNiveau10() {

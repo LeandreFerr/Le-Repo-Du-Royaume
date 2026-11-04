@@ -10,7 +10,7 @@ public class BatimentFactory {
     public static Chateau creerChateauInitial(Royaume royaume) {
 
         Chateau chateau = new Chateau(
-            1, "chateau", 1, 5000, 5000, false
+            1, "chateau", 1, 9000, 9000, false
         );
 
         royaume.ajouterBatiment(chateau);
@@ -26,7 +26,7 @@ public class BatimentFactory {
             double bonusCroissance) {
 
         Maison maison = new Maison(
-            id, nom, 1, 400, 400, true,
+            id, nom, 1, 200, 200, true,
             capaciteLogement, bonusCroissance
         );
 
