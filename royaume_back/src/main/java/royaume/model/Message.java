@@ -4,101 +4,149 @@ import java.time.LocalDateTime;
 
 public class Message {
 
-    private Integer id;
-    private String contenu;
-    private LocalDateTime dateEnvoi;
-    private boolean lu;
+	// =========================================================================
+	// Attributs
+	// =========================================================================
 
-    private Partie partie;
-    private Utilisateur expediteur;
-    private Utilisateur destinataire;
+	private Integer id;
+	private String contenu;
+	private LocalDateTime dateEnvoi;
+	private boolean lu = false;
 
-    // Constructeurs
-    public Message() {
-    }
+	private Partie partie;
+	private Utilisateur expediteur;
+	private Utilisateur destinataire;
 
-    public Message(Integer id, String contenu, LocalDateTime dateEnvoi, boolean lu, Partie partie,
-            Utilisateur expediteur,
-            Utilisateur destinataire) {
-        this.id = id;
-        this.contenu = contenu;
-        this.dateEnvoi = dateEnvoi;
-        this.lu = lu;
-        this.partie = partie;
-        this.expediteur = expediteur;
-        this.destinataire = destinataire;
-    }
+	// =========================================================================
+	// Constructeurs
+	// =========================================================================
 
-    // Méthodes métier
+	public Message() {}
 
-    public boolean estGlobal() {
-        return destinataire == null;
-    }
+	public Message(Integer id, String contenu, LocalDateTime dateEnvoi, boolean lu, Partie partie,
+			Utilisateur expediteur, Utilisateur destinataire) {
+		checkId(id);
+		checkContenu(contenu);
+		checkExpediteur(expediteur);
+		checkDestinataire(expediteur, destinataire);
+		this.id = id;
+		this.contenu = contenu;
+		this.dateEnvoi = dateEnvoi;
+		this.lu = lu;
+		this.partie = partie;
+		this.expediteur = expediteur;
+		this.destinataire = destinataire;
+	}
 
-    // getters setters
+	// =========================================================================
+	// Méthodes métier
+	// =========================================================================
 
-    public Integer getId() {
-        return id;
-    }
+	public boolean estGlobal() {
+		return destinataire == null;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	// =========================================================================
+	// Getters & Setters
+	// =========================================================================
 
-    public String getContenu() {
-        return contenu;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setContenu(String contenu) {
-        this.contenu = contenu;
-    }
+	public void setId(Integer id) {
+		checkId(id);
+		this.id = id;
+	}
 
-    public LocalDateTime getDateEnvoi() {
-        return dateEnvoi;
-    }
+	public String getContenu() {
+		return contenu;
+	}
 
-    public void setDateEnvoi(LocalDateTime dateEnvoi) {
-        this.dateEnvoi = dateEnvoi;
-    }
+	public void setContenu(String contenu) {
+		checkContenu(contenu);
+		this.contenu = contenu;
+	}
 
-    public boolean isLu() {
-        return lu;
-    }
+	public LocalDateTime getDateEnvoi() {
+		return dateEnvoi;
+	}
 
-    public void setLu(boolean lu) {
-        this.lu = lu;
-    }
+	public void setDateEnvoi(LocalDateTime dateEnvoi) {
+		this.dateEnvoi = dateEnvoi;
+	}
 
-    public Partie getPartie() {
-        return partie;
-    }
+	public boolean isLu() {
+		return lu;
+	}
 
-    public void setPartie(Partie partie) {
-        this.partie = partie;
-    }
+	public void setLu(boolean lu) {
+		this.lu = lu;
+	}
 
-    public Utilisateur getExpediteur() {
-        return expediteur;
-    }
+	public Partie getPartie() {
+		return partie;
+	}
 
-    public void setExpediteur(Utilisateur expediteur) {
-        this.expediteur = expediteur;
-    }
+	public void setPartie(Partie partie) {
+		this.partie = partie;
+	}
 
-    public Utilisateur getDestinataire() {
-        return destinataire;
-    }
+	public Utilisateur getExpediteur() {
+		return expediteur;
+	}
 
-    public void setDestinataire(Utilisateur destinataire) {
-        this.destinataire = destinataire;
-    }
+	public void setExpediteur(Utilisateur expediteur) {
+		checkExpediteur(expediteur);
+		this.expediteur = expediteur;
+	}
 
-    // toString
+	public Utilisateur getDestinataire() {
+		return destinataire;
+	}
 
-    @Override
-    public String toString() {
-        return "Message [id=" + id + ", contenu=" + contenu + ", dateEnvoi=" + dateEnvoi + ", lu=" + lu + ", partie="
-                + partie + ", expediteur=" + expediteur + ", destinataire=" + destinataire + "]";
-    }
+	public void setDestinataire(Utilisateur destinataire) {
+		checkDestinataire(this.expediteur, destinataire);
+		this.destinataire = destinataire;
+	}
 
+	// =========================================================================
+	// Méthodes helpers & Validations
+	// =========================================================================
+
+	private void checkId(Integer id) {
+		if (id != null && id <= 0) {
+			throw new IllegalArgumentException("L'id du message doit être strictement positif.");
+		}
+	}
+
+	private void checkContenu(String contenu) {
+		if (contenu == null || contenu.isBlank()) {
+			throw new IllegalArgumentException("Le contenu du message ne peut pas être vide ou blanc.");
+		}
+	}
+
+	private void checkExpediteur(Utilisateur expediteur) {
+		if (expediteur == null) {
+			throw new IllegalArgumentException("L'expéditeur du message ne peut pas être null.");
+		}
+	}
+
+	private void checkDestinataire(Utilisateur expediteur, Utilisateur destinataire) {
+		if (expediteur != null && destinataire != null && expediteur.equals(destinataire)) {
+			throw new IllegalArgumentException("Un utilisateur ne peut pas s'envoyer un message privé à lui-même.");
+		}
+	}
+
+	// =========================================================================
+	// Représentation
+	// =========================================================================
+
+	@Override
+	public String toString() {
+		return "Message [id=" + id + ", contenu=" + contenu + ", dateEnvoi=" + dateEnvoi + ", lu=" + lu
+				+ ", partie=" + (partie != null ? partie.getId() : null)
+				+ ", expediteur=" + (expediteur != null ? expediteur.getPseudo() : null)
+				+ ", destinataire=" + (destinataire != null ? destinataire.getPseudo() : null) + "]";
+	}
 }

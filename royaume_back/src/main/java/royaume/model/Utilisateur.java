@@ -1,125 +1,181 @@
 package royaume.model;
 
+import java.util.Objects;
+
 public class Utilisateur {
 
-    private Integer id;
-    private String pseudo;
-    private String email;
-    private String password;
-    private boolean online = false;
-    private boolean admin = false;
+	// =========================================================================
+	// Attributs
+	// =========================================================================
 
-    // Le lien vers partie se fera via le royaume.
-    // Un joueur ne peut pas avoir plusieurs royaumes.
-    private Royaume royaume;
+	private Integer id;
+	private String pseudo;
+	private String email;
+	private String password;
+	private boolean online = false;
+	private boolean admin = false;
+	private Royaume royaume;
 
-    // Constructeurs
+	// =========================================================================
+	// Constructeurs
+	// =========================================================================
 
-    public Utilisateur() {
-    }
+	public Utilisateur() {}
 
-    public Utilisateur(Integer id, String pseudo, String email, String password, boolean online, boolean admin,
-            Royaume royaume) {
-        this.id = id;
-        this.pseudo = pseudo;
-        this.email = email;
-        this.password = password;
-        this.online = online;
-        this.admin = admin;
-        this.royaume = royaume;
-    }
+	public Utilisateur(Integer id, String pseudo, String email, String password, boolean online, boolean admin,
+			Royaume royaume) {
+		checkId(id);
+		checkPseudo(pseudo);
+		checkEmail(email);
+		checkPassword(password);
+		this.id = id;
+		this.pseudo = pseudo;
+		this.email = email;
+		this.password = password;
+		this.online = online;
+		this.admin = admin;
+		this.royaume = royaume;
+	}
 
-    // Méthodes métier
+	// =========================================================================
+	// Méthodes métier
+	// =========================================================================
 
-    public boolean seConnecter(String password) {
+	public boolean seConnecter(String password) {
+		if (password == null || password.isBlank()) {
+			throw new IllegalArgumentException("Le mot de passe fourni ne peut pas être null ou blanc.");
+		}
+		if (password.equals(this.password)) {
+			this.online = true;
+			return true;
+		}
+		return false;
+	}
 
-        if (password != null && password.equals(this.password)) {
+	public void seDeconnecter() {
+		this.online = false;
+	}
 
-            online = true;
+	public void abandonnerPartie() {
+		this.royaume = null;
+	}
 
-            return true;
-        }
+	// =========================================================================
+	// Getters & Setters
+	// =========================================================================
 
-        return false;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void seDeconnecter() {
+	public void setId(Integer id) {
+		checkId(id);
+		this.id = id;
+	}
 
-        online = false;
+	public String getPseudo() {
+		return pseudo;
+	}
 
-    }
+	public void setPseudo(String pseudo) {
+		checkPseudo(pseudo);
+		this.pseudo = pseudo;
+	}
 
-    public void abandonnerPartie() {
+	public String getEmail() {
+		return email;
+	}
 
-        royaume = null;
+	public void setEmail(String email) {
+		checkEmail(email);
+		this.email = email;
+	}
 
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    // getters et setters
+	public void setPassword(String password) {
+		checkPassword(password);
+		this.password = password;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public boolean isOnline() {
+		return online;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public void setOnline(boolean online) {
+		this.online = online;
+	}
 
-    public String getPseudo() {
-        return pseudo;
-    }
+	public boolean isAdmin() {
+		return admin;
+	}
 
-    public void setPseudo(String pseudo) {
-        this.pseudo = pseudo;
-    }
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
 
-    public String getEmail() {
-        return email;
-    }
+	public Royaume getRoyaume() {
+		return royaume;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setRoyaume(Royaume royaume) {
+		this.royaume = royaume;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	// =========================================================================
+	// Méthodes helpers & Validations
+	// =========================================================================
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+	private void checkId(Integer id) {
+		if (id != null && id <= 0) {
+			throw new IllegalArgumentException("L'id de l'utilisateur doit être strictement positif.");
+		}
+	}
 
-    public boolean isOnline() {
-        return online;
-    }
+	private void checkPseudo(String pseudo) {
+		if (pseudo == null || pseudo.isBlank()) {
+			throw new IllegalArgumentException("Le pseudo de l'utilisateur ne peut pas être vide ou blanc.");
+		}
+	}
 
-    public void setOnline(boolean online) {
-        this.online = online;
-    }
+	private void checkEmail(String email) {
+		if (email == null || email.isBlank()) {
+			throw new IllegalArgumentException("L'email de l'utilisateur ne peut pas être vide ou blanc.");
+		}
+	}
 
-    public boolean isAdmin() {
-        return admin;
-    }
+	private void checkPassword(String password) {
+		if (password == null || password.isBlank()) {
+			throw new IllegalArgumentException("Le mot de passe ne peut pas être vide ou blanc.");
+		}
+	}
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
+	// =========================================================================
+	// Égalité & HashCode
+	// =========================================================================
 
-    public Royaume getRoyaume() {
-        return royaume;
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Utilisateur that = (Utilisateur) o;
+		return id != null && Objects.equals(id, that.id);
+	}
 
-    public void setRoyaume(Royaume royaume) {
-        this.royaume = royaume;
-    }
+	@Override
+	public int hashCode() {
+		return id != null ? Objects.hash(id) : super.hashCode();
+	}
 
-    // toString
+	// =========================================================================
+	// Représentation
+	// =========================================================================
 
-    @Override
-    public String toString() {
-        return "Utilisateur [id=" + id + ", pseudo=" + pseudo + ", email=" + email + ", password=" + password
-                + ", online="
-                + online + ", admin=" + admin + ", royaume=" + royaume + "]";
-    }
-
+	@Override
+	public String toString() {
+		return "Utilisateur [id=" + id + ", pseudo=" + pseudo + ", email=" + email + ", password=****"
+				+ ", online=" + online + ", admin=" + admin + ", royaume=" + royaume + "]";
+	}
 }
