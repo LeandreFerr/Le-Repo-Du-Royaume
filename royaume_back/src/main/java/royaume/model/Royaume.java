@@ -82,6 +82,16 @@ public class Royaume {
 
 	}
 	// ------------------------- Méthodes métier -------------------------------
+	
+	// récupérer le chateau dans le royaume pour le faire monter de niveau automatiquement et le mettre en ruine 
+	
+	public Chateau getChateau() {
+        return batiments.stream()
+                .filter(b -> b instanceof Chateau)
+                .map(Chateau.class::cast)
+                .findFirst()
+                .orElse(null);
+    }
 
 
 	public void crediterRessources(Ressource ressource, int quantite) {
@@ -160,7 +170,15 @@ public class Royaume {
 	            throw new IllegalStateException("Impossible de débiter les ressources requises.");}}
 
 	    this.niveau = niveauSuivant;
+	    
+	    Chateau chateau = getChateau();
+	    chateau.alerteNiveau10();
+	    if (chateau != null) {
+	        chateau.synchroniserAvecNiveauRoyaume(this.niveau);
+	    
+	    
 	    System.out.println("Le royaume atteint le niveau " + this.niveau);
+	}
 	}
 	
 	//_____________________________________________________
@@ -210,6 +228,13 @@ public class Royaume {
 	}
 	
 
+	public boolean estEnRuine() {
+		Chateau chateau = getChateau();
+		if (chateau.getPointsDeVie()==0) {
+			this.enRuine=true;
+		}
+		return this.enRuine;
+	}
 
 	// -------------------------Getters / Setters ------------------------------
 

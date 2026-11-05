@@ -24,6 +24,8 @@ public class Chateau extends Batiment{
 	
 	 Chateau(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
+		this.niveauPalierDebloque = niveau;
+		this.bonusDefenseRoyaume = 0.0;
 	}
 
 
@@ -49,6 +51,8 @@ public class Chateau extends Batiment{
 	public void setBonusDefenseRoyaume(double bonusDefenseRoyaume) {
 		this.bonusDefenseRoyaume = bonusDefenseRoyaume;
 	}
+	
+	
 	//__________________________________________________   // Chateau passe au niveau 2 si on est au niveau 2 
 	
 	// Si pv du chateau arrive à zero ?  
@@ -65,13 +69,17 @@ public class Chateau extends Batiment{
 	// FAIRE L'INVERSE : Si on passe au niveau 2 le chateau passe au niveau 2 automatiquement (ses PVmax n'augmente pas)
 	
 	
+	public void synchroniserAvecNiveauRoyaume(int nouveauNiveauRoyaume) {
+        this.niveau = nouveauNiveauRoyaume;
+        debloquerPalier();
+    }
+	
 	public void debloquerPalier() {
-		
 		//ex :  Si t'es niveau 2 bah tu débloque le niveau 2 pour tout les batiments (chateau inclu)
-		
-		  niveauPalierDebloque = niveau;
-		 
-	}    
+		  niveauPalierDebloque = niveau;	 
+	}  
+	
+
 	
 	//__________________________
 	public boolean verifierConditionsVictoire() {
@@ -84,9 +92,12 @@ public class Chateau extends Batiment{
             System.out.println("Vous avez dead ça ! Niveau 10 atteint - End Game");
         }
 	}
-	//__________________________
+	
+	
+	//__________________________ 
 
-
+// On n'améliore pas le chateau, on passe seulement au niveau supérieur et c'est ça qui améliore le chateau donc ça renvoie une liste vide et temps de construction = 0
+  
 	@Override
 	public List<QuantiteRessource> getCoutAmelioration(){
 	// coût nécessaire pour lancer le niveau suivant 
@@ -98,5 +109,5 @@ public class Chateau extends Batiment{
 	public int getTempsConstructionBase() {
 	//  durée de base en secondes
 		
-		 return 300;	}
+		 return 0;	}
 }
