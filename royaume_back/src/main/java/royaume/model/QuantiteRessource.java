@@ -1,5 +1,7 @@
 package royaume.model;
 
+import java.util.Objects;
+
 public class QuantiteRessource {
 
 	private int quantite;
@@ -10,6 +12,11 @@ public class QuantiteRessource {
 	
 	
 	public QuantiteRessource(int quantite, Ressource ressource) {
+		if (quantite < 0) {
+			throw new IllegalArgumentException("La quantité initiale ne peut pas être négative.");
+		} else if (ressource == null) {
+			throw new IllegalArgumentException("La ressource ne peut pas être null.");
+		}
 		this.quantite = quantite;
 		this.ressource = ressource;
 	}
@@ -17,7 +24,9 @@ public class QuantiteRessource {
 	
 	public void ajouter(int montant) {
 		if (montant <= 0) {
-        throw new IllegalArgumentException("Le montant à ajouter doit être strictement positif.");
+        	throw new IllegalArgumentException("Le montant à ajouter doit être strictement positif.");
+		} else if (Integer.MAX_VALUE - quantite < montant) {
+			throw new ArithmeticException("La quantité de ressources ne peut pas dépasser Integer.MAX_VALUE.");
 		}
 		quantite += montant;
 		
@@ -38,18 +47,43 @@ public class QuantiteRessource {
 		return quantite;
 	}
 	public void setQuantite(int quantite) {
-		this.quantite = quantite;
+		if (quantite >= 0) {
+			this.quantite = quantite;
+		} else {
+			throw new IllegalArgumentException("La quantité ne peut pas être négative.");
+		}
+		
 	}
 	public Ressource getRessource() {
 		return ressource;
 	}
 	public void setRessource(Ressource ressource) {
-		this.ressource = ressource;
+		if (ressource != null) {
+			this.ressource = ressource;
+		} else {
+			throw new IllegalArgumentException("La ressource ne peut pas être null.");
+		}
+		
 	}
 	
 	@Override
 	public String toString() {
 		return "QuantiteRessource [quantite=" + quantite + ", ressource=" + ressource + "]";
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		
+		if (o == null || getClass() != o.getClass()) return false;
+		
+		QuantiteRessource that = (QuantiteRessource) o;
+		return quantite == that.quantite && ressource == that.ressource;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(quantite, ressource);
 	}
 	
 }
