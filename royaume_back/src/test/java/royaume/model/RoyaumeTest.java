@@ -125,8 +125,8 @@ class RoyaumeTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -10, Integer.MIN_VALUE })
-        @DisplayName("Le constructeur complet rejette un niveau < 1 via IllegalArgumentException")
+        @ValueSource(ints = { 0, -1, -10, Integer.MIN_VALUE, 11, 50 })
+        @DisplayName("Le constructeur complet rejette un niveau hors de l'intervalle [1, 10] via IllegalArgumentException")
         void testConstructeurCompletRejetteNiveauInvalide(int niveauInvalide) {
             List<QuantiteRessource> vide = new ArrayList<>();
 
@@ -299,8 +299,8 @@ class RoyaumeTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -50 })
-        @DisplayName("setNiveau rejette toute valeur < 1 sans modifier le niveau actuel")
+        @ValueSource(ints = { 0, -1, -50, 11, 50 })
+        @DisplayName("setNiveau rejette toute valeur < 1 ou > 10 sans modifier le niveau actuel")
         void testSetNiveauValidation(int niveauInvalide) {
             royaume.setNiveau(3);
 
