@@ -17,6 +17,36 @@ public class BatimentFactory {
 
         return chateau;
     }
+    
+    
+    public static Maison creerMaison(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int capaciteLogement,
+            double bonusCroissance,
+            int ouvriers) {
+
+        Maison maison = new Maison(
+            id, nom, 1, 200, 200, true, // enConstruction
+            capaciteLogement, bonusCroissance
+        );
+
+        royaume.ajouterBatiment(maison);
+
+        new ChantierConstruction(
+            id,
+            maison,
+            royaume,
+            1,
+            ouvriers,
+            maison.getTempsConstructionBase(),
+            false
+        );
+
+        return maison;
+    }
+/*
 
     public static Maison creerMaison(
             Royaume royaume,
@@ -34,6 +64,8 @@ public class BatimentFactory {
 
         return maison;
     }
+    
+    */
 /*
     public static BatimentProduction creerBatimentProduction(
             Royaume royaume,
@@ -52,7 +84,34 @@ public class BatimentFactory {
         return batiment;
     }*/
     
+    ////////////////////////////////////
 
+    public static Mine creerMine(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionOrHeure,
+            int ouvriers) {
+
+        Mine mine = new Mine(
+                id, nom, 1, 2500, 2500, true,
+                productionOrHeure
+            );
+        royaume.ajouterBatiment(mine);
+        new ChantierConstruction(
+            id,
+            mine,
+            royaume,
+            1,
+            ouvriers,
+            mine.getTempsConstructionBase(),
+            false
+        );
+
+        return mine;
+    }
+    
+    /*
     public static Mine creerMine(
             Royaume royaume,
             Integer id,
@@ -67,8 +126,35 @@ public class BatimentFactory {
         royaume.ajouterBatiment(mine);
 
         return mine;
-    }
+    }*/
+    ////////////////////////////////////
+    public static Carriere creerCarriere(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionPierreHeure,
+            int ouvriers) {
 
+        Carriere carriere = new Carriere(
+                id, nom, 1, 4000, 4000, true,
+                productionPierreHeure
+            );
+        royaume.ajouterBatiment(carriere);
+        
+        new ChantierConstruction(
+            id,
+            carriere,
+            royaume,
+            1,
+            ouvriers,
+            carriere.getTempsConstructionBase(),
+            false
+        );
+
+        return carriere;
+    }
+    
+    /*
     public static Carriere creerCarriere(
             Royaume royaume,
             Integer id,
@@ -83,8 +169,35 @@ public class BatimentFactory {
         royaume.ajouterBatiment(carriere);
 
         return carriere;
-    }
+    }*/
+///////////////////////////////////////////////
+    public static Scierie creerScierie(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionBoisHeure,
+            int ouvriers) {
 
+        Scierie scierie = new Scierie(
+                id, nom, 1, 3500, 3500, true,
+                productionBoisHeure
+            );
+        
+        royaume.ajouterBatiment(scierie);
+        
+        new ChantierConstruction(
+            id,
+            scierie,
+            royaume,
+            1,
+            ouvriers,
+            scierie.getTempsConstructionBase(),
+            false
+        );
+
+        return scierie;
+    }
+    /*
     public static Scierie creerScierie(
             Royaume royaume,
             Integer id,
@@ -99,8 +212,38 @@ public class BatimentFactory {
         royaume.ajouterBatiment(scierie);
 
         return scierie;
-    }
+    }*/
+    
+    ////////////:://///////////////////////////////////////
 
+    public static Taverne creerTaverne(
+            Royaume royaume,
+            Integer id,
+            String nom,
+            int productionNourritureHeure,
+            int ouvriers) {
+
+        Taverne taverne = new Taverne(
+                id, nom, 1, 7000, 7000, true,
+                productionNourritureHeure
+            );
+        
+        royaume.ajouterBatiment(taverne);
+
+        new ChantierConstruction(
+            id,
+            taverne,
+            royaume,
+            1,
+            ouvriers,
+            taverne.getTempsConstructionBase(),
+            false
+        );
+
+        return taverne;
+    }
+}
+    /*
     public static Taverne creerTaverne(
             Royaume royaume,
             Integer id,
@@ -116,4 +259,4 @@ public class BatimentFactory {
 
         return taverne;
     }
-}
+}*/

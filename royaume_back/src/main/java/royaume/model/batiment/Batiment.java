@@ -12,6 +12,7 @@ public abstract class Batiment {
 	protected int pointsDeVie;
 	protected int pointsDeVieMax;
 	protected boolean enConstruction =false; // A passer à true dans Chantier mais là init à false.
+	private ChantierConstruction chantier;
 	
 	public Batiment(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		this.id = id;
@@ -71,6 +72,14 @@ public abstract class Batiment {
 
 	public void setEnConstruction(boolean enConstruction) {
 		this.enConstruction = enConstruction;
+	}
+	
+	public ChantierConstruction getChantier() {
+	    return chantier;
+	}
+
+	public void setChantier(ChantierConstruction chantier) {
+	    this.chantier = chantier;
 	}
 	
 	//___________________________________________________________________
