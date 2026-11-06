@@ -235,7 +235,37 @@ public class Royaume {
 		}
 		return this.enRuine;
 	}
+	// ---------------- GESTION DES OUVRIERS ----------------
 
+	public void affecterOuvriers(int nombre) {
+
+	    if (nombre <= 0) {
+	        throw new IllegalArgumentException(
+	            "Le nombre d'ouvriers doit être positif."
+	        );
+	    }
+
+	    if (populationDisponible < nombre) {
+	        throw new IllegalStateException(
+	            "Population disponible insuffisante."
+	        );
+	    }
+
+	    populationDisponible -= nombre;
+	    populationOuvriere += nombre;
+	}
+
+	public void libererOuvriers(int nombre) {
+
+	    if (nombre <= 0 || populationOuvriere < nombre) {
+	        throw new IllegalArgumentException(
+	            "Impossible de libérer ces ouvriers."
+	        );
+	    }
+
+	    populationOuvriere -= nombre;
+	    populationDisponible += nombre;
+	}
 	// -------------------------Getters / Setters ------------------------------
 
 
