@@ -171,10 +171,10 @@ public class Royaume {
 
 	    this.niveau = niveauSuivant;
 	    
-	    Chateau chateau = getChateau();
-	    chateau.alerteNiveau10();
+	    Chateau chateau = getChateau(); 
 	    if (chateau != null) {
-	        chateau.synchroniserAvecNiveauRoyaume(this.niveau);
+	        chateau.ameliorer();
+	        chateau.alerteNiveau10();
 	    
 	    
 	    System.out.println("Le royaume atteint le niveau " + this.niveau);

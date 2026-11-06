@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import royaume.model.QuantiteRessource;
+import royaume.model.Ressource;
 
 
 // C'est une classe concrète créée uniquement pour les tests (sinon abstraite !!!! )
@@ -103,5 +104,25 @@ class BatimentTest {
 
         assertEquals(2, batiment.getNiveau());
         assertEquals(100, batiment.getPointsDeVieMax());
+    }
+    
+    
+    @Test
+    void getCoutAmelioration_Carriere_RetourneCoutsConfig() {
+    	Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
+    	List<QuantiteRessource> couts = carriere.getCoutAmelioration();
+    	assertNotNull(couts);
+        assertFalse(couts.isEmpty(), "La carrière de niveau 1 doit avoir un coût pour passer au niveau 2");
+        boolean contientBois = couts.stream()
+                .anyMatch(r -> r.getRessource() == Ressource.BOIS && r.getQuantite() == 80);
+        assertTrue(contientBois, "Le coût pour le niveau 2 de la carrière doit inclure 80 de bois");
+    	
+    }
+    
+    void getTempsConstruction() {
+    	Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
+    	int temps= carriere.getTempsConstructionBase();
+    	assertEquals(180,temps);
+    	
     }
 }

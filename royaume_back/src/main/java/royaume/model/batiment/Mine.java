@@ -1,6 +1,7 @@
 package royaume.model.batiment;
 import java.util.List;
 
+import royaume.config.ConfigurationPalliersBatiment;
 import royaume.model.QuantiteRessource;
 
 public class Mine extends BatimentProduction {
@@ -30,7 +31,16 @@ public class Mine extends BatimentProduction {
 
     @Override
     public List<QuantiteRessource> getCoutAmelioration() {
-        return List.of();
+    	 int niveauSuivant = getNiveau() + 1;
+         
+         List<PallierBatiment> paliers = ConfigurationPalliersBatiment.getPaliers(Mine.class);
+         
+         for (PallierBatiment palier : paliers) {
+             if (palier.getNiveau() == niveauSuivant) {
+                 return palier.getCout();
+             }
+         }
+         return List.of();
     }
 
     @Override
