@@ -11,7 +11,7 @@ public class Royaume {
 
 	private Integer id;
 	private String nom;
-	private Population population;
+	private Population peuple;
 	private int niveau = 1;
 	private int populationDisponible = 100;
 	private int populationOuvriere = 0;
@@ -26,30 +26,26 @@ public class Royaume {
 
 	public Royaume() {}
 
-	public Royaume(Integer id, String nom) {
+	public Royaume(Integer id, String nom, Population peuple) {
 		checkId(id);
 		checkNom(nom);
+		validerPeuple(peuple);
 		this.id = id;
 		this.nom = nom;
+		this.peuple = peuple;
 	}
 
-	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
-			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
-			List<QuantiteRessource> ressources) {
-		this(id, nom, null, niveau, populationDisponible, populationOuvriere, populationEnEntrainement,
-				populationMilitaire, enRuine, ressources);
-	}
-
-	public Royaume(Integer id, String nom, Population population, int niveau, int populationDisponible,
+	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
 		checkId(id);
 		checkNom(nom);
+		validerPeuple(peuple);
 		checkNiveau(niveau);
 		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
 		this.id = id;
 		this.nom = nom;
-		this.population = population;
+		this.peuple = peuple;
 		this.niveau = niveau;
 		this.populationDisponible = populationDisponible;
 		this.populationOuvriere = populationOuvriere;
@@ -141,12 +137,24 @@ public class Royaume {
 		this.nom = nom;
 	}
 
+	public Population getPeuple() {
+		return peuple;
+	}
+
+	public void setPeuple(Population peuple) {
+		if (this.peuple != null) {
+			throw new UnsupportedOperationException("Le peuple d'un royaume est définitif et ne peut pas être modifié.");
+		}
+		validerPeuple(peuple);
+		this.peuple = peuple;
+	}
+
 	public Population getPopulation() {
-		return population;
+		return getPeuple();
 	}
 
 	public void setPopulation(Population population) {
-		this.population = population;
+		setPeuple(population);
 	}
 
 	public int getNiveau() {
@@ -246,6 +254,19 @@ public class Royaume {
 		}
 	}
 
+	private void validerPeuple(Population peuple) {
+		if (peuple == null) {
+			throw new IllegalArgumentException("Le peuple du royaume ne peut pas être null.");
+		}
+		if (!(peuple instanceof Canards
+				|| peuple instanceof Gobelins
+				|| peuple instanceof Licornes
+				|| peuple instanceof Princesses
+				|| peuple instanceof Teuteus)) {
+			throw new IllegalArgumentException("Le peuple du royaume doit être l'un des 5 peuples disponibles (Canards, Gobelins, Licornes, Princesses, Teuteus).");
+		}
+	}
+
 	private void checkNiveau(int niveau) {
 		if (niveau < 1 || niveau > 10) {
 			throw new IllegalArgumentException("Le niveau du royaume doit être compris entre 1 et 10.");
@@ -289,7 +310,7 @@ public class Royaume {
 
 	@Override
 	public String toString() {
-		return "Royaume [id=" + id + ", nom=" + nom + ", population=" + (population != null ? population.getNom() : null)
+		return "Royaume [id=" + id + ", nom=" + nom + ", peuple=" + (peuple != null ? peuple.getNom() : null)
 				+ ", niveau=" + niveau + ", populationDisponible=" + populationDisponible + ", populationOuvriere="
 				+ populationOuvriere + ", populationEnEntrainement=" + populationEnEntrainement
 				+ ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine

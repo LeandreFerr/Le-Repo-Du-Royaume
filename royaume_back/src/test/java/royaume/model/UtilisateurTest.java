@@ -24,7 +24,7 @@ public class UtilisateurTest {
 
     @BeforeEach
     void setUp() {
-        royaume = new Royaume(1, "Avalon");
+        royaume = new Royaume(1, "Avalon", new Canards(1, "Canards", "Archiduc", 0.05));
         utilisateur = new Utilisateur(1, "Arthur", "arthur@camelot.fr", "excalibur123", false, false, royaume);
     }
 
@@ -191,7 +191,7 @@ public class UtilisateurTest {
         @Test
         @DisplayName("setRoyaume permet d'affecter un nouveau royaume ou null")
         void testSetRoyaume() {
-            Royaume camelot = new Royaume(2, "Camelot");
+            Royaume camelot = new Royaume(2, "Camelot", new Canards(1, "Canards", "Archiduc", 0.05));
             utilisateur.setRoyaume(camelot);
 
             assertSame(camelot, utilisateur.getRoyaume());

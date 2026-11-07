@@ -37,14 +37,14 @@ public class PartieTest {
         partie.setId(1);
         partie.setNom("Bataille des Cinq Armées");
 
-        royaume1 = new Royaume(1, "Gondor");
-        royaume2 = new Royaume(2, "Rohan");
-        royaume3 = new Royaume(3, "Mordor");
+        royaume1 = new Royaume(1, "Gondor", new Canards(1, "Canards", "Archiduc", 0.05));
+        royaume2 = new Royaume(2, "Rohan", new Licornes(2, "Licornes", "Impératrice", 0.15));
+        royaume3 = new Royaume(3, "Mordor", new Gobelins(3, "Gobelins", "Chef", 0.0));
 
         joueur1 = new Utilisateur(1, "Aragorn", "aragorn@gondor.fr", "mdp1", true, false, royaume1);
         joueur2 = new Utilisateur(2, "Theoden", "theoden@rohan.fr", "mdp2", true, false, royaume2);
 
-        Royaume royaumeEtranger = new Royaume(99, "Harad");
+        Royaume royaumeEtranger = new Royaume(99, "Harad", new Teuteus(4, "Teuteus", "Glouton", 0.0));
         joueurEtranger = new Utilisateur(99, "Sauron", "sauron@mordor.fr", "anneau", true, false, royaumeEtranger);
     }
 
@@ -162,7 +162,7 @@ public class PartieTest {
         @Test
         @DisplayName("inscrireRoyaume lève IllegalArgumentException si le royaume est déjà en ruine")
         void testInscrireRoyaumeRejetteRoyaumeEnRuine() {
-            Royaume ruine = new Royaume(4, "Ruines d'Osgiliath");
+            Royaume ruine = new Royaume(4, "Ruines d'Osgiliath", new Canards(1, "Canards", "Archiduc", 0.05));
             ruine.setEnRuine(true);
 
             assertThrows(IllegalArgumentException.class, () -> partie.inscrireRoyaume(ruine),

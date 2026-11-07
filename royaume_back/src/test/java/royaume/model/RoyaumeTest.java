@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -21,9 +22,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("Tests unitaires exhaustifs — Royaume (Socle)")
+@DisplayName("Tests unitaires exhaustifs — Royaume (Socle & Module 2)")
 class RoyaumeTest {
 
+    private static final Population PEUPLE_TEST = new Canards(1, "Canards", "Archiduc", 0.05);
     private Royaume royaume;
 
     @BeforeEach
@@ -32,7 +34,7 @@ class RoyaumeTest {
                 new QuantiteRessource(100, Ressource.BOIS),
                 new QuantiteRessource(50, Ressource.PIERRE)
         ));
-        royaume = new Royaume(1, "TPT", 1, 100, 0, 0, 0, false, listeRessources);
+        royaume = new Royaume(1, "TPT", PEUPLE_TEST, 1, 100, 0, 0, 0, false, listeRessources);
     }
 
     /**
@@ -55,72 +57,127 @@ class RoyaumeTest {
     class ConstructeursTests {
 
         @Test
-        @DisplayName("Le constructeur vide initialise les valeurs par défaut et une liste de ressources non null")
-        void testConstructeurVideEtatInitialSain() {
+        @DisplayName("Le constructeur par défaut (JPA) initialise les valeurs standard (niveau 1, pop 100, peuple null, 4 ressources à 0)")
+        void testConstructeurParDefaut() {
             // When
-            Royaume defaut = new Royaume();
+            Royaume r = new Royaume();
 
             // Then
             assertAll(
-                () -> assertEquals(1, defaut.getNiveau(), "Niveau initial = 1"),
-                () -> assertEquals(100, defaut.getPopulationDisponible(), "Population disponible initiale = 100"),
-                () -> assertEquals(0, defaut.getPopulationOuvriere(), "Population ouvrière initiale = 0"),
-                () -> assertEquals(0, defaut.getPopulationEnEntrainement(), "Population en entraînement initiale = 0"),
-                () -> assertEquals(0, defaut.getPopulationMilitaire(), "Population militaire initiale = 0"),
-                () -> assertFalse(defaut.isEnRuine(), "Un nouveau royaume n'est pas en ruine"),
-                () -> assertNotNull(defaut.getRessources(), "La liste de ressources ne doit jamais être null"),
-                () -> assertDoesNotThrow(() -> defaut.aAssezDeRessources(Ressource.OR, 10)),
-                () -> assertFalse(defaut.aAssezDeRessources(Ressource.OR, 1))
+                () -> assertNull(r.getId()),
+                () -> assertNull(r.getNom()),
+                () -> assertNull(r.getPeuple()),
+                () -> assertEquals(1, r.getNiveau()),
+                () -> assertEquals(100, r.getPopulationDisponible()),
+                () -> assertEquals(0, r.getPopulationOuvriere()),
+                () -> assertEquals(0, r.getPopulationEnEntrainement()),
+                () -> assertEquals(0, r.getPopulationMilitaire()),
+                () -> assertFalse(r.isEnRuine()),
+                () -> assertNotNull(r.getRessources()),
+                () -> assertEquals(4, r.getRessources().size())
             );
         }
 
         @Test
-        @DisplayName("Le constructeur court (id, nom) accepte un id null ou positif et initialise ressources non null")
+        @DisplayName("Le constructeur court (id, nom, peuple) accepte un id null ou positif et initialise ressources non null")
         void testConstructeurCourtNominal() {
             // When
-            Royaume avecId = new Royaume(1, "Avalon");
-            Royaume sansId = new Royaume(null, "Camelot");
+            Royaume avecId = new Royaume(1, "Avalon", PEUPLE_TEST);
+            Royaume sansId = new Royaume(null, "Camelot", PEUPLE_TEST);
 
             // Then
             assertAll(
                 () -> assertEquals(1, avecId.getId()),
                 () -> assertEquals("Avalon", avecId.getNom()),
+                () -> assertSame(PEUPLE_TEST, avecId.getPeuple()),
                 () -> assertEquals(1, avecId.getNiveau()),
                 () -> assertEquals(100, avecId.getPopulationDisponible()),
                 () -> assertNotNull(avecId.getRessources()),
                 () -> assertNull(sansId.getId()),
                 () -> assertEquals("Camelot", sansId.getNom()),
+                () -> assertSame(PEUPLE_TEST, sansId.getPeuple()),
                 () -> assertNotNull(sansId.getRessources())
             );
         }
 
+        @Test
+        @DisplayName("Les constructeurs rejettent formellement un peuple null via IllegalArgumentException")
+        void testConstructeursRejettentPeupleNull() {
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "Avalon", null)),
+                () -> assertThrows(IllegalArgumentException.class,
+                        () -> new Royaume(1, "Avalon", null, 1, 100, 0, 0, 0, false, vide))
+            );
+        }
+
+        @Test
+        @DisplayName("Royaume accepte chacun des 5 peuples disponibles à la construction")
+        void testConstructeurAccepteLesCinqPeuplesDisponibles() {
+            List<Population> peuplesDisponibles = List.of(
+                new Canards(1, "Canards", "Archiduc", 0.05),
+                new Gobelins(2, "Gobelins", "Chef", 0.0),
+                new Licornes(3, "Licornes", "Impératrice", 0.15),
+                new Princesses(4, "Princesses", "Reine", 0.20),
+                new Teuteus(5, "Teuteus", "Glouton", 0.0)
+            );
+
+            for (Population p : peuplesDisponibles) {
+                Royaume r = new Royaume(1, "Terre", p);
+                assertSame(p, r.getPeuple());
+                assertSame(p, r.getPopulation());
+            }
+        }
+
+        @Test
+        @DisplayName("Royaume rejette toute population qui n'est pas l'un des 5 peuples officiels")
+        void testConstructeurRejettePeupleNonDisponible() {
+            class PeupleInconnu extends Population {
+                public PeupleInconnu() {
+                    super(99, "Inconnu", "Chef", 0.0, "mystere");
+                }
+                @Override
+                public double getAvantageCombatContre(Population adversaire) {
+                    return 1.0;
+                }
+                @Override
+                public String getDescriptionCapacite() {
+                    return "Inconnu";
+                }
+            }
+
+            PeupleInconnu fauxPeuple = new PeupleInconnu();
+            assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "Terre", fauxPeuple));
+        }
+
         @ParameterizedTest
         @ValueSource(ints = { 0, -1, -99, Integer.MIN_VALUE })
-        @DisplayName("Les constructeurs avec paramètres rejettent un id <= 0 via IllegalArgumentException")
+        @DisplayName("Les constructeurs rejettent un id <= 0 via IllegalArgumentException")
         void testConstructeursRejettentIdNonPositif(int idInvalide) {
             List<QuantiteRessource> vide = new ArrayList<>();
 
             assertAll(
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(idInvalide, "Avalon")),
+                        () -> new Royaume(idInvalide, "Avalon", PEUPLE_TEST)),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(idInvalide, "Avalon", 1, 100, 0, 0, 0, false, vide))
+                        () -> new Royaume(idInvalide, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, vide))
             );
         }
 
         @Test
-        @DisplayName("Les constructeurs avec paramètres rejettent un nom null, vide ou blanc via IllegalArgumentException")
+        @DisplayName("Les constructeurs rejettent un nom null, vide ou blanc via IllegalArgumentException")
         void testConstructeursRejettentNomInvalide() {
             List<QuantiteRessource> vide = new ArrayList<>();
 
             assertAll(
-                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, null)),
-                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "")),
-                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "   \t\n ")),
+                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, null, PEUPLE_TEST)),
+                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "", PEUPLE_TEST)),
+                () -> assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "   \t\n ", PEUPLE_TEST)),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, null, 1, 100, 0, 0, 0, false, vide)),
+                        () -> new Royaume(1, null, PEUPLE_TEST, 1, 100, 0, 0, 0, false, vide)),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "   ", 1, 100, 0, 0, 0, false, vide))
+                        () -> new Royaume(1, "   ", PEUPLE_TEST, 1, 100, 0, 0, 0, false, vide))
             );
         }
 
@@ -131,7 +188,7 @@ class RoyaumeTest {
             List<QuantiteRessource> vide = new ArrayList<>();
 
             assertThrows(IllegalArgumentException.class,
-                    () -> new Royaume(1, "Avalon", niveauInvalide, 100, 0, 0, 0, false, vide));
+                    () -> new Royaume(1, "Avalon", PEUPLE_TEST, niveauInvalide, 100, 0, 0, 0, false, vide));
         }
 
         @Test
@@ -141,22 +198,22 @@ class RoyaumeTest {
 
             // Cas limite valide : royaume totalement dépeuplé (0 partout)
             Royaume desert = assertDoesNotThrow(
-                    () -> new Royaume(1, "Désert", 1, 0, 0, 0, 0, false, vide));
+                    () -> new Royaume(1, "Désert", PEUPLE_TEST, 1, 0, 0, 0, 0, false, vide));
             assertEquals(0, desert.getPopulationDisponible());
 
             // Cas invalides : chacune des 4 populations négative
             assertAll(
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "R", 1, -1, 0, 0, 0, false, vide),
+                        () -> new Royaume(1, "R", PEUPLE_TEST, 1, -1, 0, 0, 0, false, vide),
                         "populationDisponible négative interdite"),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "R", 1, 0, -1, 0, 0, false, vide),
+                        () -> new Royaume(1, "R", PEUPLE_TEST, 1, 0, -1, 0, 0, false, vide),
                         "populationOuvriere négative interdite"),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "R", 1, 0, 0, -1, 0, false, vide),
+                        () -> new Royaume(1, "R", PEUPLE_TEST, 1, 0, 0, -1, 0, false, vide),
                         "populationEnEntrainement négative interdite"),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "R", 1, 0, 0, 0, -1, false, vide),
+                        () -> new Royaume(1, "R", PEUPLE_TEST, 1, 0, 0, 0, -1, false, vide),
                         "populationMilitaire négative interdite")
             );
         }
@@ -165,7 +222,7 @@ class RoyaumeTest {
         @DisplayName("Passer une liste ressources null au constructeur complet initialise une collection vide non null")
         void testConstructeurCompletAvecListeRessourcesNull() {
             // When
-            Royaume sansListe = new Royaume(1, "Avalon", 1, 100, 0, 0, 0, false, null);
+            Royaume sansListe = new Royaume(1, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, null);
 
             // Then
             assertNotNull(sansListe.getRessources(), "ressources null en entrée doit être converti en liste vide sûre");
@@ -184,10 +241,10 @@ class RoyaumeTest {
 
             assertAll(
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "Avalon", 1, 100, 0, 0, 0, false, avecNull),
+                        () -> new Royaume(1, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, avecNull),
                         "Un élément QuantiteRessource null dans la liste doit lever IllegalArgumentException"),
                 () -> assertThrows(IllegalArgumentException.class,
-                        () -> new Royaume(1, "Avalon", 1, 100, 0, 0, 0, false, avecDoublon),
+                        () -> new Royaume(1, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, avecDoublon),
                         "Deux entrées pour la même Ressource doivent lever IllegalArgumentException")
             );
         }
@@ -198,23 +255,16 @@ class RoyaumeTest {
     // =========================================================================
 
     @Nested
-    @DisplayName("Encapsulation et copies défensives des ressources")
+    @DisplayName("Encapsulation défensive des ressources")
     class EncapsulationRessourcesTests {
 
         @Test
-        @DisplayName("getRessources retourne une liste non modifiable (add / clear lèvent UnsupportedOperationException)")
+        @DisplayName("getRessources() retourne une vue découplée (la mutation externe de la liste n'affecte pas le Royaume)")
         void testGetRessourcesRetourneVueNonModifiable() {
-            List<QuantiteRessource> vue = royaume.getRessources();
-            QuantiteRessource intrus = new QuantiteRessource(999, Ressource.OR);
-
-            assertAll(
-                () -> assertThrows(UnsupportedOperationException.class,
-                        () -> vue.add(intrus),
-                        "Impossible d'injecter des ressources via getRessources().add(...)"),
-                () -> assertThrows(UnsupportedOperationException.class,
-                        vue::clear,
-                        "Impossible de vider les ressources via getRessources().clear()")
-            );
+            List<QuantiteRessource> exposition = royaume.getRessources();
+            assertThrows(UnsupportedOperationException.class,
+                    () -> exposition.add(new QuantiteRessource(999, Ressource.OR)),
+                    "La liste retournée par getRessources() doit être immuable");
         }
 
         @Test
@@ -223,7 +273,7 @@ class RoyaumeTest {
             // Given
             QuantiteRessource orExterne = new QuantiteRessource(100, Ressource.OR);
             List<QuantiteRessource> listeExterne = new ArrayList<>(List.of(orExterne));
-            Royaume coffreFort = new Royaume(2, "Coffre", 1, 100, 0, 0, 0, false, listeExterne);
+            Royaume coffreFort = new Royaume(2, "Coffre", PEUPLE_TEST, 1, 100, 0, 0, 0, false, listeExterne);
 
             // When : l'appelant vide sa liste locale et gonfle son objet QuantiteRessource local
             listeExterne.clear();
@@ -256,7 +306,7 @@ class RoyaumeTest {
         void testCompatibiliteAvecListOfImmuableEnEntree() {
             // Given : List.of est immuable (cas fréquent dans les configurations et tests)
             List<QuantiteRessource> listeImmuable = List.of(new QuantiteRessource(50, Ressource.BOIS));
-            Royaume r = new Royaume(3, "Sylve", 1, 100, 0, 0, 0, false, listeImmuable);
+            Royaume r = new Royaume(3, "Sylve", PEUPLE_TEST, 1, 100, 0, 0, 0, false, listeImmuable);
 
             // When / Then : ne doit pas lever UnsupportedOperationException lors de l'ajout d'OR
             assertDoesNotThrow(() -> r.crediterRessources(Ressource.OR, 40));
@@ -298,14 +348,48 @@ class RoyaumeTest {
             assertEquals("Minas Tirith", royaume.getNom());
         }
 
+        @Test
+        @DisplayName("Le peuple d'un royaume est immuable : setPeuple et setPopulation lèvent UnsupportedOperationException")
+        void testPeupleImmuableApresConstruction() {
+            Population teuteus = new Teuteus(5, "Teuteus", "Glouton", 0.0);
+            assertThrows(UnsupportedOperationException.class, () -> royaume.setPeuple(teuteus));
+            assertThrows(UnsupportedOperationException.class, () -> royaume.setPopulation(teuteus));
+            assertSame(PEUPLE_TEST, royaume.getPeuple());
+        }
+
+        @Test
+        @DisplayName("Sur un royaume instancié par défaut (JPA), setPeuple autorise une assignation unique puis devient immuable")
+        void testAssignationPeupleSurRoyaumeVidePuisImmuabilite() {
+            Royaume royaumeVide = new Royaume();
+            assertNull(royaumeVide.getPeuple());
+
+            // Première assignation valide
+            royaumeVide.setPeuple(PEUPLE_TEST);
+            assertSame(PEUPLE_TEST, royaumeVide.getPeuple());
+
+            // Toute assignation ultérieure est verrouillée
+            Population teuteus = new Teuteus(5, "Teuteus", "Glouton", 0.0);
+            assertThrows(UnsupportedOperationException.class, () -> royaumeVide.setPeuple(teuteus));
+            assertThrows(UnsupportedOperationException.class, () -> royaumeVide.setPopulation(teuteus));
+            assertSame(PEUPLE_TEST, royaumeVide.getPeuple());
+        }
+
+        @Test
+        @DisplayName("setPeuple sur un royaume instancié par défaut rejette null et un peuple non officiel")
+        void testSetPeupleValidationSurRoyaumeVide() {
+            Royaume royaumeVide = new Royaume();
+            assertThrows(IllegalArgumentException.class, () -> royaumeVide.setPeuple(null));
+        }
+
         @ParameterizedTest
         @ValueSource(ints = { 0, -1, -50, 11, 50 })
-        @DisplayName("setNiveau rejette toute valeur < 1 ou > 10 sans modifier le niveau actuel")
+        @DisplayName("setNiveau rejette les valeurs < 1 ou > 10 sans modifier le niveau actuel")
         void testSetNiveauValidation(int niveauInvalide) {
-            royaume.setNiveau(3);
-
             assertThrows(IllegalArgumentException.class, () -> royaume.setNiveau(niveauInvalide));
-            assertEquals(3, royaume.getNiveau());
+            assertEquals(1, royaume.getNiveau());
+
+            royaume.setNiveau(10);
+            assertEquals(10, royaume.getNiveau());
         }
 
         @Test
@@ -330,25 +414,31 @@ class RoyaumeTest {
                 () -> assertEquals(35, royaume.getPopulationMilitaire())
             );
 
-            // Passage à 0 valide
             royaume.setPopulationDisponible(0);
             assertEquals(0, royaume.getPopulationDisponible());
         }
 
         @Test
-        @DisplayName("setRessources convertit null en liste vide et rejette les éléments null ou doublons sans corrompre le stock")
+        @DisplayName("setRessources vérifie l'absence de null et de doublons et clone défensivement")
         void testSetRessourcesValidationEtCopieDefensive() {
-            List<QuantiteRessource> listeAvecNull = Arrays.asList(new QuantiteRessource(10, Ressource.OR), null);
-            List<QuantiteRessource> listeDoublons = List.of(
+            List<QuantiteRessource> avecNull = Arrays.asList(new QuantiteRessource(10, Ressource.OR), null);
+            List<QuantiteRessource> avecDoublon = List.of(
                     new QuantiteRessource(10, Ressource.OR),
                     new QuantiteRessource(20, Ressource.OR)
             );
 
-            assertThrows(IllegalArgumentException.class, () -> royaume.setRessources(listeAvecNull));
-            assertThrows(IllegalArgumentException.class, () -> royaume.setRessources(listeDoublons));
-            assertEquals(100, getStock(royaume, Ressource.BOIS), "L'ancien stock doit être préservé en cas d'erreur");
+            assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> royaume.setRessources(avecNull)),
+                () -> assertThrows(IllegalArgumentException.class, () -> royaume.setRessources(avecDoublon))
+            );
 
-            // setRessources(null) -> liste vide sûre
+            // setRessources valide avec liste mutée ensuite
+            List<QuantiteRessource> valides = new ArrayList<>(List.of(new QuantiteRessource(500, Ressource.OR)));
+            royaume.setRessources(valides);
+            valides.clear();
+            assertEquals(500, getStock(royaume, Ressource.OR));
+
+            // setRessources(null) -> initialise liste par défaut
             royaume.setRessources(null);
             assertNotNull(royaume.getRessources());
             assertEquals(0, getStock(royaume, Ressource.BOIS));
@@ -378,7 +468,7 @@ class RoyaumeTest {
         @Test
         @DisplayName("Retourne toujours true pour une quantité requise de 0, même si la ressource est absente de la liste")
         void testQuantiteZeroToujoursSatisfaite() {
-            Royaume neuf = new Royaume(5, "Neuf");
+            Royaume neuf = new Royaume(5, "Neuf", PEUPLE_TEST);
 
             assertAll(
                 () -> assertTrue(royaume.aAssezDeRessources(Ressource.BOIS, 0)),
@@ -432,7 +522,7 @@ class RoyaumeTest {
         @DisplayName("Crée dynamiquement la ligne de stock si la ressource n'existe pas encore (sans doublon ultérieur)")
         void testCrediterRessourceAbsenteSurNouveauRoyaume(Ressource type) {
             // Given : Royaume neuf sans aucun stock prérempli
-            Royaume neuf = new Royaume(10, "Fondation");
+            Royaume neuf = new Royaume(10, "Fondation", PEUPLE_TEST);
 
             // When : deux crédits successifs sur une ressource initialement absente
             neuf.crediterRessources(type, 40);
@@ -471,7 +561,7 @@ class RoyaumeTest {
         @Test
         @DisplayName("Lève ArithmeticException lors d'un dépassement de Integer.MAX_VALUE")
         void testCrediterProtectionOverflow() {
-            Royaume riche = new Royaume(9, "Eldorado", 1, 100, 0, 0, 0, false,
+            Royaume riche = new Royaume(9, "Eldorado", PEUPLE_TEST, 1, 100, 0, 0, 0, false,
                     new ArrayList<>(List.of(new QuantiteRessource(Integer.MAX_VALUE - 10, Ressource.OR))));
 
             assertThrows(ArithmeticException.class,
@@ -504,7 +594,7 @@ class RoyaumeTest {
         @Test
         @DisplayName("Retourne false sans altérer aucun stock si le solde est insuffisant ou la ressource absente")
         void testDebiterEchecSoldeInsuffisantOuRessourceAbsente() {
-            Royaume neuf = new Royaume(11, "Pauvre");
+            Royaume neuf = new Royaume(11, "Pauvre", PEUPLE_TEST);
 
             assertAll(
                 () -> assertFalse(royaume.debiterRessources(Ressource.BOIS, 101), "Stock insuffisant"),
@@ -609,11 +699,13 @@ class RoyaumeTest {
         @Test
         @DisplayName("toString fonctionne sans exception même sur un Royaume fraîchement instancié")
         void testToStringRobuste() {
-            Royaume vide = new Royaume();
-            String description = assertDoesNotThrow(vide::toString);
+            Royaume frais = new Royaume(1, "Frais", PEUPLE_TEST);
+            String description = assertDoesNotThrow(frais::toString);
 
             assertAll(
                 () -> assertNotNull(description),
+                () -> assertTrue(description.contains("Frais")),
+                () -> assertTrue(description.contains("Canards")),
                 () -> assertTrue(royaume.toString().contains("TPT"))
             );
         }
