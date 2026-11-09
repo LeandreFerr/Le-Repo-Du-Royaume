@@ -195,32 +195,66 @@ class ChantierConstructionTest {
         // VERIFICATION 1 : temps de construction de base
 
         assertEquals(180, mine.getTempsConstructionBase());
-        assertEquals(180, chantier.getDateFinPrevue()
-            .getSecond() >= 0 ? 180 : 0); // À remplacer par la vérification temporelle ci-dessous
+
+        assertEquals(
+            180,
+            chantier.calculerTempsRestant(chantier.getDateDebut())
+        );
 
         // VERIFICATION 2 : avec 1 ouvrier supplémentaire
 
-        chantier.assignerOuvriers(1);
+        LocalDateTime maintenant = chantier.getDateDebut()
+            .plusSeconds(60);
+
+        chantier.assignerOuvriers(1, maintenant);
 
         assertEquals(2, chantier.getOuvriersAssignes());
 
-        long tempsRestant = chantier.calculerTempsRestant();
+        long tempsRestant = chantier.calculerTempsRestant(maintenant);
 
-        assertTrue(tempsRestant <= 90);
-        assertTrue(tempsRestant > 0);
+        assertEquals(60, tempsRestant);
 
         // VERIFICATION 3 : avec 3 ouvriers supplémentaires
 
-        chantier.assignerOuvriers(3);
+        maintenant = maintenant.plusSeconds(20);
+
+        chantier.assignerOuvriers(3, maintenant);
 
         assertEquals(5, chantier.getOuvriersAssignes());
 
-        tempsRestant = chantier.calculerTempsRestant();
+        tempsRestant = chantier.calculerTempsRestant(maintenant);
 
-        assertTrue(tempsRestant <= 36);
-        assertTrue(tempsRestant > 0);
+        assertEquals(16, tempsRestant);
     }
+    
+    @Test
+    void ajouterOuvriersRecalculeUniquementTempsRestant() {
 
-    
-    
+        // ARRANGE
+        Mine mine = new Mine(
+            1, "Mine test", 1, 2500, 2500, true, 2
+        );
+
+        ChantierConstruction chantier = new ChantierConstruction(
+            1, mine, royaume, 1, 1,
+            mine.getTempsConstructionBase(), false
+        );
+
+        // Simuler 60 secondes écoulées
+        LocalDateTime maintenant =
+            chantier.getDateDebut().plusSeconds(60);
+
+        // Temps restant : 120 secondes
+
+        // ACT
+        chantier.assignerOuvriers(1, maintenant);
+
+        // ASSERT
+        assertEquals(2, chantier.getOuvriersAssignes());
+
+        long tempsRestant =
+            chantier.calculerTempsRestant(maintenant);
+
+        assertEquals(60, tempsRestant);
+    }
 }

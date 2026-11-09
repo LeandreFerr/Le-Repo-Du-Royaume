@@ -13,6 +13,7 @@ public class ChantierConstruction {
     private Royaume royaume;
     private int ouvriersMinimum = 1;
     private int ouvriersAssignes = 0;
+    private int ouvriersPrecedents;
     private int tempsBaseSecondes;
     private boolean amelioration = false;
 
@@ -61,6 +62,7 @@ public class ChantierConstruction {
         royaume.affecterOuvriers(ouvriersAssignes);
 
         this.ouvriersAssignes = ouvriersAssignes;
+        this.ouvriersPrecedents = ouvriersAssignes;
 
         this.dateDebut = LocalDateTime.now();
 
@@ -68,12 +70,19 @@ public class ChantierConstruction {
         batiment.setEnConstruction(true);
         batiment.setChantier(this);
 
-        recalculerDateFin();
+        initialiserDateFin()  ;
+        
     }
 
     // ---------------- MÉTHODES MÉTIER ----------------
 
     public void assignerOuvriers(int nombre) {
+
+        assignerOuvriers(nombre, LocalDateTime.now());
+    }
+
+    // Surcharge pour les tests unitaires
+    public void assignerOuvriers(int nombre, LocalDateTime maintenant) {
 
         if (!batiment.isEnConstruction()) {
             throw new IllegalStateException(
@@ -87,20 +96,33 @@ public class ChantierConstruction {
             );
         }
 
+        // Mémoriser le temps restant et l'ancien effectif
+        long ancienTempsRestant = calculerTempsRestant(maintenant);
+        int anciensOuvriers = ouvriersAssignes;
+
         royaume.affecterOuvriers(nombre);
 
         ouvriersAssignes += nombre;
 
-        recalculerDateFin();
+        recalculerDateFin(
+            ancienTempsRestant,
+            anciensOuvriers,
+            maintenant
+        );
     }
 
     public void retirerOuvriers(int nombre) {
 
-        if (!batiment.isEnConstruction() ) {   // Termine => Ici Batiment.isEnConstruction() 
+        retirerOuvriers(nombre, LocalDateTime.now());
+    }
+
+    public void retirerOuvriers(int nombre, LocalDateTime maintenant) {
+
+        if (!batiment.isEnConstruction()) {
             throw new IllegalStateException(
                 "Le chantier est terminé."
             );
-        } 
+        }
 
         if (nombre <= 0) {
             throw new IllegalArgumentException(
@@ -108,17 +130,24 @@ public class ChantierConstruction {
             );
         }
 
-        if ((ouvriersAssignes - nombre) < ouvriersMinimum) {
+        if (ouvriersAssignes - nombre < ouvriersMinimum) {
             throw new IllegalArgumentException(
                 "Impossible de descendre sous le minimum d'ouvriers."
             );
         }
 
-        ouvriersAssignes -= nombre;
+        long ancienTempsRestant = calculerTempsRestant(maintenant);
+        int anciensOuvriers = ouvriersAssignes;
 
         royaume.libererOuvriers(nombre);
 
-        recalculerDateFin();
+        ouvriersAssignes -= nombre;
+
+        recalculerDateFin(
+            ancienTempsRestant,
+            anciensOuvriers,
+            maintenant
+        );
     }
    
   //________________________________________
@@ -139,10 +168,27 @@ public class ChantierConstruction {
 
         return Math.max(0, secondes);
     }
-//________________________________________  --> Mises à jour MAJ successives de DateFinPrevue 
-   //(appel dans le constructeur pour init)
+//________________________________________ 
     
-    public void recalculerDateFin() {
+    
+    private void initialiserDateFin() {
+
+        long duree = (long) Math.ceil(
+            (double) tempsBaseSecondes / ouvriersAssignes
+        );
+
+        dateFinPrevue = dateDebut.plusSeconds(duree);
+    }
+    
+    
+    // --> Mises à jour MAJ successives de DateFinPrevue 
+   //(appel dans le constructeur pour init)
+   
+    
+    private void recalculerDateFin(
+            long ancienTempsRestant,
+            int ouvriersPrecedents,
+            LocalDateTime maintenant) {
 
         if (ouvriersAssignes <= 0) {
             throw new IllegalStateException(
@@ -150,14 +196,20 @@ public class ChantierConstruction {
             );
         }
 
-        long nouvelleDuree =
-            (long) Math.ceil(
-                (double) tempsBaseSecondes / ouvriersAssignes
-            );
+        // Temps restant -> Avant le changement d'effectif
+        // (transmis en paramètre)
 
-        dateFinPrevue = LocalDateTime.now()
-            .plusSeconds(nouvelleDuree);
+        // Recalcul proportionnel au nouvel effectif
+        long nouveauTempsRestant = (long) Math.ceil(
+            (double) ancienTempsRestant * ouvriersPrecedents
+            / ouvriersAssignes
+        );
+
+        // Nouvelle date de fin
+        dateFinPrevue = maintenant.plusSeconds(nouveauTempsRestant);
+
     }
+   
  
     //________________________________________
 
