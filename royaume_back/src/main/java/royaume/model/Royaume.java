@@ -18,6 +18,7 @@ public class Royaume {
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
 	private List<QuantiteRessource> ressources = creerRessourcesParDefaut();
+	private EmplacementCarte emplacement;
 
 	// =========================================================================
 	// Constructeurs
@@ -34,7 +35,7 @@ public class Royaume {
 
 	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
-			List<QuantiteRessource> ressources) {
+			List<QuantiteRessource> ressources, EmplacementCarte emplacement) {
 		checkId(id);
 		checkNom(nom);
 		checkNiveau(niveau);
@@ -48,6 +49,7 @@ public class Royaume {
 		this.populationMilitaire = populationMilitaire;
 		this.enRuine = enRuine;
 		setRessources(ressources);
+		this.emplacement = emplacement;
 	}
 
 	// =========================================================================
@@ -203,6 +205,34 @@ public class Royaume {
 			}
 		}
 	}
+
+	public EmplacementCarte getEmplacement() {
+    	return emplacement;
+	}
+
+	public void setEmplacement(EmplacementCarte emplacement) {
+    	this.emplacement = emplacement;
+	}
+
+	public int getX() {
+    	if (emplacement == null) {
+        throw new IllegalStateException(
+                "Le royaume n'est rattaché à aucun emplacement."
+        	);
+    	}
+
+    	return emplacement.getCoordX();
+	}
+
+	public int getY() {
+    	if (emplacement == null) {
+        throw new IllegalStateException(
+                "Le royaume n'est rattaché à aucun emplacement."
+        	);
+    	}
+
+    	return emplacement.getCoordY();
+	}	
 
 	// =========================================================================
 	// Méthodes helpers & Validations
