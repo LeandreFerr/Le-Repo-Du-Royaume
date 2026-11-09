@@ -33,7 +33,7 @@ public class Carte {
         this.centreX = centreX;
         this.centreY = centreY;
         this.partie = partie;
-        this.emplacements = emplacements != null ? emplacements : new ArrayList<>();
+        this.emplacements = emplacements != null ? new ArrayList<>(emplacements) : new ArrayList<>();
     }
 
     // =========================================================================
@@ -60,17 +60,20 @@ public class Carte {
     public void genererEmplacements(int nombre) {
         if (nombre < 1 || nombre > 10) {
             throw new IllegalArgumentException(
-                    "L'emplacement : " + nombre
-                            + "n'est pas disponible. Le nombre d'emplacements doit être compris entre 1 et 10 ");
+                    "Le nombre d'emplacements (" + nombre + ") doit être compris entre 1 et 10.");
         }
 
+        int espacementX = largeur / (nombre + 1);
+        if (espacementX < 1) {
+            throw new IllegalStateException(
+                    "La carte est trop étroite (largeur=" + largeur + ") pour " + nombre + " emplacements.");
+        }
+
+        emplacements.forEach(EmplacementCarte::liberer);
         emplacements.clear();
 
-        int espacementX = largeur / (nombre + 1);
-
         for (int i = 1; i <= nombre; i++) {
-            EmplacementCarte emplacement = new EmplacementCarte(i, i * espacementX, hauteur / 2, this);
-            emplacements.add(emplacement);
+            emplacements.add(new EmplacementCarte(i, i * espacementX, hauteur / 2, this));
         }
     }
 
@@ -102,15 +105,17 @@ public class Carte {
         return largeur;
     }
 
-    public void setLargeur(int largeur) {
-        this.largeur = largeur;
-    }
-
     public int getHauteur() {
         return hauteur;
     }
 
+    public void setLargeur(int largeur) {
+        checkDimension(largeur, "largeur");
+        this.largeur = largeur;
+    }
+
     public void setHauteur(int hauteur) {
+        checkDimension(hauteur, "hauteur");
         this.hauteur = hauteur;
     }
 
@@ -143,7 +148,7 @@ public class Carte {
     }
 
     public void setEmplacements(List<EmplacementCarte> emplacements) {
-        this.emplacements = emplacements != null ? emplacements : new ArrayList<>();
+        this.emplacements = emplacements != null ? new ArrayList<>(emplacements) : new ArrayList<>();
     }
 
     // =========================================================================
@@ -153,6 +158,12 @@ public class Carte {
     private double calculerDistance(int x1, int y1, int x2, int y2) {
         return Math.sqrt(
                 Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+    private static void checkDimension(int valeur, String nom) {
+        if (valeur <= 0) {
+            throw new IllegalArgumentException("La " + nom + " de la carte doit être strictement positive.");
+        }
     }
 
     // =========================================================================

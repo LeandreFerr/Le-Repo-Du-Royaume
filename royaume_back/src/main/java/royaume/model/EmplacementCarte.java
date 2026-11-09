@@ -61,8 +61,7 @@ public class EmplacementCarte {
     }
 
     public void liberer() {
-
-        if (this.royaume != null) {
+        if (this.royaume != null && this.royaume.getEmplacement() == this) {
             this.royaume.setEmplacement(null);
         }
 
