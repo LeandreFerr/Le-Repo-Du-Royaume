@@ -65,18 +65,4 @@ public abstract class BatimentProduction extends Batiment{
 	        return productionBaseHeure * niveau;   //Production = ProductionBaseHeure * Niveau
 	}												// Constante * niveau
 	
-	
-	@Override
-	public List<QuantiteRessource> getCoutAmelioration(){
-	// coût nécessaire pour lancer le niveau suivant 
-	// 						>> retourne la List de <QuantiteRessource> nécessaire;
-        return List.of();
-	}
-	
-	@Override
-	public int getTempsConstructionBase() {
-	//  durée de base en secondes 
-		
-		 return 60;
-	}
 }

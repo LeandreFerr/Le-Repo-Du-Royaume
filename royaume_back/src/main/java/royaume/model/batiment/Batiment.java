@@ -117,13 +117,20 @@ public abstract class Batiment {
 	
 	public void ameliorer() {
 		
+		// Si ce n'est pas le château, on vérifie qu'on ne dépasse pas le palier autorisé
+	    if (!(this instanceof Chateau)) {
+	        if (this.niveau >= Chateau.getNiveauPalierDebloque()) {
+	            throw new IllegalStateException("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.");
+	        }
+	    }
+	    
 		// augmente le niveau et recalcule les pointsDeVieMax
 		// Si amélioration : Retrouve le max de point de vie
-		
 		niveau++;
         pointsDeVieMax = calculerPointsDeVieMax();
         pointsDeVie = pointsDeVieMax;
-	}
+	    }
+	
 	
 	protected int calculerPointsDeVieMax() {
         return 50 * niveau;                        // PVmax = 50 * niveau du batiment
@@ -131,10 +138,8 @@ public abstract class Batiment {
 	//______________________
 
 
-	
 	public abstract List<QuantiteRessource> getCoutAmelioration();
-		// coût nécessaire pour lancer le niveau suivant 
-	
+
 	
 	public abstract int getTempsConstructionBase() ;
 	//  durée de base en secondes ou ticks

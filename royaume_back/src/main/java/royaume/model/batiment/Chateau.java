@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 
 public class Chateau extends Batiment{
 	
-	private int niveauPalierDebloque;
+	private static int niveauPalierDebloque;
 	private double bonusDefenseRoyaume;
 	
 	
@@ -30,14 +30,14 @@ public class Chateau extends Batiment{
 
 
 	
-	public int getNiveauPalierDebloque() {
+	public static int getNiveauPalierDebloque() {
 		return niveauPalierDebloque;
 	}
 
 
 
-	public void setNiveauPalierDebloque(int niveauPalierDebloque) {
-		this.niveauPalierDebloque = niveauPalierDebloque;
+	public static void setNiveauPalierDebloque(int niveauPalierDebloque) {
+		Chateau.niveauPalierDebloque = niveauPalierDebloque;
 	}
 
 
@@ -68,11 +68,19 @@ public class Chateau extends Batiment{
 	
 	// FAIRE L'INVERSE : Si on passe au niveau 2 le chateau passe au niveau 2 automatiquement (ses PVmax n'augmente pas)
 	
+	// Remplacée par améliorer
 	
-	public void synchroniserAvecNiveauRoyaume(int nouveauNiveauRoyaume) {
+	/*public void synchroniserAvecNiveauRoyaume(int nouveauNiveauRoyaume) {
         this.niveau = nouveauNiveauRoyaume;
         debloquerPalier();
-    }
+    }*/
+	
+	@Override
+	public void ameliorer() {
+	
+		niveau++;
+	    debloquerPalier();}
+	
 	
 	public void debloquerPalier() {
 		//ex :  Si t'es niveau 2 bah tu débloque le niveau 2 pour tout les batiments (chateau inclu)
@@ -92,6 +100,7 @@ public class Chateau extends Batiment{
             System.out.println("Vous avez dead ça ! Niveau 10 atteint - End Game");
         }
 	}
+	
 	
 	
 	//__________________________ 
