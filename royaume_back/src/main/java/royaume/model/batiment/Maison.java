@@ -22,7 +22,8 @@ public class Maison extends Batiment {
         this.bonusCroissance = bonusCroissance;
     }
 
-    public int getCapaciteLogement() {
+    public int getCapaciteLogement() {   // bonus croissance augmente avec le niveau // A MODIF ?
+    	
         return capaciteLogement * niveau;
     }
 

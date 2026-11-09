@@ -1,8 +1,5 @@
 package royaume.model.batiment;
 
-import java.util.List;
-
-import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 
 

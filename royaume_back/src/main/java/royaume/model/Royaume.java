@@ -23,6 +23,11 @@ public class Royaume {
 	
 	// Ressources automatiquement offerte à la création du Royaume (niveau1, début de partie) :
 	
+	///////////////////////////////////////////////////////
+	/// 
+	/// 
+	// WARNING : JPA peut pas persister ici (perte de la liste à chaque chargement) 
+	
 	private List<QuantiteRessource> ressources = new ArrayList<>(List.of(
 		    new QuantiteRessource(40, Ressource.BOIS),
 		    new QuantiteRessource(40, Ressource.PIERRE),
@@ -35,6 +40,9 @@ public class Royaume {
 		private List<Batiment> batiments = new ArrayList<>(List.of(
 			    //new Chateau(1, "chateau", 1, 50, 50, false) //pourrait être en construction -> true 
 			));
+		
+		/// 
+		///////////////////////////////////////////////////////
 
 
 	// ---------------- CONSTRUCTEURS --------------------------
