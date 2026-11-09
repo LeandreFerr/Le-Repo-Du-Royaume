@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import royaume.model.Peuple.*;
+
 @DisplayName("Tests unitaires rigoureux - Classe Partie")
 public class PartieTest {
 

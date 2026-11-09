@@ -2,6 +2,10 @@ package royaume.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import royaume.model.Militaire.TypeTroupe;
+import royaume.model.Peuple.*;
 
 public class Royaume {
 
@@ -24,7 +28,8 @@ public class Royaume {
 	// Constructeurs
 	// =========================================================================
 
-	public Royaume() {}
+	public Royaume() {
+	}
 
 	public Royaume(Integer id, String nom, Population peuple) {
 		checkId(id);
@@ -67,12 +72,11 @@ public class Royaume {
 			throw new IllegalArgumentException("La quantité à créditer doit être strictement positive.");
 		}
 		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresentOrElse(
-				r -> r.ajouter(quantite),
-				() -> ressources.add(new QuantiteRessource(quantite, ressource))
-			);
+				.filter(r -> r.getRessource() == ressource)
+				.findFirst()
+				.ifPresentOrElse(
+						r -> r.ajouter(quantite),
+						() -> ressources.add(new QuantiteRessource(quantite, ressource)));
 	}
 
 	public boolean aAssezDeRessources(Ressource ressource, int quantite) {
@@ -86,8 +90,8 @@ public class Royaume {
 			return true;
 		}
 		return ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.anyMatch(r -> r.getQuantite() >= quantite);
+				.filter(r -> r.getRessource() == ressource)
+				.anyMatch(r -> r.getQuantite() >= quantite);
 	}
 
 	public boolean debiterRessources(Ressource ressource, int quantite) {
@@ -101,15 +105,16 @@ public class Royaume {
 			return false;
 		}
 		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresent(r -> r.retirer(quantite));
+				.filter(r -> r.getRessource() == ressource)
+				.findFirst()
+				.ifPresent(r -> r.retirer(quantite));
 		return true;
 	}
 
 	public void appliquerCroissance(double taux) {
 		if (!Double.isFinite(taux) || taux < -1.0) {
-			throw new IllegalArgumentException("Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
+			throw new IllegalArgumentException(
+					"Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
 		}
 		long resultat = Math.round(populationDisponible * (1.0 + taux));
 		populationDisponible = Math.toIntExact(resultat);
@@ -143,7 +148,8 @@ public class Royaume {
 
 	public void setPeuple(Population peuple) {
 		if (this.peuple != null) {
-			throw new UnsupportedOperationException("Le peuple d'un royaume est définitif et ne peut pas être modifié.");
+			throw new UnsupportedOperationException(
+					"Le peuple d'un royaume est définitif et ne peut pas être modifié.");
 		}
 		validerPeuple(peuple);
 		this.peuple = peuple;
@@ -222,9 +228,9 @@ public class Royaume {
 		if (ressources != null) {
 			for (QuantiteRessource qr : ressources) {
 				this.ressources.stream()
-					.filter(r -> r.getRessource() == qr.getRessource())
-					.findFirst()
-					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
+						.filter(r -> r.getRessource() == qr.getRessource())
+						.findFirst()
+						.ifPresent(r -> r.setQuantite(qr.getQuantite()));
 			}
 		}
 	}
@@ -235,11 +241,10 @@ public class Royaume {
 
 	private static List<QuantiteRessource> creerRessourcesParDefaut() {
 		return new ArrayList<>(List.of(
-			new QuantiteRessource(0, Ressource.PIERRE),
-			new QuantiteRessource(0, Ressource.BOIS),
-			new QuantiteRessource(0, Ressource.OR),
-			new QuantiteRessource(0, Ressource.NOURRITURE)
-		));
+				new QuantiteRessource(0, Ressource.PIERRE),
+				new QuantiteRessource(0, Ressource.BOIS),
+				new QuantiteRessource(0, Ressource.OR),
+				new QuantiteRessource(0, Ressource.NOURRITURE)));
 	}
 
 	private void checkId(Integer id) {
@@ -263,7 +268,8 @@ public class Royaume {
 				|| peuple instanceof Licornes
 				|| peuple instanceof Princesses
 				|| peuple instanceof Teuteus)) {
-			throw new IllegalArgumentException("Le peuple du royaume doit être l'un des 5 peuples disponibles (Canards, Gobelins, Licornes, Princesses, Teuteus).");
+			throw new IllegalArgumentException(
+					"Le peuple du royaume doit être l'un des 5 peuples disponibles (Canards, Gobelins, Licornes, Princesses, Teuteus).");
 		}
 	}
 
@@ -299,10 +305,45 @@ public class Royaume {
 					.distinct()
 					.count();
 			if (nbDistinctes != initiales.size()) {
-				throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
+				throw new IllegalArgumentException(
+						"Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
 			}
 		}
 	}
+
+	// =========================================================================
+	// Militaire
+	// =========================================================================
+
+	public boolean peutRecruter(TypeTroupe troupe) {
+		if (troupe == null) {
+			throw new IllegalArgumentException("Le type de troupe ne peut pas être null.");
+		}
+		if (populationDisponible <= 0) {
+			return false;
+		}
+		for (Map.Entry<Ressource, Integer> e : troupe.getCout().entrySet()) {
+			if (!aAssezDeRessources(e.getKey(), e.getValue())) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public boolean recruterTroupe(TypeTroupe troupe) {
+		if (!peutRecruter(troupe)) {
+			return false;
+		}
+		// Tout est vérifié : on peut payer sans risque de paiement partiel
+		troupe.getCout().forEach(this::debiterRessources);
+
+		populationDisponible--;
+		populationEnEntrainement++;
+		return true;
+	}
+
+
+
 
 	// =========================================================================
 	// Représentation

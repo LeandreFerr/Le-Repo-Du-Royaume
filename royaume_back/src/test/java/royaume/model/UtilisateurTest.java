@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import royaume.model.Peuple.Canards;
+
 @DisplayName("Tests unitaires rigoureux - Classe Utilisateur")
 public class UtilisateurTest {
 

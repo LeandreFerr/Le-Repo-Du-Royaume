@@ -1,4 +1,5 @@
-package royaume.model;
+package royaume.model.Peuple;
+import royaume.model.Ressource;
 
 public class Teuteus extends Population {
 

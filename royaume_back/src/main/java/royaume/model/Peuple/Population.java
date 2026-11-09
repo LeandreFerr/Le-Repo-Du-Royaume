@@ -1,6 +1,7 @@
-package royaume.model;
+package royaume.model.Peuple;
 
 import java.util.Objects;
+import royaume.model.Ressource;
 
 public abstract class Population {
 

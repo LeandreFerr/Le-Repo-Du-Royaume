@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import royaume.model.Peuple.*;
+
 @DisplayName("Tests unitaires robustes de la hiérarchie Population (Module 2)")
 public class PopulationTest {
 

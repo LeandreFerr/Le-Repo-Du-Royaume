@@ -1,4 +1,4 @@
-package royaume.model;
+package royaume.model.Peuple;
 
 public class Gobelins extends Population {
 

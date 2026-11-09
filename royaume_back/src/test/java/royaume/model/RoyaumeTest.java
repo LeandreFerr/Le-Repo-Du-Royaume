@@ -22,6 +22,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import royaume.model.Peuple.*;
+
 @DisplayName("Tests unitaires exhaustifs — Royaume (Socle & Module 2)")
 class RoyaumeTest {
 
