@@ -1,8 +1,10 @@
 package royaume.model.batiment;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import royaume.model.QuantiteRessource;
+import royaume.model.Royaume;
 
 public abstract class Batiment {
 	
@@ -13,6 +15,7 @@ public abstract class Batiment {
 	protected int pointsDeVieMax;
 	protected boolean enConstruction = false; // A passer à true dans Chantier mais là init à false.
 	private ChantierConstruction chantier; // ça c'est optionnel ET nullable :  quand ya pas besion ;  on peut le mettre null
+	
 	
 	public Batiment(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		this.id = id;
@@ -94,15 +97,32 @@ public abstract class Batiment {
         pointsDeVie = Math.max(0, pointsDeVie - degats);
 	}
 	
+	 // Attention la fonction reparer va avec la fonction verifierEtFinaliserReparation
+	// Ne pas mélanger avec fonction construire un bâtiment ! 
 	
-	public void reparer(int montant) {
+	public void reparer(int montant, int nbouvriersAssignes, Royaume royaume) {
 		
-		// augmente les PV sans dépasser pointsDeVieMax :
+		if (nbouvriersAssignes < 1) {
+	        throw new IllegalArgumentException("Il faut au moins 1 ouvrier pour réparer.");
+	    }
 		
-		if (montant < 0) {
-            throw new IllegalArgumentException("Réparation négative interdite");
-        }
-        pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);  // Es ce que ça a un cout (ex nombre ouvrier à mobiliser) ? 
+		this.chantier = new ChantierConstruction(null, this, royaume, 1,1, this.getTempsConstructionBase(), false);
+		
+        //pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);  // Es ce que ça a un cout (ex nombre ouvrier à mobiliser) ? 
+	}
+	
+	public void verifierEtFinaliserReparation(int montantReparation) {
+	   
+	    if (this.enConstruction && this.chantier != null && this.chantier.estPretAAchever()) {
+	        
+	        if (montantReparation < 0) {
+	            throw new IllegalArgumentException("Réparation négative interdite");
+	        }
+
+	        this.pointsDeVie = Math.min(this.pointsDeVieMax, this.pointsDeVie + montantReparation);
+
+	        this.chantier.finaliser();
+	    }
 	}
 	
 	

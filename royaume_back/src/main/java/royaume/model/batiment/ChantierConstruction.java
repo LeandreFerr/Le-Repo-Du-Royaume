@@ -185,7 +185,7 @@ public class ChantierConstruction {
    //(appel dans le constructeur pour init)
    
     
-    private void recalculerDateFin(
+    public void recalculerDateFin(
             long ancienTempsRestant,
             int ouvriersPrecedents,
             LocalDateTime maintenant) {

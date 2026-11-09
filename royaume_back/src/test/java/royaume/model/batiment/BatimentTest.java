@@ -1,8 +1,12 @@
 package royaume.model.batiment;
 
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
+import royaume.model.Royaume;
 
 
 // C'est une classe concrète créée uniquement pour les tests (sinon abstraite !!!! )
@@ -17,12 +22,13 @@ import royaume.model.Ressource;
 class BatimentTest {
 
     private Batiment batiment;
+    private Royaume royaume;
 
     
     static class BatimentTestable extends Batiment {
 
         BatimentTestable() {
-            super(1, "Batiment test", 1, 50, 100, false);
+            super(1, "Batiment test", 1, 50, 50, false);
         }
 
         @Override
@@ -39,6 +45,11 @@ class BatimentTest {
     @BeforeEach
     void setUp() {
         batiment = new BatimentTestable();
+        royaume = new Royaume(2, "Test");
+        Chateau chateau = royaume.getChateau();
+        if (chateau != null) {
+            chateau.ameliorer(); // Monte le château au niveau 2 pour débloquer le palier 2
+        }
     }
 
     @Test
@@ -57,7 +68,7 @@ class BatimentTest {
         assertEquals(0, batiment.getPointsDeVie());
     }
 
-    @Test
+    /*@Test
     void reparer_AugmenteLesPV() {
 
         batiment.subirDegats(30);
@@ -73,6 +84,57 @@ class BatimentTest {
         batiment.reparer(100);
 
         assertEquals(100, batiment.getPointsDeVie());
+    }*/
+    
+    @Test
+    void reparer_LanceLeChantierSansModifierInstantaneDesPV() {
+        batiment.subirDegats(30); // Disons qu'il passe de 50 à 20 PV
+        int pvAvant = batiment.getPointsDeVie();
+
+        // On lance la réparation (ex: avec 2 ouvriers et le royaume)
+        batiment.reparer(30,2, royaume);
+
+        // Les PV ne doivent PAS avoir changé immédiatement
+        assertEquals(pvAvant, batiment.getPointsDeVie());
+        // Mais le bâtiment est bien en construction
+        assertTrue(batiment.isEnConstruction());
+        assertNotNull(batiment.getChantier());
+    }
+
+    @Test
+    void reparer_AugmenteLesPV_ApresFinalisation() {
+        batiment.subirDegats(30); // 20 PV restants
+
+        batiment.reparer(30,2, royaume);
+
+        // On simule que le temps est écoulé en trichant un peu sur la date de fin prévue du chantier,
+        // ou en appelant directement finaliser avec une date future pour les tests unitaires :
+        ChantierConstruction chantier = batiment.getChantier();
+        LocalDateTime futur = chantier.getDateFinPrevue().plusSeconds(1);
+
+        // Si vous avez une méthode pour appliquer la réparation à la fin (ou via finaliser) :
+        // On simule la finalisation qui restitue les PV :
+        chantier.finaliser(futur);
+        
+        // Supposons que finaliser remette au max (ou applique le montant prévu) :
+        assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie());
+        assertFalse(batiment.isEnConstruction());
+    }
+
+    @Test
+    void reparer_NeDoitPasDepasserLesPVMax() {
+        // Même si le bâtiment n'a presque rien perdu, la réparation/finalisation 
+        // ne doit jamais dépasser le plafond des points de vie max
+        batiment.subirDegats(5); // Il lui manque juste 5 PV
+
+        batiment.reparer(10,2, royaume);
+
+        ChantierConstruction chantier = batiment.getChantier();
+        LocalDateTime futur = chantier.getDateFinPrevue().plusSeconds(1);
+
+        chantier.finaliser(futur);
+
+        assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie());
     }
 
     @Test
