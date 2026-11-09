@@ -15,19 +15,18 @@ public class EmplacementCarte {
     private Carte carte;
     private Royaume royaume;
 
-    
-
     // =========================================================================
     // Constructeurs
     // =========================================================================
 
-    public EmplacementCarte() {}
+    public EmplacementCarte() {
+    }
 
-    public EmplacementCarte(int numero,int coordX,int coordY,Carte carte) {
+    public EmplacementCarte(int numero, int coordX, int coordY, Carte carte) {
         this.id = null;
         this.numero = numero;
         this.coordX = coordX;
-        this.coordY = coordY;   // Constructeur simplifié pour la méthode genererEmplacement() de classe Carte
+        this.coordY = coordY; // Constructeur simplifié pour la méthode genererEmplacement() de classe Carte
         this.occupe = false;
         this.carte = carte;
     }
@@ -47,30 +46,28 @@ public class EmplacementCarte {
 
     public void assignerRoyaume(Royaume royaume) {
         if (royaume == null) {
-        throw new IllegalArgumentException(
-                "Aucun royaume à assigner."
-        );
+            throw new IllegalArgumentException(
+                    "Aucun royaume à assigner.");
         }
 
         if (occupe) {
-        throw new IllegalStateException(
-                "L'emplacement " + numero + " est déjà occupé."
-        );
+            throw new IllegalStateException(
+                    "L'emplacement " + numero + " est déjà occupé.");
         }
 
-    this.royaume = royaume;
-    this.occupe = true;
-    royaume.setEmplacement(this);
+        this.royaume = royaume;
+        this.occupe = true;
+        royaume.setEmplacement(this);
     }
 
     public void liberer() {
 
         if (this.royaume != null) {
-        this.royaume.setEmplacement(null);
+            this.royaume.setEmplacement(null);
         }
 
-    this.royaume = null;
-    this.occupe = false;
+        this.royaume = null;
+        this.occupe = false;
     }
 
     // =========================================================================
@@ -113,10 +110,6 @@ public class EmplacementCarte {
         return occupe;
     }
 
-    public void setOccupe(boolean occupe) {
-        this.occupe = occupe;
-    }
-
     public Carte getCarte() {
         return carte;
     }
@@ -126,13 +119,12 @@ public class EmplacementCarte {
     }
 
     public Royaume getRoyaume() {
-    return royaume;
+        return royaume;
     }
 
     // =========================================================================
     // Méthodes helpers & Validations
     // =========================================================================
-
 
     // =========================================================================
     // Représentation
@@ -141,7 +133,7 @@ public class EmplacementCarte {
     @Override
     public String toString() {
         return "EmplacementCarte [id=" + id + ", numero=" + numero + ", coordX=" + coordX + ", coordY=" + coordY
-                + ", occupe=" + occupe + ", royaume=" + royaume  + "]";
+                + ", occupe=" + occupe + ", royaume=" + royaume + "]";
     }
 
 }

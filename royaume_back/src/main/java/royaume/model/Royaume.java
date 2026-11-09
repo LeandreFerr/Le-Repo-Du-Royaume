@@ -24,7 +24,8 @@ public class Royaume {
 	// Constructeurs
 	// =========================================================================
 
-	public Royaume() {}
+	public Royaume() {
+	}
 
 	public Royaume(Integer id, String nom) {
 		checkId(id);
@@ -32,6 +33,26 @@ public class Royaume {
 		this.id = id;
 		this.nom = nom;
 	}
+
+	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
+			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
+			List<QuantiteRessource> ressources) {
+		checkId(id);
+		checkNom(nom);
+		checkNiveau(niveau);
+		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
+		this.id = id;
+		this.nom = nom;
+		this.niveau = niveau;
+		this.populationDisponible = populationDisponible;
+		this.populationOuvriere = populationOuvriere;
+		this.populationEnEntrainement = populationEnEntrainement;
+		this.populationMilitaire = populationMilitaire;
+		this.enRuine = enRuine;
+		setRessources(ressources);
+	}
+
+	// Constructeur pour pouvoir attacher un emplacement au royaume
 
 	public Royaume(Integer id, String nom, int niveau, int populationDisponible, int populationOuvriere,
 			int populationEnEntrainement, int populationMilitaire, boolean enRuine,
@@ -64,12 +85,11 @@ public class Royaume {
 			throw new IllegalArgumentException("La quantité à créditer doit être strictement positive.");
 		}
 		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresentOrElse(
-				r -> r.ajouter(quantite),
-				() -> ressources.add(new QuantiteRessource(quantite, ressource))
-			);
+				.filter(r -> r.getRessource() == ressource)
+				.findFirst()
+				.ifPresentOrElse(
+						r -> r.ajouter(quantite),
+						() -> ressources.add(new QuantiteRessource(quantite, ressource)));
 	}
 
 	public boolean aAssezDeRessources(Ressource ressource, int quantite) {
@@ -83,8 +103,8 @@ public class Royaume {
 			return true;
 		}
 		return ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.anyMatch(r -> r.getQuantite() >= quantite);
+				.filter(r -> r.getRessource() == ressource)
+				.anyMatch(r -> r.getQuantite() >= quantite);
 	}
 
 	public boolean debiterRessources(Ressource ressource, int quantite) {
@@ -98,15 +118,16 @@ public class Royaume {
 			return false;
 		}
 		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresent(r -> r.retirer(quantite));
+				.filter(r -> r.getRessource() == ressource)
+				.findFirst()
+				.ifPresent(r -> r.retirer(quantite));
 		return true;
 	}
 
 	public void appliquerCroissance(double taux) {
 		if (!Double.isFinite(taux) || taux < -1.0) {
-			throw new IllegalArgumentException("Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
+			throw new IllegalArgumentException(
+					"Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
 		}
 		long resultat = Math.round(populationDisponible * (1.0 + taux));
 		populationDisponible = Math.toIntExact(resultat);
@@ -199,40 +220,38 @@ public class Royaume {
 		if (ressources != null) {
 			for (QuantiteRessource qr : ressources) {
 				this.ressources.stream()
-					.filter(r -> r.getRessource() == qr.getRessource())
-					.findFirst()
-					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
+						.filter(r -> r.getRessource() == qr.getRessource())
+						.findFirst()
+						.ifPresent(r -> r.setQuantite(qr.getQuantite()));
 			}
 		}
 	}
 
 	public EmplacementCarte getEmplacement() {
-    	return emplacement;
+		return emplacement;
 	}
 
 	public void setEmplacement(EmplacementCarte emplacement) {
-    	this.emplacement = emplacement;
+		this.emplacement = emplacement;
 	}
 
 	public int getX() {
-    	if (emplacement == null) {
-        throw new IllegalStateException(
-                "Le royaume n'est rattaché à aucun emplacement."
-        	);
-    	}
+		if (emplacement == null) {
+			throw new IllegalStateException(
+					"Le royaume n'est rattaché à aucun emplacement.");
+		}
 
-    	return emplacement.getCoordX();
+		return emplacement.getCoordX();
 	}
 
 	public int getY() {
-    	if (emplacement == null) {
-        throw new IllegalStateException(
-                "Le royaume n'est rattaché à aucun emplacement."
-        	);
-    	}
+		if (emplacement == null) {
+			throw new IllegalStateException(
+					"Le royaume n'est rattaché à aucun emplacement.");
+		}
 
-    	return emplacement.getCoordY();
-	}	
+		return emplacement.getCoordY();
+	}
 
 	// =========================================================================
 	// Méthodes helpers & Validations
@@ -240,11 +259,10 @@ public class Royaume {
 
 	private static List<QuantiteRessource> creerRessourcesParDefaut() {
 		return new ArrayList<>(List.of(
-			new QuantiteRessource(0, Ressource.PIERRE),
-			new QuantiteRessource(0, Ressource.BOIS),
-			new QuantiteRessource(0, Ressource.OR),
-			new QuantiteRessource(0, Ressource.NOURRITURE)
-		));
+				new QuantiteRessource(0, Ressource.PIERRE),
+				new QuantiteRessource(0, Ressource.BOIS),
+				new QuantiteRessource(0, Ressource.OR),
+				new QuantiteRessource(0, Ressource.NOURRITURE)));
 	}
 
 	private void checkId(Integer id) {
@@ -291,7 +309,8 @@ public class Royaume {
 					.distinct()
 					.count();
 			if (nbDistinctes != initiales.size()) {
-				throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
+				throw new IllegalArgumentException(
+						"Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
 			}
 		}
 	}
