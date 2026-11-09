@@ -11,8 +11,8 @@ public abstract class Batiment {
 	protected int niveau = 1;
 	protected int pointsDeVie;
 	protected int pointsDeVieMax;
-	protected boolean enConstruction =false; // A passer à true dans Chantier mais là init à false.
-	private ChantierConstruction chantier;
+	protected boolean enConstruction = false; // A passer à true dans Chantier mais là init à false.
+	private ChantierConstruction chantier; // ça c'est optionnel ET nullable :  quand ya pas besion ;  on peut le mettre null
 	
 	public Batiment(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		this.id = id;

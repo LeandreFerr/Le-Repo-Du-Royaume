@@ -9,20 +9,19 @@ public class ChantierConstruction {
 
     private Integer id;
 
-    private int ouvriersAssignes = 0;
-    private int ouvriersMinimum = 1;
-
-    private LocalDateTime dateDebut;
-    private LocalDateTime dateFinPrevue;
-
-    private boolean amelioration = false;
-
-    private long tempsBaseSecondes;
-
     private Batiment batiment;
     private Royaume royaume;
+    private int ouvriersMinimum = 1;
+    private int ouvriersAssignes = 0;
+    private int tempsBaseSecondes;
+    private boolean amelioration = false;
 
-    private boolean termine = false;
+    private LocalDateTime dateDebut;				 // Ajout regle dateFin > dateDebut 
+    private LocalDateTime dateFinPrevue;  
+    											//  getTempsConstruction()/ ouvriersAssigne = dateFinPrevu
+  
+
+    //private boolean termine = false;
 
     // ---------------- CONSTRUCTEUR ----------------
 
@@ -31,8 +30,8 @@ public class ChantierConstruction {
             Batiment batiment,
             Royaume royaume,
             int ouvriersMinimum,
-            int ouvriersInitiaux,
-            long tempsBaseSecondes,
+            int ouvriersAssignes,
+            int tempsBaseSecondes,
             boolean amelioration) {
 
         if (batiment == null || royaume == null) {
@@ -42,8 +41,7 @@ public class ChantierConstruction {
         }
 
         if (ouvriersMinimum < 1 ||
-            ouvriersInitiaux < ouvriersMinimum ||
-            tempsBaseSecondes <= 0) {
+        		ouvriersAssignes < ouvriersMinimum) {
 
             throw new IllegalArgumentException(
                 "Paramètres du chantier invalides."
@@ -58,10 +56,11 @@ public class ChantierConstruction {
         this.tempsBaseSecondes = tempsBaseSecondes;
         this.amelioration = amelioration;
 
-        // Affectation initiale des ouvriers
-        royaume.affecterOuvriers(ouvriersInitiaux);
+        // Affectation initiale des ouvriers : 
+        
+        royaume.affecterOuvriers(ouvriersAssignes);
 
-        this.ouvriersAssignes = ouvriersInitiaux;
+        this.ouvriersAssignes = ouvriersAssignes;
 
         this.dateDebut = LocalDateTime.now();
 
@@ -76,7 +75,7 @@ public class ChantierConstruction {
 
     public void assignerOuvriers(int nombre) {
 
-        if (termine) {
+        if (!batiment.isEnConstruction()) {
             throw new IllegalStateException(
                 "Le chantier est terminé."
             );
@@ -97,11 +96,11 @@ public class ChantierConstruction {
 
     public void retirerOuvriers(int nombre) {
 
-        if (termine) {
+        if (!batiment.isEnConstruction() ) {   // Termine => Ici Batiment.isEnConstruction() 
             throw new IllegalStateException(
                 "Le chantier est terminé."
             );
-        }
+        } 
 
         if (nombre <= 0) {
             throw new IllegalArgumentException(
@@ -109,7 +108,7 @@ public class ChantierConstruction {
             );
         }
 
-        if (ouvriersAssignes - nombre < ouvriersMinimum) {
+        if ((ouvriersAssignes - nombre) < ouvriersMinimum) {
             throw new IllegalArgumentException(
                 "Impossible de descendre sous le minimum d'ouvriers."
             );
@@ -121,12 +120,16 @@ public class ChantierConstruction {
 
         recalculerDateFin();
     }
+   
+  //________________________________________
+
 
     public long calculerTempsRestant() {
         return calculerTempsRestant(LocalDateTime.now());
     }
 
-    // Surcharge pratique pour les tests unitaires
+    // ( Surcharge pratique pour les tests unitaires )
+    
     public long calculerTempsRestant(LocalDateTime maintenant) {
 
         long secondes = Duration.between(
@@ -136,7 +139,9 @@ public class ChantierConstruction {
 
         return Math.max(0, secondes);
     }
-
+//________________________________________  --> Mises à jour MAJ successives de DateFinPrevue 
+   //(appel dans le constructeur pour init)
+    
     public void recalculerDateFin() {
 
         if (ouvriersAssignes <= 0) {
@@ -153,16 +158,19 @@ public class ChantierConstruction {
         dateFinPrevue = LocalDateTime.now()
             .plusSeconds(nouvelleDuree);
     }
+ 
+    //________________________________________
 
     public boolean estPretAAchever() {
         return estPretAAchever(LocalDateTime.now());
     }
 
     // Surcharge pour faciliter les tests
+    
     public boolean estPretAAchever(LocalDateTime maintenant) {
 
-        return !termine &&
-               !maintenant.isBefore(dateFinPrevue);
+        return batiment.isEnConstruction() &&
+               !maintenant.isBefore(dateFinPrevue); // date de peremption (datedefin est dépassé)
     }
 
     // ---------------- FINALISATION ----------------
@@ -171,40 +179,44 @@ public class ChantierConstruction {
     }
     
     
-  
-
     public void finaliser(LocalDateTime maintenant) {
 
         // Vérifier si le chantier est déjà terminé
-        if (termine) {
+    	
+        if (!batiment.isEnConstruction()) {
             return;
         }
 
-        // Vérifier si la date de fin est atteinte
+        //  la date de fin est atteinte : 
+        
         if (!estPretAAchever(maintenant)) {
             throw new IllegalStateException(
                 "Le chantier n'est pas encore terminé."
             );
         }
 
-        // Si c'est une amélioration, augmenter le niveau
+        // Si c'est une amélioration, augmenter le niveau : 
+        
         if (amelioration) {
             batiment.ameliorer();
         }
-
-        // Restituer les ouvriers au royaume
+        // Restituer les ouvriers au royaume : 
+        
         royaume.libererOuvriers(ouvriersAssignes);
 
         ouvriersAssignes = 0;
 
-        // Rendre le bâtiment opérationnel
-        batiment.setEnConstruction(false);
 
-        // Supprimer la liaison avec le chantier
+        // Le chantier devient null (car c'est un attribut semi-optionnel si null : 
+        
+       //pas de chantier pour le batiment actuellement) 
+        
         batiment.setChantier(null);
 
-        // Marquer le chantier comme terminé
-        termine = true;
+        // Marquer le chantier comme terminé +  Rendre le bâtiment opérationnel
+      
+        
+        batiment.setEnConstruction(false);    // --> Simili :  termine = true;
     }
     
     // ---------------- GETTERS / SETTERS ----------------
@@ -241,7 +253,5 @@ public class ChantierConstruction {
         return royaume;
     }
 
-    public boolean isTermine() {
-        return termine;
-    }
+   
 }

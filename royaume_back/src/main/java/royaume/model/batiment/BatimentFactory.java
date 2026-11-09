@@ -41,7 +41,7 @@ public class BatimentFactory {
             1,
             ouvriers,
             maison.getTempsConstructionBase(),
-            false
+            false // premier chantier à la création du batiment 
         );
 
         return maison;
