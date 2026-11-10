@@ -29,9 +29,8 @@ public class MarcheTest {
     @BeforeEach
     void setUp() {
 
-        // Réinitialisation de la liste statique des offres
+        // Initialisation d'une nouvelle instance de marché
         marche = new Marche(1, "Marché central");
-        marche.getOffres().clear();
 
         // Ressources du vendeur
         orVendeur = new QuantiteRessource(500, Ressource.OR);
@@ -417,6 +416,94 @@ public class MarcheTest {
 
         // Vérification qu'aucune offre n'a été supprimée
         assertEquals(3, marche.getOffres().size());
+    }
+
+    // ==========================================================
+    // Sécurité métier, Invariants & Architecture
+    // ==========================================================
+
+    @Test
+    @DisplayName("retirerOffre lève une exception et ne rembourse pas si l'offre est déjà annulée ou conclue")
+    void testRetirerOffreAntiDuplication() {
+        // Given : Offre publiée puis annulée
+        OffreMarche offre = marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        );
+        marche.retirerOffre(offre);
+        assertEquals(500, getStock(vendeur, Ressource.OR));
+
+        // When & Then : Tentative de ré-annulation (anti-duplication glitch)
+        assertThrows(IllegalStateException.class, () -> marche.retirerOffre(offre));
+        assertEquals(500, getStock(vendeur, Ressource.OR),
+            "Le vendeur ne doit pas être crédité une seconde fois");
+
+        // Cas offre conclue
+        OffreMarche offre2 = marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        );
+        marche.executerEchange(offre2, acheteur);
+        assertThrows(IllegalStateException.class, () -> marche.retirerOffre(offre2));
+    }
+
+    @Test
+    @DisplayName("executerEchange interdit à un vendeur d'acheter sa propre offre")
+    void testExecuterEchangeAutoAchatInterdit() {
+        // Given
+        OffreMarche offre = marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        );
+
+        // When & Then
+        assertThrows(IllegalStateException.class, () -> marche.executerEchange(offre, vendeur));
+    }
+
+    @Test
+    @DisplayName("Un royaume en ruine ne peut ni publier d'offre ni exécuter d'échange")
+    void testReglesRoyaumeEnRuine() {
+        // Given : Vendeur en ruine
+        vendeur.setEnRuine(true);
+        assertThrows(IllegalStateException.class, () -> marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        ));
+
+        // Acheteur en ruine
+        vendeur.setEnRuine(false);
+        OffreMarche offre = marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        );
+        acheteur.setEnRuine(true);
+        assertThrows(IllegalStateException.class, () -> marche.executerEchange(offre, acheteur));
+    }
+
+    @Test
+    @DisplayName("getOffres retourne une vue non modifiable")
+    void testListeOffresImmuableDepuisExterieur() {
+        assertThrows(UnsupportedOperationException.class, () -> marche.getOffres().add(null));
+    }
+
+    @Test
+    @DisplayName("Deux instances distinctes de Marché possèdent des listes d'offres isolées et indépendantes")
+    void testInstancesMarcheIndependantes() {
+        Marche autreMarche = new Marche(2, "Marché secondaire");
+        marche.publierOffre(
+            vendeur,
+            new QuantiteRessource(100, Ressource.OR),
+            new QuantiteRessource(150, Ressource.PIERRE)
+        );
+
+        assertEquals(1, marche.getOffres().size());
+        assertEquals(0, autreMarche.getOffres().size(),
+            "Le deuxième marché ne doit pas contenir les offres du premier (non-statique)");
     }
 
     private int getStock(Royaume royaume, Ressource ressource) {
