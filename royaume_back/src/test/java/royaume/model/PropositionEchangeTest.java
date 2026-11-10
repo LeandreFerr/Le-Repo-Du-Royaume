@@ -425,6 +425,63 @@ public class PropositionEchangeTest {
         assertEquals(StatutEchange.REFUSE, proposition.getStatut());
     }
 
+    // ==========================================================
+    // Sécurité métier & Invariants
+    // ==========================================================
+
+    @Test
+    @DisplayName("accepter refuse l'échange si l'expéditeur et le destinataire sont le même royaume (auto-échange)")
+    void testAccepterRefuseAutoEchange() {
+        // Given : proposition pointant sur le même royaume
+        proposition.setDestinataire(expediteur);
+
+        // When
+        proposition.accepter();
+
+        // Then
+        assertEquals(StatutEchange.EN_ATTENTE, proposition.getStatut());
+        assertEquals(500, getStock(expediteur, Ressource.OR));
+    }
+
+    @Test
+    @DisplayName("accepter refuse l'échange si l'un des royaumes est en ruine")
+    void testAccepterRefuseSiRoyaumeEnRuine() {
+        // Given : Expéditeur en ruine
+        expediteur.setEnRuine(true);
+        proposition.accepter();
+        assertEquals(StatutEchange.EN_ATTENTE, proposition.getStatut());
+
+        // Given : Destinataire en ruine
+        expediteur.setEnRuine(false);
+        destinataire.setEnRuine(true);
+        proposition.accepter();
+        assertEquals(StatutEchange.EN_ATTENTE, proposition.getStatut());
+    }
+
+    @Test
+    @DisplayName("accepter refuse l'échange si la quantité offerte ou demandée est non positive")
+    void testAccepterRefuseQuantitesInvalides() {
+        // Given : Quantité offerte nulle
+        proposition.setOfferte(new QuantiteRessource(0, Ressource.OR));
+        proposition.accepter();
+        assertEquals(StatutEchange.EN_ATTENTE, proposition.getStatut());
+    }
+
+    @Test
+    @DisplayName("Equals et HashCode respectent le contrat POJO")
+    void testEqualsEtHashCode() {
+        PropositionEchange p1 = new PropositionEchange();
+        p1.setId(5);
+        PropositionEchange p2 = new PropositionEchange();
+        p2.setId(5);
+        PropositionEchange p3 = new PropositionEchange();
+        p3.setId(6);
+
+        assertEquals(p1, p2);
+        assertEquals(p1.hashCode(), p2.hashCode());
+        assertNotEquals(p1, p3);
+    }
+
     private int getStock(Royaume royaume, Ressource ressource) {
         return royaume.getRessources().stream()
             .filter(r -> r.getRessource() == ressource)
