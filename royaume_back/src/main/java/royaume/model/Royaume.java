@@ -115,6 +115,75 @@ public class Royaume {
 		populationDisponible = Math.toIntExact(resultat);
 	}
 
+	public boolean peutMonterDeNiveau(List<PalierNiveau> paliers) {
+		if (this.enRuine) {
+			return false;
+		}
+		if (paliers == null || paliers.isEmpty()) {
+			return false;
+		}
+		if (this.niveau >= 10) {
+			return false;
+		}
+
+		int niveauSuivant = this.niveau + 1;
+		PalierNiveau palierSuivant = paliers.stream()
+				.filter(p -> p != null && p.getNiveau() == niveauSuivant)
+				.findFirst()
+				.orElse(null);
+
+		if (palierSuivant == null) {
+			return false;
+		}
+
+		int popTotale = populationDisponible + populationOuvriere + populationMilitaire + populationEnEntrainement;
+		if (popTotale < palierSuivant.getPopulationRequise()) {
+			return false;
+		}
+
+		if (palierSuivant.getPrerequis() != null) {
+			for (QuantiteRessource requis : palierSuivant.getPrerequis()) {
+				if (requis != null && !aAssezDeRessources(requis.getRessource(), requis.getQuantite())) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	public boolean ameliorerNiveau(List<PalierNiveau> paliers) {
+		if (!peutMonterDeNiveau(paliers)) {
+			System.out.println("Ressources ou population insuffisantes pour monter de niveau.");
+			return false;
+		}
+
+		int niveauSuivant = this.niveau + 1;
+		PalierNiveau palierSuivant = paliers.stream()
+				.filter(p -> p != null && p.getNiveau() == niveauSuivant)
+				.findFirst()
+				.orElse(null);
+
+		if (palierSuivant == null) {
+			return false;
+		}
+
+		if (palierSuivant.getPrerequis() != null) {
+			for (QuantiteRessource requis : palierSuivant.getPrerequis()) {
+				if (requis != null) {
+					boolean debitReussi = debiterRessources(requis.getRessource(), requis.getQuantite());
+					if (!debitReussi) {
+						throw new IllegalStateException("Impossible de débiter les ressources requises : " + requis.getRessource());
+					}
+				}
+			}
+		}
+
+		setNiveau(niveauSuivant);
+		System.out.println("Le royaume atteint le niveau " + this.niveau);
+		return true;
+	}
+
 	// =========================================================================
 	// Getters & Setters
 	// =========================================================================
