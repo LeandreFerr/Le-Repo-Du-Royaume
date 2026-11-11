@@ -252,6 +252,13 @@ public class ChantierConstruction {
         if (amelioration) {
             batiment.ameliorer();
         }
+        
+        else {
+        	Batiment b = this.batiment;
+            b.setPointsDeVie(Math.min(b.getPointsDeVieMax(), b.getPointsDeVie() + b.getMontantReparationEnCours()));
+            b.setMontantReparationEnCours(0);
+        }
+        
         // Restituer les ouvriers au royaume : 
         
         royaume.libererOuvriers(ouvriersAssignes);

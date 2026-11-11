@@ -16,6 +16,8 @@ public abstract class Batiment {
 	protected boolean enConstruction = false; // A passer à true dans Chantier mais là init à false.
 	private ChantierConstruction chantier; // ça c'est optionnel ET nullable :  quand ya pas besion ;  on peut le mettre null
 	
+	protected int montantReparationEnCours = 0;
+	
 	
 	public Batiment(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		this.id = id;
@@ -85,8 +87,19 @@ public abstract class Batiment {
 	    this.chantier = chantier;
 	}
 	
+	public int getMontantReparationEnCours() {
+		return montantReparationEnCours;
+	}
+
+	public void setMontantReparationEnCours(int montantReparationEnCours) {
+		this.montantReparationEnCours = montantReparationEnCours;
+	}
+	
+	
 	//___________________________________________________________________
 	
+	
+
 	public void subirDegats(int degats) {
 		
 		// diminue les points de vie sans descendre sous 0 :
@@ -102,28 +115,33 @@ public abstract class Batiment {
 	
 	public void reparer(int montant, int nbouvriersAssignes, Royaume royaume) {
 		
+		 if (montant < 0) {
+	            throw new IllegalArgumentException("Réparation négative interdite");
+	        }
+		
 		if (nbouvriersAssignes < 1) {
 	        throw new IllegalArgumentException("Il faut au moins 1 ouvrier pour réparer.");
 	    }
 		
-		this.chantier = new ChantierConstruction(null, this, royaume, 1,1, this.getTempsConstructionBase(), false);
-		
-        //pointsDeVie = Math.min(pointsDeVieMax, pointsDeVie + montant);  // Es ce que ça a un cout (ex nombre ouvrier à mobiliser) ? 
-	}
+       this.montantReparationEnCours = montant;
+        
+        // On passe bien nbouvriersAssignes au lieu de 1,1 en dur
+        this.chantier = new ChantierConstruction(null, this, royaume,1, nbouvriersAssignes, this.getTempsConstructionBase(), false);
+        this.enConstruction = true; // S'assurer que le bâtiment passe en construction pour la réparation
+    }
 	
-	public void verifierEtFinaliserReparation(int montantReparation) {
+	
+	
+	/*public void verifierEtFinaliserReparation() {
 	   
 	    if (this.enConstruction && this.chantier != null && this.chantier.estPretAAchever()) {
 	        
-	        if (montantReparation < 0) {
-	            throw new IllegalArgumentException("Réparation négative interdite");
-	        }
+	        this.pointsDeVie = Math.min(this.pointsDeVieMax, this.pointsDeVie + this.montantReparationEnCours);
+	        this.montantReparationEnCours = 0; // On remet à zéro
 
-	        this.pointsDeVie = Math.min(this.pointsDeVieMax, this.pointsDeVie + montantReparation);
-
-	        this.chantier.finaliser();
+	        this.chantier.finaliser(); // ou ta logique de fin
 	    }
-	}
+	}*/
 	
 	
 	public boolean estOperationnel() {

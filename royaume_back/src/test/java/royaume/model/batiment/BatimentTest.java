@@ -101,7 +101,7 @@ class BatimentTest {
         assertNotNull(batiment.getChantier());
     }
 
-    @Test
+   /* @Test
     void reparer_AugmenteLesPV_ApresFinalisation() {
         batiment.subirDegats(30); // 20 PV restants
 
@@ -118,6 +118,23 @@ class BatimentTest {
         
         // Supposons que finaliser remette au max (ou applique le montant prévu) :
         assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie());
+        assertFalse(batiment.isEnConstruction());
+    }*/
+    
+    @Test
+    void reparer_AugmenteLesPV_ApresFinalisation() {
+        batiment.subirDegats(30); // 20 PV restants
+
+        batiment.reparer(30, 2, royaume);
+
+        ChantierConstruction chantier = batiment.getChantier();
+        LocalDateTime futur = chantier.getDateFinPrevue().plusSeconds(1);
+
+        // Finalise le chantier (ce qui déclenche batiment.verifierEtFinaliserReparation())
+        chantier.finaliser(futur);
+        
+        // Assertions
+        assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie()); // Doit donner 50
         assertFalse(batiment.isEnConstruction());
     }
 
