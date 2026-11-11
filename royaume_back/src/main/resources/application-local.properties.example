@@ -1,0 +1,47 @@
+# ===================================================================
+# MODÈLE DE CONFIGURATION LOCALE (application-local.properties.example)
+#
+# INSTRUCTIONS :
+# 1. Copiez ce fichier et renommez-le en "application-local.properties"
+#    dans le même dossier (src/main/resources/).
+# 2. Décommentez et ajustez les lignes selon votre machine/environnement.
+# 3. Ce fichier est ignoré par Git : zéro risque de conflit avec l'équipe !
+# ===================================================================
+
+# -------------------------------------------------------------------
+# 1. PORT DU SERVEUR WEB
+# -------------------------------------------------------------------
+# Configuration standard :
+server.port=8080
+
+# Si le port 8080 est déjà occupé :
+# server.port=8090
+# server.port=8081
+
+
+# -------------------------------------------------------------------
+# 2. CONNEXION BASE DE DONNÉES MYSQL
+# -------------------------------------------------------------------
+
+# Option A : Configuration classique (Windows MySQL Installer / Docker standard)
+# Port 3306, utilisateur 'root', mot de passe 'root'
+spring.datasource.url=jdbc:mysql://localhost:3306/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=root
+
+# Option B : Pour les utilisateurs de MAMP (Mac / Windows)
+# Attention : MAMP utilise par défaut le port 8889 pour MySQL (et mdp 'root')
+# spring.datasource.url=jdbc:mysql://localhost:8889/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+# spring.datasource.username=root
+# spring.datasource.password=root
+
+# Option C : Pour WampServer, XAMPP ou Mac Homebrew (sans mot de passe)
+# Port 3306, utilisateur 'root', mot de passe VIDE
+# spring.datasource.url=jdbc:mysql://localhost:3306/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+# spring.datasource.username=root
+# spring.datasource.password=
+
+# Option D : Pour un port MySQL personnalisé (ex: Docker sur le port 3307)
+# spring.datasource.url=jdbc:mysql://localhost:3307/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+# spring.datasource.username=root
+# spring.datasource.password=root

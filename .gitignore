@@ -6,3 +6,6 @@ target/
 .DS_Store
 Servers/
 .vscode/
+
+# Configuration locale individuelle (évite les conflits Git sur les ports et MDP)
+*application-local.properties
