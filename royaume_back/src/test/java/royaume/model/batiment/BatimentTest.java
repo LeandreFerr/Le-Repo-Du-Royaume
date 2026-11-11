@@ -30,6 +30,7 @@ class BatimentTest {
         BatimentTestable() {
             super(1, "Batiment test", 1, 50, 50, false);
         }
+        
 
         @Override
         public List<QuantiteRessource> getCoutAmelioration() {
@@ -203,5 +204,48 @@ class BatimentTest {
     	int temps= carriere.getTempsConstructionBase();
     	assertEquals(180,temps);
     	
+    }
+    
+    @Test
+    void ameliorer_AvecParametres_LanceLeChantierEtDebiteRessources() {
+        // On utilise directement 'batiment' (BatimentTestable) du setup
+        batiment.ameliorer(2, royaume);
+
+        assertTrue(batiment.isEnConstruction());
+        assertNotNull(batiment.getChantier());
+        assertEquals(1, batiment.getNiveau());
+    }
+
+    @Test
+    void ameliorer_AugmenteNiveauEtPV_ApresFinalisationChantier() {
+        // On utilise directement 'batiment' du setup
+        batiment.ameliorer(2, royaume);
+
+        ChantierConstruction chantier = batiment.getChantier();
+        LocalDateTime futur = chantier.getDateFinPrevue().plusSeconds(1);
+
+        chantier.finaliser(futur);
+
+        assertEquals(2, batiment.getNiveau());
+        assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie());
+        assertFalse(batiment.isEnConstruction());
+    }
+    @Test
+    void getRessourceManquanteAmelioration_RetourneLesRessourcesManquantes() {
+        Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
+        
+        // On vide les ressources du royaume pour être sûr qu'il manque tout
+        royaume.getRessources().clear();
+
+        List<QuantiteRessource> manquantes = carriere.getRessourceManquanteAmelioration(royaume);
+
+        // On vérifie que la liste des manquantes n'est pas vide et contient bien ce que demande la carrière
+        assertNotNull(manquantes);
+        assertFalse(manquantes.isEmpty());
+        
+        // Exemple : si la carrière demande du bois, on vérifie qu'il est bien listé dans les manquants
+        boolean contientBoisManquant = manquantes.stream()
+                .anyMatch(r -> r.getRessource() == Ressource.BOIS);
+        assertTrue(contientBoisManquant, "Le bois manquant doit être identifié");
     }
 }

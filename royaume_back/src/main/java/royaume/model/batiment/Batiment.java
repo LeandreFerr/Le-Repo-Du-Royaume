@@ -1,9 +1,11 @@
 package royaume.model.batiment;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import royaume.model.QuantiteRessource;
+import royaume.model.Ressource;
 import royaume.model.Royaume;
 
 public abstract class Batiment {
@@ -129,8 +131,7 @@ public abstract class Batiment {
         this.chantier = new ChantierConstruction(null, this, royaume,1, nbouvriersAssignes, this.getTempsConstructionBase(), false);
         this.enConstruction = true; // S'assurer que le bâtiment passe en construction pour la réparation
     }
-	
-	
+
 	
 	/*public void verifierEtFinaliserReparation() {
 	   
@@ -153,7 +154,12 @@ public abstract class Batiment {
 	
 	//______________________
 	
-	public void ameliorer() {
+	public void ameliorer(int nbouvriersAssignes, Royaume royaume) {
+		
+		
+		if (nbouvriersAssignes < 1) {
+	        throw new IllegalArgumentException("Il faut au moins 1 ouvrier pour réparer.");
+	    }
 		
 		// Si ce n'est pas le château, on vérifie qu'on ne dépasse pas le palier autorisé
 	    if (!(this instanceof Chateau)) {
@@ -162,6 +168,26 @@ public abstract class Batiment {
 	        }
 	    }
 	    
+	    //  Vérifier si le royaume a assez de ressources pour le coût d'amélioration
+	    List<QuantiteRessource> couts = getCoutAmelioration();
+	    for (QuantiteRessource cout : couts) {
+	        if (!royaume.aAssezDeRessources(cout.getRessource(), cout.getQuantite())) {
+	            throw new IllegalStateException("Ressources insuffisantes pour améliorer le bâtiment ");
+	        }
+	    }
+	    
+	    // Débiter les ressources du royaume
+	    for (QuantiteRessource cout : couts) {
+	       royaume.debiterRessources(cout.getRessource(), cout.getQuantite());
+	    }
+	    
+	    this.chantier = new ChantierConstruction(null, this, royaume,1, nbouvriersAssignes, this.getTempsConstructionBase(), true);
+        this.enConstruction = true; //
+        
+	}
+	
+        // Version qui sera appelée quand le chantier se finalise
+        public void ameliorer() {
 		// augmente le niveau et recalcule les pointsDeVieMax
 		// Si amélioration : Retrouve le max de point de vie
 		niveau++;
@@ -178,6 +204,28 @@ public abstract class Batiment {
 
 	public abstract List<QuantiteRessource> getCoutAmelioration();
 
+	public List<QuantiteRessource> getRessourceManquanteAmelioration(Royaume royaume) {
+	    List<QuantiteRessource> ressourcesManquantes = new ArrayList<>();
+	    List<QuantiteRessource> couts = getCoutAmelioration(); // Appellera la bonne version selon la fille (Mine, Carriere...)
+
+	    for (QuantiteRessource cout : couts) {
+	        Ressource ressource = cout.getRessource();
+	        int quantiteRequise = cout.getQuantite();
+
+	        int quantitePossedee = royaume.getRessources().stream()
+	                .filter(r -> r.getRessource() == ressource)
+	                .mapToInt(QuantiteRessource::getQuantite)
+	                .findFirst()
+	                .orElse(0);
+
+	        if (quantitePossedee < quantiteRequise) {
+	            int manque = quantiteRequise - quantitePossedee;
+	            ressourcesManquantes.add(new QuantiteRessource(manque, ressource));
+	        }
+	    }
+
+	    return ressourcesManquantes;
+	}
 	
 	public abstract int getTempsConstructionBase() ;
 	//  durée de base en secondes ou ticks
