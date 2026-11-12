@@ -163,12 +163,20 @@ public class PropositionEchange {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		PropositionEchange that = (PropositionEchange) o;
-		return id != null && Objects.equals(id, that.id);
+		if (id != null && that.id != null) {
+			return Objects.equals(id, that.id);
+		}
+		return Objects.equals(dateCreation, that.dateCreation)
+				&& statut == that.statut
+				&& Objects.equals(expediteur, that.expediteur)
+				&& Objects.equals(destinataire, that.destinataire)
+				&& Objects.equals(offerte, that.offerte)
+				&& Objects.equals(demandee, that.demandee);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id);
+		return (id != null) ? Objects.hashCode(id) : Objects.hash(dateCreation, statut, expediteur, destinataire, offerte, demandee);
 	}
 
 	@Override

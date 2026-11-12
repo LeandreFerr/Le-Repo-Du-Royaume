@@ -1,6 +1,7 @@
 package royaume.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -503,6 +504,22 @@ public class MarcheTest {
         assertEquals(1, marche.getOffres().size());
         assertEquals(0, autreMarche.getOffres().size(),
             "Le deuxième marché ne doit pas contenir les offres du premier (non-statique)");
+    }
+
+    @Test
+    @DisplayName("Equals et HashCode de OffreMarche respectent le contrat POJO")
+    void testEqualsEtHashCodeOffreMarche() {
+        OffreMarche o1 = new OffreMarche();
+        o1.setId(1);
+        OffreMarche o2 = new OffreMarche();
+        o2.setId(1);
+        OffreMarche o3 = new OffreMarche();
+        o3.setId(2);
+
+        assertEquals(o1, o2);
+        assertEquals(o1.hashCode(), o2.hashCode());
+        assertNotEquals(o1, o3);
+        assertNotNull(o1.toString());
     }
 
     private int getStock(Royaume royaume, Ressource ressource) {
