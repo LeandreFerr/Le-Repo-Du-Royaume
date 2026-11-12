@@ -230,6 +230,7 @@ class BatimentTest {
         assertEquals(batiment.getPointsDeVieMax(), batiment.getPointsDeVie());
         assertFalse(batiment.isEnConstruction());
     }
+    
     @Test
     void getRessourceManquanteAmelioration_RetourneLesRessourcesManquantes() {
         Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);

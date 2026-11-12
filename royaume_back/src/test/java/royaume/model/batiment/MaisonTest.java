@@ -20,35 +20,12 @@ class MaisonTest {
 
     @BeforeEach
     void setUp() {
-        maison = new Maison(
-            1,
-            "Maison paysanne",
-            1,
-            50,
-            50,
-            false,
-            10,
-            0.3
-        );
-    }
+    	
+    	Maison.setBonusCroissance(0.0);
+    	maison = new Maison(1,"Maison paysanne", 1,50,50,false);
+    	
+    	}
 
-    @Test
-    void getCapaciteLogement_RetourneCapaciteDeBase() {
-
-        assertEquals(10, maison.getCapaciteLogement());
-    }
-
-    @Test
-    void getCapaciteLogement_AugmenteAvecLeNiveau() {
-
-        maison.ameliorer();
-
-        assertEquals(20, maison.getCapaciteLogement());
-
-        maison.ameliorer();
-
-        assertEquals(30, maison.getCapaciteLogement());
-    }
     
     @Test
     void getCoutAmelioration_NiveauSuivant_RetourneLesCoutsDeLaConfiguration() {
@@ -76,4 +53,19 @@ class MaisonTest {
         assertTrue(couts.isEmpty(), "Il ne doit pas y avoir de coût au-delà du niveau max");
     }
     
+    @Test
+    void testBonusCroissanceSAdditionneAvecPlusieursMaisons() {
+    	
+    	//On a déjà une maison dans le set up donc on doit être à 0.12
+    	// 0,0001 permet d'éviter les faux échecs liés aux arrondis
+    	assertEquals(0.12,Maison.getBonusCroissance(), 0.0001);
+    	
+    	// 2. Création d'une deuxième maison 
+        new Maison(2, "Maison paysanne 2", 1, 50, 50, false);
+        assertEquals(0.24, Maison.getBonusCroissance(), 0.0001);
+
+        // 3. Création d'une troisième maison 
+        new Maison(3, "Maison bourgeoise", 1, 100, 100, false);
+        assertEquals(0.36, Maison.getBonusCroissance(), 0.0001);
+    }
 }

@@ -26,17 +26,7 @@ class ChateauTest {
 
     @BeforeEach
     void setUp() {
-        chateau = new Chateau(
-        	1,
-            "Chateau",
-            1,
-            50,
-            50,
-            false
-        );
-        
-        maison = new Maison(2, "Maison Test", 1, 100, 100, false, 5, 1.0);
-        
+    	
       	List<QuantiteRessource> ressources = List.of(
     			new QuantiteRessource(10000, Ressource.OR),
     			new QuantiteRessource(10000, Ressource.PIERRE),
@@ -46,6 +36,12 @@ class ChateauTest {
 
     	royaume = new Royaume(1, "FarFarAway", 1, 500, 500, 200, 100, false, ressources);
         
+    	chateau = royaume.getChateau();
+    	chateau.debloquerPalier();
+    	
+    	Maison.setBonusCroissance(0.0);
+    	maison = new Maison(2, "Maison Test", 1, 100, 100, false);
+    	
  
     }
 
@@ -88,7 +84,7 @@ class ChateauTest {
     @Test
     void testInterdictionDepasserPalierChateau() {
     	Exception exception = assertThrows(IllegalStateException.class, () -> {
-            maison.ameliorer();
+            maison.ameliorer(1,royaume);
         });
 
         assertEquals("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.", exception.getMessage());
@@ -98,10 +94,11 @@ class ChateauTest {
     void testAmeliorerBatimentApresAmeliorationChateau() {
     
         chateau.ameliorer(); 
+        chateau.debloquerPalier();
         assertDoesNotThrow(() -> {
-            maison.ameliorer();
+            maison.ameliorer(1,royaume);
         });
-
+        maison.ameliorer();
        
         assertEquals(2, maison.getNiveau());
 

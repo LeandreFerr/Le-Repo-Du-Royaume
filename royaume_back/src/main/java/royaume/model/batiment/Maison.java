@@ -6,28 +6,39 @@ import royaume.model.QuantiteRessource;
 
 public class Maison extends Batiment {
 
-    private int capaciteLogement;
-    private double bonusCroissance = 0.12; // ex: taux de croissance de la pop augmente ?
-
     
+    private static double bonusCroissance = 0.0; // ex: taux de croissance de la pop augmente ?
+
     
     // Constructeur en privée, dans le package, car on ne doit passer que par Factory !
     
      Maison(Integer id, String nom, int niveau,
-            int pv, int pvMax, boolean construction,
-            int capaciteLogement, double bonusCroissance) {
+            int pv, int pvMax, boolean construction) {
 
         super(id, nom, niveau, pv, pvMax, construction);
-        this.capaciteLogement = capaciteLogement;
-        this.bonusCroissance = bonusCroissance;
+       
+        Maison.bonusCroissance += 0.12;
     }
+     
+     
 
-    public int getCapaciteLogement() {   // bonus croissance augmente avec le niveau // A MODIF ?
-    	
-        return capaciteLogement * niveau;
-    }
 
-    @Override
+    public static double getBonusCroissance() {
+
+    	return bonusCroissance;
+	}
+
+
+
+
+	 public static void setBonusCroissance(double bonusCroissance) {
+		 Maison.bonusCroissance = bonusCroissance;
+	 }
+
+
+
+
+	@Override
     public List<QuantiteRessource> getCoutAmelioration() {
     	
     	int niveauSuivant = getNiveau() + 1;

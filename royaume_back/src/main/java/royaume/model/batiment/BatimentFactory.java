@@ -29,7 +29,7 @@ public class BatimentFactory {
 
         Maison maison = new Maison(
             id, nom, 1, 200, 200, true, // enConstruction
-            capaciteLogement, bonusCroissance
+             bonusCroissance
         );
 
         royaume.ajouterBatiment(maison);
