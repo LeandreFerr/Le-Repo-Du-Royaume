@@ -181,11 +181,13 @@ public abstract class Batiment {
 	    }
 		
 		// Si ce n'est pas le château, on vérifie qu'on ne dépasse pas le palier autorisé
-	    if (!(this instanceof Chateau)) {
-	        if (this.niveau >= Chateau.getNiveauPalierDebloque()) {
-	            throw new IllegalStateException("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.");
-	        }
-	    }
+		if (!(this instanceof Chateau)
+		        && niveau >= royaume.getChateau().getNiveauPalierDebloque()) {
+
+		    throw new IllegalStateException(
+		        "Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château."
+		    );
+		}
 	    
 	    //  Vérifier si le royaume a assez de ressources pour le coût d'amélioration
 	    List<QuantiteRessource> couts = getCoutAmelioration();
@@ -208,14 +210,32 @@ public abstract class Batiment {
 	/// 
     /// // Version qui sera appelée quand le chantier se finalise
 	
-        public void ameliorer() {
-		// augmente le niveau et recalcule les pointsDeVieMax
-		// Si amélioration : Retrouve le max de point de vie
-        	
-		niveau++;
-        pointsDeVieMax = calculerPointsDeVieMax();
-        pointsDeVie = pointsDeVieMax;
+	public void ameliorer(Royaume royaume) {
+
+	    if (royaume == null) {
+	        throw new IllegalArgumentException(
+	            "Le royaume ne peut pas être null."
+	        );
 	    }
+
+	    if (!(this instanceof Chateau)
+	            && niveau >= royaume.getChateau().getNiveauPalierDebloque()) {
+
+	        throw new IllegalStateException(
+	            "Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château."
+	        );
+	    }
+
+	    niveau++;
+
+	    pointsDeVieMax = calculerPointsDeVieMax();
+	    pointsDeVie = pointsDeVieMax;
+	}
+	
+	// Celui la est spécifique au chateau pour Override
+	public void ameliorer() {
+	    }
+	
 	
 	
 	protected int calculerPointsDeVieMax() {

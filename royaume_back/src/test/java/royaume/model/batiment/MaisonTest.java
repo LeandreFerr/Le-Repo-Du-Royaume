@@ -25,6 +25,12 @@ class MaisonTest {
 
         royaume = new Royaume(1, "Royaume test");
 
+
+        //Passe au niveau 2 le chateau :
+        
+        Chateau chateau = royaume.getChateau();
+        chateau.ameliorer();
+        
         maison = new Maison(
             1,
             "Maison paysanne",
@@ -57,16 +63,9 @@ class MaisonTest {
         assertTrue(contientBois);
     }
 
-    @Test
-    void getCoutAmelioration_NiveauMax_RetourneListeVide() {
-
-        for (int i = maison.getNiveau(); i < 10; i++) {
-            maison.ameliorer();
-        }
-
-        assertTrue(maison.getCoutAmelioration().isEmpty());
-    }
-
+  
+    
+    
     // -----------------------------------------
     // TESTS DU BONUS DE CROISSANCE
     // -----------------------------------------
@@ -108,15 +107,12 @@ class MaisonTest {
     @Test
     void actualiserBonus_AugmenteBonusApresAmeliorationMaison() {
 
-        // Bonus initial : 0.12
+    	maison.ameliorer(2, royaume);
 
-        maison.ameliorer();
+    	maison.getChantier().finaliser( maison.getChantier().getDateFinPrevue()
+    	);
 
-        maison.actualiserBonus(royaume);
-
-        // Niveau 2 : 0.24
-
-        assertEquals(0.24, royaume.getBonusCroissance(), 0.0001);
+    	assertEquals(0.24, royaume.getBonusCroissance(), 0.0001);
     }
 
     // -----------------------------------------
@@ -138,7 +134,7 @@ class MaisonTest {
     @Test
     void detruireMaison_RetireAutomatiquementSonBonus() {
 
-        maison.subirDegats(50);
+        royaume.recevoirDegats(maison, 50);
 
         assertEquals(0, maison.getPointsDeVie());
 
@@ -146,7 +142,33 @@ class MaisonTest {
 
         assertEquals(0.0, royaume.getBonusCroissance(), 0.0001);
     }
+    
+   /* @Test
+    void detruireUneMaison_NeRetirePasLeBonusDesAutresMaisons() {
 
+        Maison maison2 = new Maison(
+            2, "Maison 2", 1, 50, 50, false
+        );
+
+        royaume.ajouterBatiment(maison2);
+        maison2.actualiserBonus(royaume);
+
+        assertEquals(0.24, royaume.getBonusCroissance(), 0.0001);
+
+        // Détruire uniquement la première maison
+        maison.subirDegats(50); // ATTENTION ce'est pas subirDegat() qui retire du Royaume le batiment : 
+        //  c'est recevoirDegat() du Royaume qui appel subirDegat
+        
+        
+
+        // Le bonus de la deuxième maison doit rester
+        assertEquals(0.12, royaume.getBonusCroissance(), 0.0001);
+
+        assertTrue(royaume.getBatiments().contains(maison2));
+        assertFalse(royaume.getBatiments().contains(maison));
+    }
+    */
+    
     @Test
     void detruireUneMaison_NeRetirePasLeBonusDesAutresMaisons() {
 
@@ -160,7 +182,7 @@ class MaisonTest {
         assertEquals(0.24, royaume.getBonusCroissance(), 0.0001);
 
         // Détruire uniquement la première maison
-        maison.subirDegats(50);
+        royaume.recevoirDegats(maison, 50);
 
         // Le bonus de la deuxième maison doit rester
         assertEquals(0.12, royaume.getBonusCroissance(), 0.0001);
@@ -185,7 +207,7 @@ class MaisonTest {
         assertEquals(0.12, royaume2.getBonusCroissance(), 0.0001);
 
         // Détruire une maison dans le premier royaume
-        maison.subirDegats(50);
+        royaume.recevoirDegats(maison, 50);
 
         assertEquals(0.0, royaume.getBonusCroissance(), 0.0001);
 

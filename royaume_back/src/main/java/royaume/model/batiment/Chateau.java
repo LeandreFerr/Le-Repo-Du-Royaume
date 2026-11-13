@@ -6,7 +6,7 @@ import royaume.model.QuantiteRessource;
 
 public class Chateau extends Batiment{
 	
-	private static int niveauPalierDebloque;
+	private int niveauPalierDebloque;
 	private double bonusDefenseRoyaume;
 	
 	
@@ -30,14 +30,14 @@ public class Chateau extends Batiment{
 
 
 	
-	public static int getNiveauPalierDebloque() {
+	public int getNiveauPalierDebloque() {
 		return niveauPalierDebloque;
 	}
 
 
 
-	public static void setNiveauPalierDebloque(int niveauPalierDebloque) {
-		Chateau.niveauPalierDebloque = niveauPalierDebloque;
+	public void setNiveauPalierDebloque(int niveauPalierDebloque) {
+	    this.niveauPalierDebloque = niveauPalierDebloque;
 	}
 
 

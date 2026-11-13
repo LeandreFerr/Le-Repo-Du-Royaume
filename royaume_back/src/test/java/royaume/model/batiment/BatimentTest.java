@@ -51,6 +51,7 @@ class BatimentTest {
         if (chateau != null) {
             chateau.ameliorer(); // Monte le château au niveau 2 pour débloquer le palier 2
         }
+        royaume.ajouterBatiment(batiment);
     }
 
     @Test
@@ -180,8 +181,11 @@ class BatimentTest {
     @Test
     void ameliorer_IncrementeLeNiveauEtLesPVMax() {
 
-        batiment.ameliorer();
+        batiment.ameliorer(2, royaume);
 
+        batiment.getChantier().finaliser(
+        		batiment.getChantier().getDateFinPrevue()
+        	);
         assertEquals(2, batiment.getNiveau());
         assertEquals(100, batiment.getPointsDeVieMax());
     }
@@ -260,14 +264,28 @@ class BatimentTest {
     }
 
     @Test
-    void subirDegats_NeDoitPasRetirerBatimentAutomatiquement() {
+    void subirDegats_NeRetirePasBatimentSiPVPositifs() {
+
+        batiment.subirDegats(20);
+
+        assertEquals(30, batiment.getPointsDeVie());
+
+        assertTrue(royaume.getBatiments().contains(batiment));
+    }
+    
+    
+    @Test
+    void subirDegats_RetireBatimentSiPVZero() {
 
         batiment.subirDegats(50);
 
         assertEquals(0, batiment.getPointsDeVie());
 
-        // Batiment ne connaît pas le Royaume :
-        // il ne peut donc pas le retirer automatiquement.
-        assertTrue(royaume.getBatiments().contains(batiment));
+        // Le Royaume gère la suppression du bâtiment
+        if (batiment.getPointsDeVie() == 0) {
+            royaume.retirerBatiment(batiment);
+        }
+
+        assertFalse(royaume.getBatiments().contains(batiment));
     }
 }

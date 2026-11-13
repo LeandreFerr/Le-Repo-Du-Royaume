@@ -98,13 +98,13 @@ class ChateauTest {
         assertDoesNotThrow(() -> {
             maison.ameliorer(1,royaume);
         });
-        maison.ameliorer();
+        maison.ameliorer(royaume);
        
         assertEquals(2, maison.getNiveau());
 
         
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            maison.ameliorer();
+            maison.ameliorer(royaume);
         });
 
         assertEquals("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.", exception.getMessage());
@@ -123,7 +123,7 @@ class ChateauTest {
         }
 
         assertEquals(royaume.getNiveau(), royaume.getChateau().getNiveau());
-        assertEquals(royaume.getNiveau(), Chateau.getNiveauPalierDebloque());
+        assertEquals(royaume.getNiveau(), royaume.getChateau().getNiveauPalierDebloque());
     }
     
     @Test

@@ -7,8 +7,9 @@ import royaume.model.Royaume;
 
 public class Maison extends Batiment {
 
-    
-    //private static double bonusCroissance = 0.0; // Le bonus global -> déplacer vers Royaume sinon c'est commun a tout les royaumes
+ // Le bonus global -> déplacer vers Royaume + pas en static :  sinon c'est commun a tout les royaumes
+    //private static double bonusCroissance = 0.0;  
+	
     private double bonusPropre =0.0;
     
     // Constructeur en privée, dans le package, car on ne doit passer que par Factory !

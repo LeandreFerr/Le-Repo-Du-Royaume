@@ -250,7 +250,8 @@ public class ChantierConstruction {
         // Si c'est une amélioration, augmenter le niveau : 
         
         if (amelioration) {
-            batiment.ameliorer();
+            batiment.ameliorer(this.getRoyaume());
+            
         }
         
         else {

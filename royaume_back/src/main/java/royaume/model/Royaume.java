@@ -133,6 +133,9 @@ public class Royaume {
 	
 	// ICI Pour Gérer la croissance de la pop à voir  tout les combien de temps ont MAJ le site :
 	
+	
+	// TAUX DE BASE peut etre à enlever ? 
+	
 	public void appliquerCroissance(double tauxBase) {
 
 	    double tauxTotal = tauxBase + bonusCroissance;
@@ -307,12 +310,10 @@ public class Royaume {
 	        .findFirst()
 	        .orElse(null);
 	}
-
 	
 	// Permet de cibler par ID ! 
 	
 	// Exemple :  Maison maison = royaume.getBatimentParId(2);
-
     // royaume.recevoirDegats(maison, 200);
 
 	
@@ -326,7 +327,8 @@ public class Royaume {
 	
 	    batiment.subirDegats(degats);
 	
-	    // Si le bâtiment est détruit, le royaume le retire.
+	    // Si le bâtiment est détruit, le royaume le retire.  // au lieu de detruire()
+	    
 	    if (batiment.getPointsDeVie() == 0) {
 	        retirerBatiment(batiment);
 	    }
