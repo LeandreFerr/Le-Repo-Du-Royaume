@@ -276,7 +276,10 @@ public class ChantierConstruction {
       
         
         batiment.setEnConstruction(false);    // --> Simili :  termine = true;
-    }
+        if (batiment instanceof Maison maison) {
+            maison.actualiserBonus(royaume);
+        }
+        }
     
     // ---------------- GETTERS / SETTERS ----------------
 

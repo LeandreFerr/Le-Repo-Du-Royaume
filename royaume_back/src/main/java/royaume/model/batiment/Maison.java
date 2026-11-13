@@ -3,12 +3,13 @@ import java.util.List;
 
 import royaume.config.ConfigurationPalliersBatiment;
 import royaume.model.QuantiteRessource;
+import royaume.model.Royaume;
 
 public class Maison extends Batiment {
 
     
-    private static double bonusCroissance = 0.0; // ex: taux de croissance de la pop augmente ?
-
+    //private static double bonusCroissance = 0.0; // Le bonus global -> déplacer vers Royaume sinon c'est commun a tout les royaumes
+    private double bonusPropre =0.0;
     
     // Constructeur en privée, dans le package, car on ne doit passer que par Factory !
     
@@ -17,24 +18,54 @@ public class Maison extends Batiment {
 
         super(id, nom, niveau, pv, pvMax, construction);
        
-        Maison.bonusCroissance += 0.12;
+       // Maison.bonusCroissance += 0.12;  -> avec retirerBonus et ajouterBonus pour si maison detruite
     }
      
      
+     /////////////////////  A faire à chaque fois que la maison change de niveau + a la creation
+    
+     public void actualiserBonus(Royaume royaume) {
+
+    	    if (royaume == null) {
+    	        throw new IllegalArgumentException("Royaume null");
+    	    }
+
+    	    double nouveauBonus = 0.0;
+
+    	    if (estOperationnel()) {
+    	        nouveauBonus = calculerBonusPropre();
+    	    }
+
+    	    // Retirer l'ancien bonus de CE royaume
+    	    
+    	    royaume.retirerBonusCroissance(this.bonusPropre);
+
+    	    // Mémoriser le nouveau bonus propre à cette maison
+    	    
+    	    this.bonusPropre = nouveauBonus;
+
+    	    // Ajouter le nouveau bonus à CE royaume
+    	    
+    	    royaume.ajouterBonusCroissance(this.bonusPropre);
+    	}
+
+     /////////////////////
+
+     public double calculerBonusPropre() {
+    	    return 0.12 * getNiveau();
+    	}
+
+    
+     public double getBonusPropre() {
+    	    return bonusPropre;
+    	}
+     
+   
 
 
-    public static double getBonusCroissance() {
-
-    	return bonusCroissance;
-	}
 
 
-
-
-	 public static void setBonusCroissance(double bonusCroissance) {
-		 Maison.bonusCroissance = bonusCroissance;
-	 }
-
+	
 
 
 

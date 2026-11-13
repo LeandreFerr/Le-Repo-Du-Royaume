@@ -1,6 +1,5 @@
 package royaume.model.batiment;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,16 +101,36 @@ public abstract class Batiment {
 	
 	
 
+
 	public void subirDegats(int degats) {
-		
-		// diminue les points de vie sans descendre sous 0 :
-		
-		if (degats < 0) {
-            throw new IllegalArgumentException("Dégâts négatifs interdits");
-        }
-        pointsDeVie = Math.max(0, pointsDeVie - degats);
-	}
 	
+	    if (degats < 0) {
+	        throw new IllegalArgumentException(
+	            "Dégâts négatifs interdits"
+	        );
+	    }
+	
+	    pointsDeVie = Math.max(0, pointsDeVie - degats);
+	}
+
+	
+	/*   MIGRATION vers le Royaume 
+	 * 
+	 * Parceque le Royaume connais ses batiments VS le batiment ne connais pas son Royaume
+	 * 
+	 * 
+	 * public void detruire(Royaume royaume) {
+
+	    if (royaume == null) {
+	        throw new IllegalArgumentException("Le royaume ne peut pas être null");
+	    }
+
+	    royaume.retirerBatiment(this);
+	}*/
+	
+	
+	//___________________________________
+
 	 // Attention la fonction reparer va avec la fonction verifierEtFinaliserReparation
 	// Ne pas mélanger avec fonction construire un bâtiment ! 
 	
@@ -185,11 +204,14 @@ public abstract class Batiment {
         this.enConstruction = true; //
         
 	}
+	//////////////////////////////////////////////
+	/// 
+    /// // Version qui sera appelée quand le chantier se finalise
 	
-        // Version qui sera appelée quand le chantier se finalise
         public void ameliorer() {
 		// augmente le niveau et recalcule les pointsDeVieMax
 		// Si amélioration : Retrouve le max de point de vie
+        	
 		niveau++;
         pointsDeVieMax = calculerPointsDeVieMax();
         pointsDeVie = pointsDeVieMax;

@@ -39,7 +39,7 @@ class ChateauTest {
     	chateau = royaume.getChateau();
     	chateau.debloquerPalier();
     	
-    	Maison.setBonusCroissance(0.0);
+    	//Maison.setBonusCroissance(0.0); Maintenant le bonus Global est géré par Royaume direct
     	maison = new Maison(2, "Maison Test", 1, 100, 100, false);
     	
  

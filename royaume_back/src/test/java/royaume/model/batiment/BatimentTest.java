@@ -249,4 +249,25 @@ class BatimentTest {
                 .anyMatch(r -> r.getRessource() == Ressource.BOIS);
         assertTrue(contientBoisManquant, "Le bois manquant doit être identifié");
     }
+    @Test
+    void retirerBatiment_RetireBatimentDeLaListeDuRoyaume() {
+
+        assertTrue(royaume.getBatiments().contains(batiment));
+
+        royaume.retirerBatiment(batiment);
+
+        assertFalse(royaume.getBatiments().contains(batiment));
+    }
+
+    @Test
+    void subirDegats_NeDoitPasRetirerBatimentAutomatiquement() {
+
+        batiment.subirDegats(50);
+
+        assertEquals(0, batiment.getPointsDeVie());
+
+        // Batiment ne connaît pas le Royaume :
+        // il ne peut donc pas le retirer automatiquement.
+        assertTrue(royaume.getBatiments().contains(batiment));
+    }
 }

@@ -8,6 +8,7 @@ import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
+import royaume.model.batiment.Maison;
 
 public class Royaume {
 
@@ -19,6 +20,7 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
+	private double bonusCroissance = 0.0;
 
 	
 	// Ressources automatiquement offerte à la création du Royaume (niveau1, début de partie) :
@@ -128,9 +130,28 @@ public class Royaume {
 		return true;
 	}
 
-	public void appliquerCroissance(double taux) {
-		// A voir si on l'utilise étant donné qu'on a le bâtiment "maison"
-		populationDisponible = (int) Math.round(populationDisponible * (1 + taux));
+	
+	// ICI Pour Gérer la croissance de la pop à voir  tout les combien de temps ont MAJ le site :
+	
+	public void appliquerCroissance(double tauxBase) {
+
+	    double tauxTotal = tauxBase + bonusCroissance;
+
+	    populationDisponible = (int) Math.round(
+	        populationDisponible * (1 + tauxTotal)
+	    );
+	}
+	
+	public double getBonusCroissance() {
+	    return bonusCroissance;
+	}
+
+	public void ajouterBonusCroissance(double bonus) {
+	    bonusCroissance += bonus;
+	}
+
+	public void retirerBonusCroissance(double bonus) {
+	    bonusCroissance = Math.max(0.0, bonusCroissance - bonus);
 	}
 
 	
@@ -235,7 +256,32 @@ public class Royaume {
 	    batiments.add(batiment);
 	}
 	
+	
+	public void retirerBatiment(Batiment batiment) {
 
+	    if (batiment == null) {
+	        return;
+	    }
+
+	    // Si c'est le château, le royaume passe en ruine 
+	    //        + chateau à 0pv + reste toujours dans la liste (juste il est en ruine): 
+	    
+	    if (batiment instanceof Chateau) {
+	        this.enRuine = true;
+	        return;
+	    }
+
+	    // Si c'est une maison, retirer son bonusPropre du bonus global  :
+	    
+	    if (batiment instanceof Maison maison) {
+	        retirerBonusCroissance(maison.getBonusPropre());
+	    }
+
+	    
+	    batiments.remove(batiment);
+	}
+	
+	
 	public boolean estEnRuine() {
 		Chateau chateau = getChateau();
 		if (chateau.getPointsDeVie()==0) {
@@ -243,6 +289,50 @@ public class Royaume {
 		}
 		return this.enRuine;
 	}
+	
+	
+	// Pour supprimer le batiment via Id donné (exemple tel ou tel maison)
+	
+	/*
+	 Batiment batiment = royaume.getBatimentParId(2);
+	if (batiment != null) {
+	    batiment.subirDegats(200, royaume);
+	}
+	*/
+	
+	public Batiment getBatimentParId(Integer id) {
+
+	    return batiments.stream()
+	        .filter(b -> b.getId().equals(id))
+	        .findFirst()
+	        .orElse(null);
+	}
+
+	
+	// Permet de cibler par ID ! 
+	
+	// Exemple :  Maison maison = royaume.getBatimentParId(2);
+
+    // royaume.recevoirDegats(maison, 200);
+
+	
+	public void recevoirDegats(Batiment batiment, int degats) {
+	
+	    if (batiment == null || !batiments.contains(batiment)) {
+	        throw new IllegalArgumentException(
+	            "Ce bâtiment n'appartient pas à ce royaume."
+	        );
+	    }
+	
+	    batiment.subirDegats(degats);
+	
+	    // Si le bâtiment est détruit, le royaume le retire.
+	    if (batiment.getPointsDeVie() == 0) {
+	        retirerBatiment(batiment);
+	    }
+	}
+
+	
 	// ---------------- GESTION DES OUVRIERS ----------------
 
 	public void affecterOuvriers(int nombre) {
