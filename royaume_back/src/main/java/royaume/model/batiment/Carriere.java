@@ -48,4 +48,8 @@ public class Carriere extends BatimentProduction {
     public int getTempsConstructionBase() {
         return 180;
     }
+    
+    public int getProductionPierreHeure() {
+        return productionPierreHeure;
+    }
 }

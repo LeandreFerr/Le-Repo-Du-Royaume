@@ -47,4 +47,8 @@ public class Mine extends BatimentProduction {
     public int getTempsConstructionBase() {
         return 180;
     }
+    
+    public int getProductionOrHeure() {
+        return productionOrHeure;
+    }
 }
