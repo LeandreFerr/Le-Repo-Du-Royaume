@@ -5,6 +5,14 @@ import java.util.List;
 import royaume.config.ConfigurationPalliersBatiment;
 import royaume.model.QuantiteRessource;
 
+/*
+ * [REVIEW TICKET 1] Voir le commentaire détaillé dans BatimentProduction.java :
+ * Selon le nouvel UML (suite à la réunion pour le valider avec Jordan), 
+ * cette classe peut être supprimée au profit d'une classe
+ * BatimentProduction concrète 
+ * (ce qui corrige aussi le bug `typeRessource == null`
+ * causé par l'appel à super(...) sans Ressource.NOURRITURE).
+ */
 public class Taverne extends BatimentProduction {
 
     private int productionNourritureHeure = 50;

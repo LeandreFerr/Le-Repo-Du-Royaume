@@ -24,7 +24,6 @@ public class Maison extends Batiment {
      
      
      /////////////////////  A faire à chaque fois que la maison change de niveau + a la creation
-    
      public void actualiserBonus(Royaume royaume) {
 
     	    if (royaume == null) {
@@ -70,6 +69,11 @@ public class Maison extends Batiment {
 
 
 
+	/*
+	 * [REVIEW TICKET 1 - Réponse question Trello]
+	 * Renvoyer `List.of()` quand le bâtiment est déjà au niveau max (10) et bloquer
+	 * avec une exception dans ameliorer() c'est nickel, on laisse tel quel !
+	 */
 	@Override
     public List<QuantiteRessource> getCoutAmelioration() {
     	
@@ -85,6 +89,14 @@ public class Maison extends Batiment {
          return List.of();
     }
 
+    /*
+    * [REVIEW TICKET 1 - Réponse question Trello]
+    * Pour le temps de construction (fixe vs évolutif selon le niveau) :
+    * Laisser le temps fixe c'est plus simple à mettre en place,
+    * mais le faire évoluer avec le niveau (ex: 120 * niveau ou un truc du genre), 
+    * c'est ce qu'on voit en général dans les jeux du style. Vous pouvez faire 
+    * comme vous le sentez en vrai.
+    */
     @Override
     public int getTempsConstructionBase() {
         return 120;

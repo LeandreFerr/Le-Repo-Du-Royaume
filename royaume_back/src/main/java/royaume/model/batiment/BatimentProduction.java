@@ -3,6 +3,38 @@ package royaume.model.batiment;
 import royaume.model.Ressource;
 
 
+/*
+ * ============================================================================
+ * [REVIEW TICKET 1 - Arbre des bâtiments]
+ * ============================================================================
+ * Déjà je tiens à dire que vous avez hyper bien bossé
+ *
+ * 1) Note UML (my bad) :
+ *    Vous aviez l'ancienne version de l'UML, je n'avais pas dû vous envoyer
+ *    la nouvelle version ! Sur le nouvel UML, BatimentProduction est une classe
+ *    CONCRÈTE (pas abstract), et il n'y a plus les 4 sous-classes Mine, Carriere,
+ *    Scierie et Taverne (qui dupliquent quasiment le même code).
+ *    Je l'avais modifié suite à la réunion avec Jordan pour valider le diagramme.
+ *
+ * 2) Bug actuel causé par les 4 sous-classes :
+ *    Mine, Carriere, Scierie et Taverne appellent le constructeur à 6 paramètres
+ *    `super(id, nom, niveau, pv, pvMax, construction)` qui laisse `typeRessource = null`.
+ *    Du coup, dans Royaume.ajouterBatiment(), le test :
+ *      `b.getTypeRessource() == production.getTypeRessource()`
+ *    compare `null == null` (true) et EMPÊCHE de construire une Carrière/Scierie/Taverne
+ *    si le royaume possède déjà une Mine !
+ *
+ * 3) A corriger (alignement nouvel UML) :
+ *    - Rendre BatimentProduction concrète (retirer `abstract`) et supprimer le
+ *      constructeur à 6 paramètres pour obliger à renseigner `typeRessource` et
+ *      `productionBaseHeure`.
+ *    - Déplacer getCoutAmelioration() et getTempsConstructionBase() (180s)
+ *      directement ici dans BatimentProduction.
+ *    - Supprimer Mine.java, Carriere.java, Scierie.java et Taverne.java
+ *      (ce sera en plus beaucoup plus simple à mapper en JPA juste après !).
+ * 
+ * ============================================================================
+ */
 public abstract class BatimentProduction extends Batiment{
 
 	

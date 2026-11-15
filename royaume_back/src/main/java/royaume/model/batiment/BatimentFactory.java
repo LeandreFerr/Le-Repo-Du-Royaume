@@ -2,6 +2,11 @@ package royaume.model.batiment;
 
 import royaume.model.Royaume;
 
+/*
+ * [REVIEW TICKET 1] Super idée de centraliser la création des bâtiments
+ * dans BatimentFactory avec des constructeurs au niveau du package et 
+ * l'ajout automatique au Royaume !
+ */
 public class BatimentFactory {
 
     private BatimentFactory() {
@@ -19,6 +24,12 @@ public class BatimentFactory {
     }
     
     
+    /*
+     * [REVIEW TICKET 1] On peut retirer les paramètres `int capaciteLogement` et
+     * `double bonusCroissance` de cette signature : ils ne sont plus utilisés dans
+     * la méthode (on retire capaciteLogement -> la Maison agit comme un générateur 
+     * de population, et le bonus est déjà calculé par niveau).
+     */
     public static Maison creerMaison(
             Royaume royaume,
             Integer id,
@@ -86,6 +97,14 @@ public class BatimentFactory {
     
     ////////////////////////////////////
 
+    /*
+     * [REVIEW TICKET 1] Avec BatimentProduction concret (cf. BatimentProduction.java),
+     * vous pouvez soit utiliser une méthode unique creerBatimentProduction(..., Ressource typeRessource, ...),
+     * soit garder creerMine/creerCarriere/creerScierie/creerTaverne en leur faisant
+     * instancier et retourner un `new BatimentProduction(..., Ressource.OR, ...)`
+     * Mais pour plus de modularité, j'ai une préférence pour la méthode creerBatimentProduction
+     * (sans oublier de bien passer la Ressource correspondante pour corriger le bug null !).
+     */
     public static Mine creerMine(
             Royaume royaume,
             Integer id,

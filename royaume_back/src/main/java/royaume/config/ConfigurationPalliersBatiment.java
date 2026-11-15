@@ -26,6 +26,13 @@ public final class ConfigurationPalliersBatiment {
     private ConfigurationPalliersBatiment() {
     }
 
+    /*
+     * [REVIEW TICKET 1] Table des coûts très propre !
+     * Si vous fusionnez Mine/Carriere/Scierie/Taverne dans un BatimentProduction
+     * concret (cf. BatimentProduction.java), vous pourrez indexer ces mêmes paliers
+     * directement par Ressource (Ressource.OR, Ressource.PIERRE, Ressource.BOIS,
+     * Ressource.NOURRITURE) tout en conservant exactement vos valeurs d'équilibrage.
+     */
     private static final Map<Class<? extends Batiment>, List<PallierBatiment>> PALIERS =
         Map.of(
 
