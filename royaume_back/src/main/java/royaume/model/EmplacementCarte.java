@@ -55,6 +55,12 @@ public class EmplacementCarte {
                     "L'emplacement " + numero + " est déjà occupé.");
         }
 
+        if (royaume.getEmplacement() != null) {
+            throw new IllegalStateException(
+                    "Le royaume est déjà placé sur l'emplacement "
+                            + royaume.getEmplacement().getNumero() + ".");
+        }
+
         this.royaume = royaume;
         this.occupe = true;
         royaume.setEmplacement(this);

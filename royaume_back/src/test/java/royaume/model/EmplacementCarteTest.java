@@ -164,6 +164,27 @@ public class EmplacementCarteTest {
         assertSame(royaume, emplacement.getRoyaume());
     }
 
+    @Test
+    void modifierLaCarteDUnEmplacementOccupeNeDoitPasDetacherLeRoyaume() {
+        emplacement.assignerRoyaume(royaume);
+
+        Carte autreCarte = new Carte();
+        emplacement.setCarte(autreCarte);
+
+        assertAll(
+                () -> assertSame(
+                        autreCarte,
+                        emplacement.getCarte()),
+                () -> assertTrue(
+                        emplacement.isOccupe()),
+                () -> assertSame(
+                        royaume,
+                        emplacement.getRoyaume()),
+                () -> assertSame(
+                        emplacement,
+                        royaume.getEmplacement()));
+    }
+
     // =====================================================================
     // Assignation d'un royaume
     // =====================================================================
@@ -239,6 +260,24 @@ public class EmplacementCarteTest {
 
         assertSame(royaume, emplacement.getRoyaume());
         assertSame(emplacement, royaume.getEmplacement());
+    }
+
+    @Test
+    void assignerUnRoyaumeDejaPlaceSurUnAutreEmplacementDoitLeverUneException() {
+        EmplacementCarte autreEmplacement = new EmplacementCarte(2, 75, 50, carte);
+        autreEmplacement.assignerRoyaume(royaume);
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> emplacement.assignerRoyaume(royaume));
+
+        assertEquals(
+                "Le royaume est déjà placé sur l'emplacement 2.",
+                exception.getMessage());
+
+        assertFalse(emplacement.isOccupe());
+        assertNull(emplacement.getRoyaume());
+        assertSame(autreEmplacement, royaume.getEmplacement());
     }
 
     @Test
@@ -337,6 +376,31 @@ public class EmplacementCarteTest {
     }
 
     @Test
+    void libererDoitConserverLIdDeLEmplacement() {
+        EmplacementCarte persistant = new EmplacementCarte(
+                42,
+                1,
+                25,
+                50,
+                false,
+                carte);
+
+        persistant.assignerRoyaume(royaume);
+        persistant.liberer();
+
+        assertAll(
+                () -> assertEquals(
+                        42,
+                        persistant.getId()),
+                () -> assertFalse(
+                        persistant.isOccupe()),
+                () -> assertNull(
+                        persistant.getRoyaume()),
+                () -> assertNull(
+                        royaume.getEmplacement()));
+    }
+
+    @Test
     void apresLiberationLEmplacementDoitPouvoirAccueillirUnNouveauRoyaume() {
         Royaume nouveauRoyaume = new Royaume();
         emplacement.assignerRoyaume(royaume);
@@ -359,6 +423,22 @@ public class EmplacementCarteTest {
 
         assertTrue(emplacement.isOccupe());
         assertSame(emplacement, royaume.getEmplacement());
+    }
+
+    @Test
+    void libererNeDoitPasDetacherUnRoyaumeDejaReaffecteAilleurs() {
+        EmplacementCarte autreEmplacement = new EmplacementCarte(2, 75, 50, carte);
+        emplacement.assignerRoyaume(royaume);
+
+        // Le royaume est rattaché à un autre emplacement sans passer par
+        // assignerRoyaume (qui refuserait un royaume déjà placé)
+        royaume.setEmplacement(autreEmplacement);
+
+        emplacement.liberer();
+
+        assertSame(autreEmplacement, royaume.getEmplacement());
+        assertFalse(emplacement.isOccupe());
+        assertNull(emplacement.getRoyaume());
     }
 
     // =====================================================================
@@ -395,7 +475,7 @@ public class EmplacementCarteTest {
     }
 
     // =====================================================================
-    // Intégration avec Carte
+    // Intégration avec Carte (emplacements générés en cercle)
     // =====================================================================
 
     @Test
@@ -420,6 +500,43 @@ public class EmplacementCarteTest {
 
         assertSame(unique, reutilise);
         assertSame(second, unique.getRoyaume());
+    }
+
+    @Test
+    void lesEmplacementsGeneresParLaCarteNeDoiventPasAvoirDId() {
+        carte.genererEmplacements(3);
+
+        for (EmplacementCarte genere : carte.getEmplacements()) {
+            assertNull(genere.getId());
+        }
+    }
+
+    @Test
+    void unRoyaumePlaceSurLaCarteGenereeDoitExposerLesCoordonneesDuCercle() {
+        carte.genererEmplacements(3);
+        Royaume premier = new Royaume();
+        Royaume deuxieme = new Royaume();
+
+        carte.placerRoyaume(premier);
+        carte.placerRoyaume(deuxieme);
+
+        assertEquals(50, premier.getX());
+        assertEquals(10, premier.getY());
+        assertEquals(85, deuxieme.getX());
+        assertEquals(70, deuxieme.getY());
+    }
+
+    @Test
+    void regenererLesEmplacementsDeLaCarteDoitLibererLesAnciensEmplacements() {
+        carte.genererEmplacements(1);
+        EmplacementCarte ancien = carte.getEmplacements().get(0);
+        carte.placerRoyaume(royaume);
+
+        carte.genererEmplacements(1);
+
+        assertFalse(ancien.isOccupe());
+        assertNull(ancien.getRoyaume());
+        assertNull(royaume.getEmplacement());
     }
 
     // =====================================================================
@@ -453,21 +570,5 @@ public class EmplacementCarteTest {
 
         assertDoesNotThrow(() -> emplacement.toString());
         assertDoesNotThrow(() -> royaume.toString());
-    }
-
-    // =====================================================================
-    // Comportements à trancher (désactivés tant que le code n'est pas corrigé)
-    // =====================================================================
-
-    @Test
-    void libererNeDoitPasDetacherUnRoyaumeDejaReaffecteAilleurs() {
-        EmplacementCarte autreEmplacement = new EmplacementCarte(2, 75, 50, carte);
-
-        emplacement.assignerRoyaume(royaume);
-        autreEmplacement.assignerRoyaume(royaume);
-
-        emplacement.liberer();
-
-        assertSame(autreEmplacement, royaume.getEmplacement());
     }
 }

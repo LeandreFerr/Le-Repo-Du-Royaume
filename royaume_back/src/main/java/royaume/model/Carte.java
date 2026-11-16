@@ -3,6 +3,7 @@ package royaume.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Carte {
 
@@ -19,6 +20,8 @@ public class Carte {
 
     private List<EmplacementCarte> emplacements = new ArrayList<>();
 
+    private final EmplacementCarte emplacementMarche = new EmplacementCarte(0, 50, 50, this);
+
     // =========================================================================
     // Constructeurs
     // =========================================================================
@@ -28,6 +31,7 @@ public class Carte {
 
     public Carte(int largeur, int hauteur, int centreX, int centreY, Partie partie,
             List<EmplacementCarte> emplacements) {
+
         this.largeur = largeur;
         this.hauteur = hauteur;
         this.centreX = centreX;
@@ -60,20 +64,61 @@ public class Carte {
     public void genererEmplacements(int nombre) {
         if (nombre < 1 || nombre > 10) {
             throw new IllegalArgumentException(
-                    "Le nombre d'emplacements (" + nombre + ") doit être compris entre 1 et 10.");
+                    "Le nombre d'emplacements (" + nombre
+                            + ") doit être compris entre 1 et 10.");
         }
 
-        int espacementX = largeur / (nombre + 1);
-        if (espacementX < 1) {
+        int rayon = Math.min(largeur, hauteur) / 2 - 10;
+
+        if (rayon <= 0) {
             throw new IllegalStateException(
-                    "La carte est trop étroite (largeur=" + largeur + ") pour " + nombre + " emplacements.");
+                    "La carte est trop petite pour générer les emplacements.");
         }
 
+        // Libération des royaumes éventuellement déjà placés
         emplacements.forEach(EmplacementCarte::liberer);
         emplacements.clear();
 
-        for (int i = 1; i <= nombre; i++) {
-            emplacements.add(new EmplacementCarte(i, i * espacementX, hauteur / 2, this));
+        double angleEntreEmplacements = 2 * Math.PI / nombre;
+        double angleInitial = -Math.PI / 2;
+
+        for (int i = 0; i < nombre; i++) {
+            double angle = angleInitial + i * angleEntreEmplacements;
+
+            int x = centreX + (int) Math.round(rayon * Math.cos(angle));
+            int y = centreY + (int) Math.round(rayon * Math.sin(angle));
+
+            EmplacementCarte emplacement = new EmplacementCarte(
+                    i + 1,
+                    x,
+                    y,
+                    this);
+
+            emplacements.add(emplacement);
+        }
+    }
+
+    // Surcharge de la méthode pour générer les emplacements avec un décalage entre
+    // [-4;4]
+
+    public void genererEmplacements(
+            int nombre,
+            boolean avecDecalageAleatoire) {
+
+        // Appel de la méthode existante
+        genererEmplacements(nombre);
+
+        if (!avecDecalageAleatoire) {
+            return;
+        }
+
+        // Décalage des emplacements déjà générés
+        for (EmplacementCarte emplacement : emplacements) {
+            emplacement.setCoordX(
+                    emplacement.getCoordX() + genererDecalageAleatoire());
+
+            emplacement.setCoordY(
+                    emplacement.getCoordY() + genererDecalageAleatoire());
         }
     }
 
@@ -151,19 +196,32 @@ public class Carte {
         this.emplacements = emplacements != null ? new ArrayList<>(emplacements) : new ArrayList<>();
     }
 
+    public EmplacementCarte getEmplacementMarche() {
+        return emplacementMarche;
+    }
+
     // =========================================================================
     // Méthodes helpers & Validations
     // =========================================================================
 
     private double calculerDistance(int x1, int y1, int x2, int y2) {
-        return Math.sqrt(
-                Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+        return Math.hypot(
+                (double) x2 - x1,
+                (double) y2 - y1);
     }
 
     private static void checkDimension(int valeur, String nom) {
         if (valeur <= 0) {
             throw new IllegalArgumentException("La " + nom + " de la carte doit être strictement positive.");
         }
+    }
+
+    private int genererDecalageAleatoire() {
+        int valeur = ThreadLocalRandom.current().nextInt(2, 5);
+
+        return ThreadLocalRandom.current().nextBoolean()
+                ? valeur
+                : -valeur;
     }
 
     // =========================================================================
