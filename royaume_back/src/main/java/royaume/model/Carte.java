@@ -76,6 +76,7 @@ public class Carte {
         }
 
         // Libération des royaumes éventuellement déjà placés
+
         emplacements.forEach(EmplacementCarte::liberer);
         emplacements.clear();
 
@@ -121,10 +122,6 @@ public class Carte {
                     emplacement.getCoordY() + genererDecalageAleatoire());
         }
     }
-
-    // Méthode non présente sur le ticket, qui permet de placer le royaume et de
-    // l'assigner sur un emplacement
-    // CAD -> liaison entre emplacementCarte - Carte - Royaume
 
     public EmplacementCarte placerRoyaume(Royaume royaume) {
 
