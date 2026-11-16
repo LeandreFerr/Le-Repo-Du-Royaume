@@ -13,35 +13,26 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import royaume.model.Ressource;
 import royaume.model.Royaume;
 
 class ChantierConstructionTest {
 
     private Royaume royaume;
-    private Mine mine;
     private ChantierConstruction chantier;
-
+    private BatimentProduction mine;
+    
     @BeforeEach
     void setUp() {
 
         royaume = new Royaume(1, "Test");
 
-        mine = new Mine(
-            2, "Mine test", 1,
-            2500, 2500, false, 100
+        mine = BatimentFactory.creerBatimentProduction(
+            royaume, 2, "Mine d'or", 2500,
+            Ressource.OR, 100, 2
         );
 
-        royaume.ajouterBatiment(mine);
-
-        chantier = new ChantierConstruction(
-            1,
-            mine,
-            royaume,
-            1,
-            2,
-            3600,
-            false
-        );
+        chantier = mine.getChantier();
     }
 
     @Test
@@ -172,29 +163,20 @@ class ChantierConstructionTest {
     }
     
     @Test
-    void verifierTempsConstructionMineEtRecalculDateFin() {
+    void verifierTempsConstructionTaverneEtRecalculDateFin() {
 
-        // ARRANGE : création d'une mine avec 1 ouvrier
+        // ARRANGE : création d'une taverne avec 1 ouvrier
 
-        int ouvriersInitiaux = 1;
-
-        Mine mine = new Mine(
-            1, "Mine test", 1, 2500, 2500, true, 2
+        BatimentProduction taverne = BatimentFactory.creerBatimentProduction(
+            royaume, 2, "Taverne", 7000,
+            Ressource.NOURRITURE, 50, 1
         );
 
-        ChantierConstruction chantier = new ChantierConstruction(
-            1,
-            mine,
-            royaume,
-            1,
-            ouvriersInitiaux,
-            mine.getTempsConstructionBase(),
-            false
-        );
+        ChantierConstruction chantier = taverne.getChantier();
 
         // VERIFICATION 1 : temps de construction de base
 
-        assertEquals(180, mine.getTempsConstructionBase());
+        assertEquals(180, taverne.getTempsConstructionBase());
 
         assertEquals(
             180,
@@ -231,30 +213,30 @@ class ChantierConstructionTest {
     void ajouterOuvriersRecalculeUniquementTempsRestant() {
 
         // ARRANGE
-        Mine mine = new Mine(
-            1, "Mine test", 1, 2500, 2500, true, 2
+
+        BatimentProduction scierie = BatimentFactory.creerBatimentProduction(
+            royaume, 2, "Scierie", 3500,
+            Ressource.BOIS, 90, 1
         );
 
-        ChantierConstruction chantier = new ChantierConstruction(
-            1, mine, royaume, 1, 1,
-            mine.getTempsConstructionBase(), false
-        );
+        ChantierConstruction chantier = scierie.getChantier();
 
         // Simuler 60 secondes écoulées
+
         LocalDateTime maintenant =
             chantier.getDateDebut().plusSeconds(60);
 
-        // Temps restant : 120 secondes
+        // ACT : ajouter un ouvrier
 
-        // ACT
         chantier.assignerOuvriers(1, maintenant);
 
         // ASSERT
+
         assertEquals(2, chantier.getOuvriersAssignes());
 
         long tempsRestant =
             chantier.calculerTempsRestant(maintenant);
 
         assertEquals(60, tempsRestant);
+      }
     }
-}

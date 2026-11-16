@@ -2,12 +2,12 @@
 package royaume.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.ChantierConstruction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
-import royaume.model.batiment.Mine;
 
 class RoyaumeTestBatiment {
 
@@ -46,14 +45,12 @@ class RoyaumeTestBatiment {
     @Test
     void creerMaison_AjouteMaisonEtChantierAuRoyaume() {
 
-        Maison maison = BatimentFactory.creerMaison(
-            royaume,
-            2,
-            "Maison paysanne",
-            10,
-            0.3,
-            3
-        );
+    	Maison maison = BatimentFactory.creerMaison(
+    		    royaume,
+    		    2,
+    		    "Maison paysanne",
+    		    3
+    		);
 
         assertTrue(royaume.getBatiments().contains(maison));
         assertEquals(2, royaume.getBatiments().size());
@@ -70,13 +67,13 @@ class RoyaumeTestBatiment {
     @Test
     void creerPlusieursMaisons_EstAutorise() {
 
-        Maison maison1 = BatimentFactory.creerMaison(
-            royaume, 2, "Maison 1", 10, 0.3, 2
-        );
+    	Maison maison1 = BatimentFactory.creerMaison(
+    		    royaume, 2, "Maison 1", 2
+    		);
 
-        Maison maison2 = BatimentFactory.creerMaison(
-            royaume, 3, "Maison 2", 10, 0.3, 2
-        );
+		Maison maison2 = BatimentFactory.creerMaison(
+		    royaume, 3, "Maison 2", 2
+		);
 
         assertEquals(3, royaume.getBatiments().size());
 
@@ -96,13 +93,9 @@ class RoyaumeTestBatiment {
     @Test
     void creerBatimentProduction_AjouteAutomatiquementLaMine() {
 
-        BatimentProduction mine =
-            BatimentFactory.creerMine(
-                royaume,
-                2,
-                "Mine d'or",
-                100,
-                3
+    	BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                royaume, 2, "Mine d'or", 2500,
+                Ressource.OR, 100, 3
             );
 
         assertTrue(royaume.getBatiments().contains(mine));
@@ -120,14 +113,16 @@ class RoyaumeTestBatiment {
     @Test
     void ajouterBatiment_RefuseUnDeuxiemeBatimentProductionDeMemeClasse() {
 
-        BatimentFactory.creerMine(
-            royaume, 2, "Mine d'or", 100, 2
+        BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+            royaume, 2, "Mine d'or", 2500,
+            Ressource.OR, 100, 3
         );
 
         assertThrows(
             IllegalArgumentException.class,
-            () -> BatimentFactory.creerMine(
-                royaume, 3, "Deuxième mine", 80, 2
+            () -> BatimentFactory.creerBatimentProduction(
+                royaume, 3, "Deuxième mine d'or", 400,
+                Ressource.OR, 100, 3
             )
         );
     }
@@ -153,9 +148,10 @@ class RoyaumeTestBatiment {
     @Test
     void creerMine_ChantierEstBienAssocieAuBatiment() {
 
-        Mine mine = BatimentFactory.creerMine(
-            royaume, 2, "Mine test", 100, 4
-        );
+    	BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+    		    royaume, 2, "Mine d'or", 2500,
+    		    Ressource.OR, 100, 3
+    		);
 
         ChantierConstruction chantier = mine.getChantier();
 
@@ -165,5 +161,31 @@ class RoyaumeTestBatiment {
 
         assertTrue(mine.isEnConstruction());
        // assertFalse(chantier.isTermine());
+    }
+    
+    @Test
+    void creerTaverneEtScierie_DansLeMemeRoyaume() {
+
+       
+    	BatimentProduction taverne = BatimentFactory.creerBatimentProduction(
+    		    royaume, 5, "Taverne", 7000,
+    		    Ressource.NOURRITURE, 50, 3
+    		);
+
+    	BatimentProduction scierie = BatimentFactory.creerBatimentProduction(
+    		    royaume, 4, "Scierie", 3500,
+    		    Ressource.BOIS, 90, 3
+    		);
+
+        assertEquals(3, royaume.getBatiments().size());
+
+        assertTrue(royaume.getBatiments().contains(taverne));
+        assertTrue(royaume.getBatiments().contains(scierie));
+
+        assertTrue(taverne.isEnConstruction());
+        assertTrue(scierie.isEnConstruction());
+
+        assertNotNull(taverne.getChantier());
+        assertNotNull(scierie.getChantier());
     }
 }

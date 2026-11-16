@@ -7,13 +7,8 @@ import java.util.Map;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.batiment.Batiment;
-import royaume.model.batiment.Carriere;
-import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
-import royaume.model.batiment.Mine;
 import royaume.model.batiment.PallierBatiment;
-import royaume.model.batiment.Scierie;
-import royaume.model.batiment.Taverne;
 
 
 // PVmax depend du niveau du batiment cf. ameliorer() dans Batiment 
@@ -21,36 +16,33 @@ import royaume.model.batiment.Taverne;
 //calculerPointsDeVieMax()
 //getCoutAmelioration();
 
+
 public final class ConfigurationPalliersBatiment {
 
     private ConfigurationPalliersBatiment() {
     }
 
-    /*
-     * [REVIEW TICKET 1] Table des coûts très propre !
-     * Si vous fusionnez Mine/Carriere/Scierie/Taverne dans un BatimentProduction
-     * concret (cf. BatimentProduction.java), vous pourrez indexer ces mêmes paliers
-     * directement par Ressource (Ressource.OR, Ressource.PIERRE, Ressource.BOIS,
-     * Ressource.NOURRITURE) tout en conservant exactement vos valeurs d'équilibrage.
-     */
-    private static final Map<Class<? extends Batiment>, List<PallierBatiment>> PALIERS =
+    // ---------------- MAISON ----------------
+
+    private static final List<PallierBatiment> PALIERS_MAISON = List.of(
+        new PallierBatiment(2, cout(10, 10, 10, 1)),
+        new PallierBatiment(3, cout(30, 30, 30, 3)),
+        new PallierBatiment(4, cout(50, 50, 50, 5)),
+        new PallierBatiment(5, cout(70, 70, 70, 7)),
+        new PallierBatiment(6, cout(90, 90, 90, 9)),
+        new PallierBatiment(7, cout(120, 120, 120, 12)),
+        new PallierBatiment(8, cout(150, 150, 150, 15)),
+        new PallierBatiment(9, cout(175, 175, 175, 18)),
+        new PallierBatiment(10, cout(200, 200, 200, 20))
+    );
+
+    // ---------------- BATIMENTS DE PRODUCTION ----------------
+
+    private static final Map<Ressource, List<PallierBatiment>> PALIERS_PRODUCTION =
         Map.of(
 
-            // ---------------- MAISON ----------------
-            Maison.class, List.of(
-                new PallierBatiment(2, cout(10, 10, 10, 1)),
-                new PallierBatiment(3, cout(30, 30, 30, 3)),
-                new PallierBatiment(4, cout(50, 50, 50, 5)),
-                new PallierBatiment(5, cout(70, 70, 70, 7)),
-                new PallierBatiment(6, cout(90, 90, 90, 9)),
-                new PallierBatiment(7, cout(120, 120, 120, 12)),
-                new PallierBatiment(8, cout(150, 150, 150, 15)),
-                new PallierBatiment(9, cout(175, 175, 175, 18)),
-                new PallierBatiment(10, cout(200, 200, 200, 20))
-            ),
-
-            // ---------------- MINE ----------------
-            Mine.class, List.of(
+            // MINE : OR
+            Ressource.OR, List.of(
                 new PallierBatiment(2, cout(100, 80, 60, 40)),
                 new PallierBatiment(3, cout(180, 140, 100, 80)),
                 new PallierBatiment(4, cout(280, 220, 160, 130)),
@@ -62,8 +54,8 @@ public final class ConfigurationPalliersBatiment {
                 new PallierBatiment(10, cout(1700, 1400, 1150, 1000))
             ),
 
-            // ---------------- CARRIERE ----------------
-            Carriere.class, List.of(
+            // CARRIERE : PIERRE
+            Ressource.PIERRE, List.of(
                 new PallierBatiment(2, cout(80, 60, 100, 40)),
                 new PallierBatiment(3, cout(140, 100, 180, 80)),
                 new PallierBatiment(4, cout(220, 160, 280, 130)),
@@ -75,8 +67,8 @@ public final class ConfigurationPalliersBatiment {
                 new PallierBatiment(10, cout(1400, 1150, 1700, 1000))
             ),
 
-            // ---------------- SCIERIE ----------------
-            Scierie.class, List.of(
+            // SCIERIE : BOIS
+            Ressource.BOIS, List.of(
                 new PallierBatiment(2, cout(60, 100, 80, 40)),
                 new PallierBatiment(3, cout(100, 180, 140, 80)),
                 new PallierBatiment(4, cout(160, 280, 220, 130)),
@@ -88,8 +80,8 @@ public final class ConfigurationPalliersBatiment {
                 new PallierBatiment(10, cout(1150, 1700, 1400, 1000))
             ),
 
-            // ---------------- TAVERNE ----------------
-            Taverne.class, List.of(
+            // TAVERNE : NOURRITURE
+            Ressource.NOURRITURE, List.of(
                 new PallierBatiment(2, cout(100, 100, 80, 60)),
                 new PallierBatiment(3, cout(180, 180, 140, 120)),
                 new PallierBatiment(4, cout(280, 280, 220, 200)),
@@ -100,27 +92,12 @@ public final class ConfigurationPalliersBatiment {
                 new PallierBatiment(9, cout(1300, 1300, 1050, 1150)),
                 new PallierBatiment(10, cout(1700, 1700, 1400, 1500))
             )
-/*
-            // ---------------- CHATEAU ----------------   // cf. ça augmente tout seul avec le niveau du Royaume
-            Chateau.class, List.of(
-                new PallierBatiment(2, cout(150, 150, 150, 100)),
-                new PallierBatiment(3, cout(250, 250, 250, 200)),
-                new PallierBatiment(4, cout(400, 400, 400, 350)),
-                new PallierBatiment(5, cout(600, 600, 600, 500)),
-                new PallierBatiment(6, cout(850, 850, 850, 750)),
-                new PallierBatiment(7, cout(1150, 1150, 1150, 1000)),
-                new PallierBatiment(8, cout(1500, 1500, 1500, 1300)),
-                new PallierBatiment(9, cout(1900, 1900, 1900, 1700)),
-                new PallierBatiment(10, cout(2400, 2400, 2400, 2200))
-            )*/
         );
 
     /*
      * Ordre des paramètres :
      * bois, pierre, nourriture, or
      */
-    
-  //__________________________________________________
 
     private static List<QuantiteRessource> cout(
             int bois, int pierre, int nourriture, int or) {
@@ -132,11 +109,25 @@ public final class ConfigurationPalliersBatiment {
             new QuantiteRessource(or, Ressource.OR)
         );
     }
-//__________________________________________________
+
+    // GETTER #1  : Récupération des paliers d'une Maison
     
     public static List<PallierBatiment> getPaliers(
             Class<? extends Batiment> type) {
 
-        return PALIERS.getOrDefault(type, List.of());
+        if (type == Maison.class) {
+            return PALIERS_MAISON;
+        }
+
+        return List.of();
+    }
+
+    // GETTER #2  :  Récupération des paliers d'un bâtiment de production
+    
+    public static List<PallierBatiment> getPaliersProduction(
+            Ressource typeRessource) {
+
+        return PALIERS_PRODUCTION.getOrDefault(typeRessource, List.of());
     }
 }
+

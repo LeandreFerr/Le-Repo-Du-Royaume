@@ -193,7 +193,11 @@ class BatimentTest {
     
     @Test
     void getCoutAmelioration_Carriere_RetourneCoutsConfig() {
-    	Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
+    	BatimentProduction carriere = new BatimentProduction(
+    		    1, "Carrière", 1, 50, 100, false,
+    		    Ressource.PIERRE, 30
+    		);
+    	
     	List<QuantiteRessource> couts = carriere.getCoutAmelioration();
     	assertNotNull(couts);
         assertFalse(couts.isEmpty(), "La carrière de niveau 1 doit avoir un coût pour passer au niveau 2");
@@ -204,7 +208,10 @@ class BatimentTest {
     }
     
     void getTempsConstruction() {
-    	Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
+    	BatimentProduction carriere = new BatimentProduction(
+    		    1, "Carrière", 1, 50, 100, false,
+    		    Ressource.PIERRE, 30
+    		);
     	int temps= carriere.getTempsConstructionBase();
     	assertEquals(180,temps);
     	
@@ -237,8 +244,11 @@ class BatimentTest {
     
     @Test
     void getRessourceManquanteAmelioration_RetourneLesRessourcesManquantes() {
-        Carriere carriere = new Carriere(1, "Carrière", 1, 50, 100, false, 30);
-        
+    	BatimentProduction carriere = new BatimentProduction(
+    		    1, "Carrière", 1, 50, 100, false,
+    		    Ressource.PIERRE, 30
+    		);
+    	
         // On vide les ressources du royaume pour être sûr qu'il manque tout
         royaume.getRessources().clear();
 

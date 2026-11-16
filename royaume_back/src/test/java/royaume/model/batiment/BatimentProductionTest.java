@@ -40,23 +40,23 @@ class BatimentProductionTest {
         chateau.ameliorer();
         
         
-        mine = new Mine(
-            1,
-            "Mine d'or",
-            1,
-            50,
-            50,
-            false,
-            100
-        );
+        mine = BatimentFactory.creerBatimentProduction(
+                royaume, 2, "Mine d'or", 2500,
+                Ressource.OR, 100, 2
+            );
         
-        royaume.ajouterBatiment(mine);
+       // royaume.ajouterBatiment(mine);
 
     }
 
     @Test
     void calculerProduction_RetourneProductionDeBase() {
-
+    	
+    	// On finalise le chantier sinon pas Operationel !
+    	
+    	mine.getChantier().finaliser(
+    		        mine.getChantier().getDateFinPrevue()
+    		    );
         assertEquals(100, mine.calculerProduction());
     }
 

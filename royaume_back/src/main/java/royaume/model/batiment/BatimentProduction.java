@@ -1,5 +1,9 @@
 package royaume.model.batiment;
 
+import java.util.List;
+
+import royaume.config.ConfigurationPalliersBatiment;
+import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 
 
@@ -35,7 +39,7 @@ import royaume.model.Ressource;
  * 
  * ============================================================================
  */
-public abstract class BatimentProduction extends Batiment{
+public class BatimentProduction extends Batiment{
 
 	
 	private Ressource typeRessource;
@@ -45,6 +49,16 @@ public abstract class BatimentProduction extends Batiment{
 	
 	
 	
+	BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
+			boolean enConstruction, Ressource typeRessource, int productionBaseHeure) {
+		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
+		this.typeRessource = typeRessource;
+		this.productionBaseHeure = productionBaseHeure;
+	}
+
+
+
+	/*
     BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
 			boolean enConstruction, Ressource typeRessource, int productionBaseHeure) {
 		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
@@ -57,7 +71,7 @@ public abstract class BatimentProduction extends Batiment{
     BatimentProduction(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax,
 			boolean enConstruction) {
 		super(id, nom, niveau, pointsDeVie, pointsDeVieMax, enConstruction);
-	}
+	}*/
 
 
 
@@ -91,7 +105,34 @@ public abstract class BatimentProduction extends Batiment{
 	            return 0;
 	        }
 
-	        return productionBaseHeure * niveau;   //Production = ProductionBaseHeure * Niveau
-	}												// Constante * niveau
+	        return productionBaseHeure * niveau;   // Constante * niveau
+	    	
+	}												
+	
+
+	@Override
+	public List<QuantiteRessource> getCoutAmelioration() {
+	
+	    int niveauSuivant = getNiveau() + 1;
+	
+	    List<PallierBatiment> paliers =
+	        ConfigurationPalliersBatiment.getPaliersProduction(
+	            getTypeRessource()
+	        );
+	
+	    for (PallierBatiment palier : paliers) {
+	        if (palier.getNiveau() == niveauSuivant) {
+	            return palier.getCout();
+	        }
+	    }
+	
+	    return List.of();
+	}
+
+
+    @Override
+    public int getTempsConstructionBase() {
+        return 180;
+    }
 	
 }
