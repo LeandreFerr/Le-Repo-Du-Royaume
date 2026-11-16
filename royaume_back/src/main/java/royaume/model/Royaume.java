@@ -47,15 +47,19 @@ public class Royaume {
 	private int niveau = 1;
 	@PositiveOrZero
 	@NotNull
+	@JoinColumn(name = "population_disponible", nullable = false)
 	private int populationDisponible = 100;
 	@PositiveOrZero
 	@NotNull
+	@JoinColumn(name = "population_ouvriere", nullable = false)
 	private int populationOuvriere = 0;
 	@PositiveOrZero
 	@NotNull
+	@JoinColumn(name = "population_entrainement", nullable = false)
 	private int populationEnEntrainement = 0;
 	@PositiveOrZero
 	@NotNull
+	@JoinColumn(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
 	
 	@NotNull
