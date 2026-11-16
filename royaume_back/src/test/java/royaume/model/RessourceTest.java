@@ -44,7 +44,11 @@ class RessourceTest {
             () -> assertNotNull(Ressource.valueOf("NOURRITURE"))
         );
     }
-
+    
+    
+    // ____________                                                     ____________
+    // ____________--------------  NO ENTIENDO LO QUE DICE -------------____________
+    
     @Test
     @DisplayName("Architecture POJO : aucune annotation Spring, JPA, Hibernate ou Jackson sur les classes du socle")
     void testAbsenceTotaleAnnotationsFramework() {

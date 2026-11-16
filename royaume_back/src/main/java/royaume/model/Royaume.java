@@ -20,6 +20,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 
@@ -32,15 +33,17 @@ public class Royaume {
 	// =========================================================================
 
 	@Id
+	@Positive
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	@NotBlank
-	@Size(min=2, max=50)
+	@Size(min = 2, max = 50)
 	@Column(name = "nom_du_royaume", nullable = false)
 	private String nom;
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "peuple", nullable = false)
+	@NotNull
+	@Valid
 	private Population peuple;
 	@Min(1)
 	@Max(10)
@@ -62,22 +65,22 @@ public class Royaume {
 	@NotNull
 	@Column(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
-	
+
 	@NotNull
 	@Column(name = "en_ruine", nullable = false)
 	private boolean enRuine = false;
-	
+
 	@NotNull
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "ressources", columnDefinition = "json", nullable = false)
-	@Valid
 	private List<@NotNull @Valid QuantiteRessource> ressources = creerRessourcesParDefaut();
 
 	// =========================================================================
 	// Constructeurs
 	// =========================================================================
 
-	public Royaume() {}
+	public Royaume() {
+	}
 
 	public Royaume(Integer id, String nom, Population peuple) {
 		validerPeuple(peuple);
@@ -89,7 +92,7 @@ public class Royaume {
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
-		
+
 		validerPeuple(peuple);
 		this.id = id;
 		this.nom = nom;
@@ -114,13 +117,8 @@ public class Royaume {
 		if (quantite <= 0) {
 			throw new IllegalArgumentException("La quantité à créditer doit être strictement positive.");
 		}
-		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresentOrElse(
-				r -> r.ajouter(quantite),
-				() -> ressources.add(new QuantiteRessource(quantite, ressource))
-			);
+		ressources.stream().filter(r -> r.getRessource() == ressource).findFirst().ifPresentOrElse(
+				r -> r.ajouter(quantite), () -> ressources.add(new QuantiteRessource(quantite, ressource)));
 	}
 
 	public boolean aAssezDeRessources(Ressource ressource, int quantite) {
@@ -133,9 +131,8 @@ public class Royaume {
 		if (quantite == 0) {
 			return true;
 		}
-		return ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.anyMatch(r -> r.getQuantite() >= quantite);
+		return ressources.stream().filter(r -> r.getRessource() == ressource)
+				.anyMatch(r -> r.getQuantite() >= quantite);
 	}
 
 	public boolean debiterRessources(Ressource ressource, int quantite) {
@@ -148,16 +145,14 @@ public class Royaume {
 		if (!aAssezDeRessources(ressource, quantite)) {
 			return false;
 		}
-		ressources.stream()
-			.filter(r -> r.getRessource() == ressource)
-			.findFirst()
-			.ifPresent(r -> r.retirer(quantite));
+		ressources.stream().filter(r -> r.getRessource() == ressource).findFirst().ifPresent(r -> r.retirer(quantite));
 		return true;
 	}
 
 	public void appliquerCroissance(double taux) {
 		if (!Double.isFinite(taux) || taux < -1.0) {
-			throw new IllegalArgumentException("Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
+			throw new IllegalArgumentException(
+					"Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
 		}
 		long resultat = Math.round(populationDisponible * (1.0 + taux));
 		populationDisponible = Math.toIntExact(resultat);
@@ -175,10 +170,8 @@ public class Royaume {
 		}
 
 		int niveauSuivant = this.niveau + 1;
-		PalierNiveau palierSuivant = paliers.stream()
-				.filter(p -> p != null && p.getNiveau() == niveauSuivant)
-				.findFirst()
-				.orElse(null);
+		PalierNiveau palierSuivant = paliers.stream().filter(p -> p != null && p.getNiveau() == niveauSuivant)
+				.findFirst().orElse(null);
 
 		if (palierSuivant == null) {
 			return false;
@@ -207,10 +200,8 @@ public class Royaume {
 		}
 
 		int niveauSuivant = this.niveau + 1;
-		PalierNiveau palierSuivant = paliers.stream()
-				.filter(p -> p != null && p.getNiveau() == niveauSuivant)
-				.findFirst()
-				.orElse(null);
+		PalierNiveau palierSuivant = paliers.stream().filter(p -> p != null && p.getNiveau() == niveauSuivant)
+				.findFirst().orElse(null);
 
 		if (palierSuivant == null) {
 			return false;
@@ -221,7 +212,8 @@ public class Royaume {
 				if (requis != null) {
 					boolean debitReussi = debiterRessources(requis.getRessource(), requis.getQuantite());
 					if (!debitReussi) {
-						throw new IllegalStateException("Impossible de débiter les ressources requises : " + requis.getRessource());
+						throw new IllegalStateException(
+								"Impossible de débiter les ressources requises : " + requis.getRessource());
 					}
 				}
 			}
@@ -258,7 +250,8 @@ public class Royaume {
 
 	public void setPeuple(Population peuple) {
 		if (this.peuple != null) {
-			throw new UnsupportedOperationException("Le peuple d'un royaume est définitif et ne peut pas être modifié.");
+			throw new UnsupportedOperationException(
+					"Le peuple d'un royaume est définitif et ne peut pas être modifié.");
 		}
 		validerPeuple(peuple);
 		this.peuple = peuple;
@@ -321,62 +314,87 @@ public class Royaume {
 	}
 
 	public List<QuantiteRessource> getRessources() {
-		return ressources.stream()
-				.map(r -> new QuantiteRessource(r.getQuantite(), r.getRessource()))
-				.toList();
+		return ressources.stream().map(r -> new QuantiteRessource(r.getQuantite(), r.getRessource())).toList();
 	}
+	/*
+	 * public void setRessources(List<QuantiteRessource> ressources) {
+	 * validerRessources(ressources); this.ressources = creerRessourcesParDefaut();
+	 * for (QuantiteRessource qr : ressources) { this.ressources.stream() .filter(r
+	 * -> r.getRessource() == qr.getRessource()) .findFirst() .ifPresent(r ->
+	 * r.setQuantite(qr.getQuantite())); } }
+	 */
 
 	public void setRessources(List<QuantiteRessource> ressources) {
-		validerRessources(ressources);
+
 		this.ressources = creerRessourcesParDefaut();
-			for (QuantiteRessource qr : ressources) {
-				this.ressources.stream()
-					.filter(r -> r.getRessource() == qr.getRessource())
-					.findFirst()
-					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
-			}
+
+		if (ressources == null) {
+			return;
 		}
-	
+
+		validerRessources(ressources);
+
+		for (QuantiteRessource qr : ressources) {
+			this.ressources.stream().filter(r -> r.getRessource() == qr.getRessource()).findFirst()
+					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
+		}
+	}
 
 	// =========================================================================
 	// Méthodes helpers & Validations
 	// =========================================================================
 
 	private static List<QuantiteRessource> creerRessourcesParDefaut() {
-		return new ArrayList<>(List.of(
-			new QuantiteRessource(0, Ressource.PIERRE),
-			new QuantiteRessource(0, Ressource.BOIS),
-			new QuantiteRessource(0, Ressource.OR),
-			new QuantiteRessource(0, Ressource.NOURRITURE)
-		));
+		return new ArrayList<>(
+				List.of(new QuantiteRessource(0, Ressource.PIERRE), new QuantiteRessource(0, Ressource.BOIS),
+						new QuantiteRessource(0, Ressource.OR), new QuantiteRessource(0, Ressource.NOURRITURE)));
 	}
 
-	
-
 	private void validerPeuple(Population peuple) {
-		
-		if (!(peuple instanceof Canards
-				|| peuple instanceof Gobelins
-				|| peuple instanceof Licornes
-				|| peuple instanceof Princesses
-				|| peuple instanceof Teuteus)) {
-			throw new IllegalArgumentException("Le peuple du royaume doit être l'un des 5 peuples disponibles (Canards, Gobelins, Licornes, Princesses, Teuteus).");
+		// Juste pour les test JPA : null sera détecté par Jakarta Bean Validation
+		if (peuple == null) {
+			return;
+		}
+		if (!(peuple instanceof Canards || peuple instanceof Gobelins || peuple instanceof Licornes
+				|| peuple instanceof Princesses || peuple instanceof Teuteus)) {
+			throw new IllegalArgumentException(
+					"Le peuple du royaume doit être l'un des 5 peuples disponibles (Canards, Gobelins, Licornes, Princesses, Teuteus).");
 		}
 	}
 
-	
-	
-
+	/*
+	 * 
+	 * private void validerRessources(List<QuantiteRessource> initiales) { if
+	 * (initiales != null) {
+	 * 
+	 * long nbDistinctes = initiales.stream() .map(QuantiteRessource::getRessource)
+	 * .distinct() .count(); if (nbDistinctes != initiales.size()) { throw new
+	 * IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource."
+	 * ); } } }
+	 * 
+	 */
 	private void validerRessources(List<QuantiteRessource> initiales) {
-		if (initiales != null) {
-			
-			long nbDistinctes = initiales.stream()
-					.map(QuantiteRessource::getRessource)
-					.distinct()
-					.count();
-			if (nbDistinctes != initiales.size()) {
-				throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
-			}
+
+		if (initiales == null) {
+			return;
+		}
+
+		// 1. Vérifier qu'aucun élément n'est null
+		if (initiales.stream().anyMatch(qr -> qr == null)) {
+			throw new IllegalArgumentException("La liste des ressources ne peut pas contenir d'élément null.");
+		}
+
+		// 2. Vérifier que chaque ressource possède un type
+		if (initiales.stream().anyMatch(qr -> qr.getRessource() == null)) {
+			throw new IllegalArgumentException("Une QuantiteRessource doit posséder un type de ressource.");
+		}
+
+		// 3. Vérifier qu'il n'y a pas de doublons
+		long nbDistinctes = initiales.stream().map(QuantiteRessource::getRessource).distinct().count();
+
+		if (nbDistinctes != initiales.size()) {
+			throw new IllegalArgumentException(
+					"Il ne peut pas y avoir plusieurs QuantiteRessource d'un même type de ressource.");
 		}
 	}
 
@@ -389,7 +407,7 @@ public class Royaume {
 		return "Royaume [id=" + id + ", nom=" + nom + ", peuple=" + (peuple != null ? peuple.getNom() : null)
 				+ ", niveau=" + niveau + ", populationDisponible=" + populationDisponible + ", populationOuvriere="
 				+ populationOuvriere + ", populationEnEntrainement=" + populationEnEntrainement
-				+ ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine
-				+ ", ressources=" + ressources + "]";
+				+ ", populationMilitaire=" + populationMilitaire + ", enRuine=" + enRuine + ", ressources=" + ressources
+				+ "]";
 	}
 }

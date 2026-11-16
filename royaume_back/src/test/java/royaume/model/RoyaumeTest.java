@@ -483,24 +483,50 @@ class RoyaumeTest {
     	@DisplayName("setId permet la modification mais Bean Validation détecte les valeurs non positives")
     	void testSetIdValidation() {
 
+    	    // 0 : invalide
     	    royaume.setId(0);
 
-    	    assertTrue(validator.validate(royaume).stream().anyMatch(v ->
-    	            v.getPropertyPath().toString().equals("id")));
+    	    assertTrue(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
 
+    	    // -5 : invalide
     	    royaume.setId(-5);
 
-    	    assertTrue(validator.validate(royaume).stream().anyMatch(v ->
-    	            v.getPropertyPath().toString().equals("id")));
+    	    assertTrue(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
 
-    	    // Valeurs valides
+    	    // null : autorisé par @Positive
     	    royaume.setId(null);
-    	    assertTrue(validator.validate(royaume).isEmpty());
 
+    	    assertFalse(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
+
+    	    // 42 : valide
     	    royaume.setId(42);
+
     	    assertEquals(42, royaume.getId());
+
+    	    assertFalse(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
     	}
-    	
+    	@Test
+    	void diagnosticValidationId() {
+
+    	    royaume.setId(0);
+
+    	    Set<ConstraintViolation<Royaume>> violations =
+    	            validator.validate(royaume);
+
+    	    System.out.println("ID actuel : " + royaume.getId());
+    	    System.out.println("Nombre de violations : " + violations.size());
+
+    	    violations.forEach(v ->
+    	            System.out.println(
+    	                    "Champ : " + v.getPropertyPath()
+    	                    + " | Message : " + v.getMessage()
+    	            )
+    	    );
+    	}
     	/*
         @Test
         @DisplayName("setId accepte null ou un entier > 0, mais rejette <= 0 sans modifier l'id existant")
