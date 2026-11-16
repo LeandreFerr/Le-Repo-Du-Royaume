@@ -2,11 +2,33 @@ package royaume.model;
 
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name="offre_marche")
 public class OffreMarche {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@Column(nullable=false)
 	private LocalDateTime datePublication;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(nullable=false)
 	private StatutOffre statut;
+	
 	
 	private Royaume vendeur;
 	private QuantiteRessource propose;
