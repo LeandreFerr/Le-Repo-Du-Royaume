@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 @Entity
 @Table(name = "palier_niveau")
@@ -35,7 +36,7 @@ public class PalierNiveau {
 	@Column(nullable = false, unique = true)
 	private int niveau;
 	@NotNull
-	@Min(0)
+	@PositiveOrZero
 	@Column(nullable = false)
 	private int populationRequise;
 	@NotNull
