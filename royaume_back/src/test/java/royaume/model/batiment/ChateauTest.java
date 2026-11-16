@@ -83,15 +83,18 @@ class ChateauTest {
    
     @Test
     void testInterdictionDepasserPalierChateau() {
-    	maison.getChantier().finaliser(									
-    	        maison.getChantier().getDateFinPrevue()
-    	    );
-    	Exception exception = assertThrows(IllegalStateException.class, () -> {
-            maison.ameliorer(1,royaume);
-        });
 
-        assertEquals("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.", exception.getMessage());
-        assertEquals(2, maison.getNiveau());
+        Exception exception = assertThrows(
+            IllegalStateException.class,
+            () -> maison.ameliorer(1, royaume)
+        );
+
+        assertEquals(
+            "Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.",
+            exception.getMessage()
+        );
+
+        assertEquals(1, maison.getNiveau());
         assertFalse(maison.isEnConstruction());
         assertEquals(null, maison.getChantier());
     }
