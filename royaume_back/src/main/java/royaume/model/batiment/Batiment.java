@@ -114,27 +114,7 @@ public abstract class Batiment {
 	}
 
 	
-	/*
-	 * [REVIEW TICKET 2 - Par rapport à vos commentaires sur Trello]
-	 * Votre raisonnement est 100% le bon : comme c'est le Royaume qui connaît et gère
-	 * sa liste de bâtiments et pas l'inverse, avoir déplacé la destruction dans
-	 * Royaume.recevoirDegats() / retirerBatiment() c'est nickel ! Vous pourrez
-	 * supprimer ce code commenté du coup.
-	 */
-	/*   MIGRATION vers le Royaume 
-	 * 
-	 * Parceque le Royaume connais ses batiments VS le batiment ne connais pas son Royaume
-	 * 
-	 * 
-	 * public void detruire(Royaume royaume) {
 
-	    if (royaume == null) {
-	        throw new IllegalArgumentException("Le royaume ne peut pas être null");
-	    }
-
-	    royaume.retirerBatiment(this);
-	}*/
-	
 	
 	//___________________________________
 
@@ -145,7 +125,14 @@ public abstract class Batiment {
 		// [REVIEW TICKET 2] : Pensez à vérifier si le bâtiment est déjà en chantier 
 		// On ne peut pas réparer un batiment en construction.
 		// Sinon on dit que ça gele la construction le temps de la réparation.
+		
+		if (this.isEnConstruction()) {
+		    throw new IllegalStateException(
+		        "Impossible d'améliorer : le bâtiment est déjà en construction."
+		    );
+		}
 
+		  
 		 if (montant < 0) {
 	            throw new IllegalArgumentException("Réparation négative interdite");
 	        }
@@ -187,9 +174,14 @@ public abstract class Batiment {
 		
 		// [REVIEW TICKET 2] : Même chose ici, vérifier si le bâtiment est déjà en chantier
 		
+		if (this.isEnConstruction()) {
+		    throw new IllegalStateException(
+		        "Impossible d'améliorer : le bâtiment est déjà en construction."
+		    );
+		}
+		
 		if (nbouvriersAssignes < 1) {
-	        // [REVIEW TICKET 2] : Petit problème de copier-coller ici, je me suis permis de modifier :
-			// réparer -> améliorer. Dans le texte de l'exception :)
+	       
 	        throw new IllegalArgumentException("Il faut au moins 1 ouvrier pour améliorer.");
 	    }
 		
@@ -213,6 +205,7 @@ public abstract class Batiment {
 	    // [REVIEW TICKET 2 - Réponse question Trello]
 	    // Débiter les ressources directement ici au lancement du chantier, c'est nickel !
 	    // Débiter les ressources du royaume
+	    
 	    for (QuantiteRessource cout : couts) {
 	       royaume.debiterRessources(cout.getRessource(), cout.getQuantite());
 	    }
@@ -232,7 +225,7 @@ public abstract class Batiment {
 	 * Comme ça, seul ChantierConstruction.finaliser() pourra l'appeler et personne ne
 	 * pourra l'appeler par erreur depuis l'extérieur !
 	 */
-	public void ameliorer(Royaume royaume) {
+	void acheverAmelioration(Royaume royaume) {
 
 	    if (royaume == null) {
 	        throw new IllegalArgumentException(
@@ -253,18 +246,6 @@ public abstract class Batiment {
 	    pointsDeVieMax = calculerPointsDeVieMax();
 	    pointsDeVie = pointsDeVieMax;
 	}
-	
-	/*
-	 * [REVIEW TICKET 2 - Réponse à un commentaire Trello]
-	 * Comme `royaume.getChateau()` renvoie directement un objet de type `Chateau`,
-	 * vous pouvez même supprimer cette méthode vide de `Batiment` (et retirer le
-	 * `@Override` sur `ameliorer()` dans `Chateau`) : comme ça `ameliorer()` sans
-	 * paramètre n'existera QUE dans `Chateau` et plus personne ne pourra l'appeler
-	 * par erreur sur une Maison ou un autre bâtiment !
-	 */
-	// Celui la est spécifique au chateau pour Override
-	public void ameliorer() {
-	    }
 	
 	
 	

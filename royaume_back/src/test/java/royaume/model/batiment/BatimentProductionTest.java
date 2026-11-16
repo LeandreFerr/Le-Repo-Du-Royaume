@@ -45,6 +45,8 @@ class BatimentProductionTest {
                 Ressource.OR, 100, 2
             );
         
+      
+        
        // royaume.ajouterBatiment(mine);
 
     }
@@ -62,13 +64,21 @@ class BatimentProductionTest {
 
     @Test
     void calculerProduction_AugmenteAvecLeNiveau() {
-
+    	mine.getChantier().finaliser(									
+    	        mine.getChantier().getDateFinPrevue()
+    	    );
+    	
+    	// WARNINNNG : si on finalise pas le chantier
+		// de la premiere construction (avec factory) bah le chantier est toujours ON 
+			// ça bloque les améliorations futures avec la méthode à Xavier qui verifie 
+			// que pas de chantier en cours 
+    	
         mine.ameliorer(2, royaume);
 
         mine.getChantier().finaliser(
         	    mine.getChantier().getDateFinPrevue()
         	);
-        
+        assertEquals(2, mine.getNiveau());
         assertEquals(200, mine.calculerProduction());
     }
 

@@ -263,9 +263,7 @@ public class ChantierConstruction {
         // Si c'est une amélioration, augmenter le niveau : 
         
         if (amelioration) {
-            // [REVIEW TICKET 2] Une fois ameliorer(Royaume) renommée en acheverAmelioration(Royaume)
-            // dans Batiment.java, vous pourrez appeler ici : batiment.acheverAmelioration(this.getRoyaume());
-            batiment.ameliorer(this.getRoyaume());
+                        batiment.acheverAmelioration(this.getRoyaume());
             
         }
         

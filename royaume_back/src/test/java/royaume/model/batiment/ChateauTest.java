@@ -83,13 +83,64 @@ class ChateauTest {
    
     @Test
     void testInterdictionDepasserPalierChateau() {
+    	maison.getChantier().finaliser(									
+    	        maison.getChantier().getDateFinPrevue()
+    	    );
     	Exception exception = assertThrows(IllegalStateException.class, () -> {
             maison.ameliorer(1,royaume);
         });
 
         assertEquals("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.", exception.getMessage());
+        assertEquals(2, maison.getNiveau());
+        assertFalse(maison.isEnConstruction());
+        assertEquals(null, maison.getChantier());
     }
-    
+    ///////////////////////////////////////
+    /// 
+    /// ///////////////////////////////////
+    /// 
+    /// 
+    ///     C4EST LA le fonctionnement ameliorer / finaliser ////
+
+@Test
+void testAmeliorerBatimentApresAmeliorationChateau() {
+
+    chateau.ameliorer();
+    chateau.debloquerPalier();
+
+    // Première amélioration : niveau 1 vers niveau 2
+    assertDoesNotThrow(() -> {
+        maison.ameliorer(1, royaume);
+    });
+
+    // Finalisation du premier chantier
+    maison.getChantier().finaliser(
+        maison.getChantier().getDateFinPrevue()
+    );
+
+    assertEquals(2, maison.getNiveau());
+
+    // Deuxième amélioration : interdite car le palier est à 2
+    Exception exception = assertThrows(
+        IllegalStateException.class,
+        () -> maison.ameliorer(1, royaume)
+    );
+
+    assertEquals(
+        "Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.",
+        exception.getMessage()
+    ); 
+    assertEquals(2, maison.getNiveau());
+    assertFalse(maison.isEnConstruction());
+    assertEquals(null, maison.getChantier());
+}
+
+///
+/// 
+/// 
+/// ////////////////////////////////////////////////////////
+
+/*
     @Test
     void testAmeliorerBatimentApresAmeliorationChateau() {
     
@@ -101,18 +152,26 @@ class ChateauTest {
         // [REVIEW TICKET 2] Une fois ameliorer(Royaume) renommée en acheverAmelioration(Royaume),
         // vous pourrez ici finaliser le chantier comme dans vos autres tests :
         // maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
-        maison.ameliorer(royaume);
-       
+        
+       // maison.acheverAmelioration(royaume);
+       maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+        
         assertEquals(2, maison.getNiveau());
 
         
         Exception exception = assertThrows(IllegalStateException.class, () -> {
-            maison.ameliorer(royaume);
+          //  maison.acheverAmelioration(royaume);
+          maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
         });
 
         assertEquals("Impossible d'améliorer : le niveau du bâtiment ne peut pas dépasser le niveau du château.", exception.getMessage());
+        assertEquals(2, maison.getNiveau());
+        assertFalse(maison.isEnConstruction());
+        assertEquals(null, maison.getChantier());
+        
     }
-    
+    */
     @Test
     void testLeNiveauDuChateauMonteAvecLeRoyaume() {
   
