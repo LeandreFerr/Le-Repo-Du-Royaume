@@ -41,7 +41,7 @@ class RoyaumeTest {
 	    validator = factory.getValidator();
 	}
 
-    private static final Population PEUPLE_TEST = new Canards(1, "Canards", "Archiduc", 0.05);
+    private static final Population PEUPLE_TEST = new Canards(null, "Canards", "Archiduc", 0.05);
     private Royaume royaume;
 
     @BeforeEach
