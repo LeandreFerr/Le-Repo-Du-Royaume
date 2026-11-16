@@ -13,6 +13,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public class QuantiteRessource {
 
 	@PositiveOrZero
+	@Column(nullable = false)
 	private int quantite;
 	@NotNull
 	@Enumerated(EnumType.STRING)

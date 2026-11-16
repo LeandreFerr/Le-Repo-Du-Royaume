@@ -36,6 +36,7 @@ public class Royaume {
 	private Integer id;
 	@NotBlank
 	@Size(min=2, max=50)
+	@Column(name = "nom_du_royaume", nullable = false)
 	private String nom;
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -47,22 +48,23 @@ public class Royaume {
 	private int niveau = 1;
 	@PositiveOrZero
 	@NotNull
-	@JoinColumn(name = "population_disponible", nullable = false)
+	@Column(name = "population_disponible", nullable = false)
 	private int populationDisponible = 100;
 	@PositiveOrZero
 	@NotNull
-	@JoinColumn(name = "population_ouvriere", nullable = false)
+	@Column(name = "population_ouvriere", nullable = false)
 	private int populationOuvriere = 0;
 	@PositiveOrZero
 	@NotNull
-	@JoinColumn(name = "population_entrainement", nullable = false)
+	@Column(name = "population_entrainement", nullable = false)
 	private int populationEnEntrainement = 0;
 	@PositiveOrZero
 	@NotNull
-	@JoinColumn(name = "population_militaire", nullable = false)
+	@Column(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
 	
 	@NotNull
+	@Column(name = "en_ruine", nullable = false)
 	private boolean enRuine = false;
 	
 	@NotNull
@@ -327,7 +329,6 @@ public class Royaume {
 	public void setRessources(List<QuantiteRessource> ressources) {
 		validerRessources(ressources);
 		this.ressources = creerRessourcesParDefaut();
-		if (ressources != null) {
 			for (QuantiteRessource qr : ressources) {
 				this.ressources.stream()
 					.filter(r -> r.getRessource() == qr.getRessource())
@@ -335,7 +336,7 @@ public class Royaume {
 					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
 			}
 		}
-	}
+	
 
 	// =========================================================================
 	// Méthodes helpers & Validations

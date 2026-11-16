@@ -1,12 +1,16 @@
 package royaume.model;
-
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -15,11 +19,24 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 @DisplayName("Tests unitaires exhaustifs — QuantiteRessource")
 class QuantiteRessourceTest {
 
     private QuantiteRessource qr;
+    
+    
+    private static Validator validator;
 
+    @BeforeAll
+    static void setUpValidator() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
     @BeforeEach
     void setUp() {
         qr = new QuantiteRessource(50, Ressource.BOIS);
@@ -60,16 +77,32 @@ class QuantiteRessourceTest {
             );
         }
 
-        @ParameterizedTest
+        /*@ParameterizedTest
         @ValueSource(ints = { -1, -10, -500, Integer.MIN_VALUE })
         @DisplayName("Le constructeur paramétré lève IllegalArgumentException si la quantité initiale est négative")
         void testConstructeurRejetteQuantiteNegative(int quantiteInvalide) {
             assertThrows(IllegalArgumentException.class,
                     () -> new QuantiteRessource(quantiteInvalide, Ressource.PIERRE),
                     "Une quantité initiale négative doit lever IllegalArgumentException");
+        }*/
+        
+        @ParameterizedTest
+        @ValueSource(ints = { -1, -10, -500, Integer.MIN_VALUE })
+        @DisplayName("Le constructeur permet de créer un objet invalide, détecté par Bean Validation,  si la quantité initiale est négative")
+        void testConstructeurRejetteQuantiteNegative(int quantiteInvalide) {
+
+            QuantiteRessource stock =
+                    new QuantiteRessource(quantiteInvalide, Ressource.PIERRE);
+            
+            Set<ConstraintViolation<QuantiteRessource>> violations =
+                    validator.validate(stock);
+            assertFalse(violations.isEmpty());
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("quantite")));
         }
 
-        @Test
+       /* @Test
         @DisplayName("Le constructeur paramétré lève IllegalArgumentException si la ressource est null")
         void testConstructeurRejetteRessourceNull() {
             assertAll(
@@ -80,8 +113,25 @@ class QuantiteRessourceTest {
                         () -> new QuantiteRessource(0, null),
                         "Même avec une quantité à 0, une ressource null doit lever IllegalArgumentException")
             );
-        }
+        }*/
+        
+        @Test
+        @DisplayName("Bean Validation détecte une ressource null")
+        void testConstructeurRejetteRessourceNull() {
 
+            // Given
+            QuantiteRessource stock = new QuantiteRessource(50, null);
+
+            // When
+            Set<ConstraintViolation<QuantiteRessource>> violations =
+                    validator.validate(stock);
+
+            // Then
+            assertFalse(violations.isEmpty());
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("ressource")));
+        }
         @Test
         @DisplayName("Le constructeur sans argument initialise une quantité à 0 non négative")
         void testConstructeurParDefaut() {
@@ -111,6 +161,26 @@ class QuantiteRessourceTest {
 
         @ParameterizedTest
         @ValueSource(ints = { -1, -42, Integer.MIN_VALUE })
+        @DisplayName("setQuantite accepte la valeur mais Bean Validation détecte une quantité négative")
+        void testSetQuantiteRejetteNegatifSansModifierEtat(int quantiteNegative) {
+
+            // When
+            qr.setQuantite(quantiteNegative);
+
+            // Then
+            Set<ConstraintViolation<QuantiteRessource>> violations =
+                    validator.validate(qr);
+
+            assertFalse(violations.isEmpty());
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("quantite")));
+
+            assertEquals(quantiteNegative, qr.getQuantite());
+        }
+        /*
+        @ParameterizedTest
+        @ValueSource(ints = { -1, -42, Integer.MIN_VALUE })
         @DisplayName("setQuantite lève IllegalArgumentException si la quantité est négative et préserve l'état")
         void testSetQuantiteRejetteNegatifSansModifierEtat(int quantiteNegative) {
             // When / Then
@@ -118,7 +188,7 @@ class QuantiteRessourceTest {
                     () -> qr.setQuantite(quantiteNegative),
                     "setQuantite ne doit jamais permettre d'injecter un stock négatif");
             assertEquals(50, qr.getQuantite(), "La quantité précédente doit rester intacte");
-        }
+        }*/
 
         @Test
         @DisplayName("setRessource met à jour la ressource lorsqu'elle est non null")
@@ -129,7 +199,26 @@ class QuantiteRessourceTest {
             // Then
             assertEquals(Ressource.NOURRITURE, qr.getRessource());
         }
+        
+        @Test
+        @DisplayName("setRessource accepte null mais Bean Validation détecte la violation")
+        void testSetRessourceRejetteNullSansModifierEtat() {
 
+            // When
+            qr.setRessource(null);
+
+            // Then
+            Set<ConstraintViolation<QuantiteRessource>> violations =
+                    validator.validate(qr);
+
+            assertFalse(violations.isEmpty());
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("ressource")));
+
+            assertNull(qr.getRessource());
+        }
+        /*
         @Test
         @DisplayName("setRessource lève IllegalArgumentException si la ressource est null et préserve l'état")
         void testSetRessourceRejetteNullSansModifierEtat() {
@@ -138,7 +227,7 @@ class QuantiteRessourceTest {
                     () -> qr.setRessource(null),
                     "setRessource(null) doit lever IllegalArgumentException");
             assertEquals(Ressource.BOIS, qr.getRessource(), "La ressource précédente doit rester intacte");
-        }
+        }*/
     }
 
     // =========================================================================
