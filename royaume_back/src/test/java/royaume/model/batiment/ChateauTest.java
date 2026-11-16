@@ -98,6 +98,9 @@ class ChateauTest {
         assertDoesNotThrow(() -> {
             maison.ameliorer(1,royaume);
         });
+        // [REVIEW TICKET 2] Une fois ameliorer(Royaume) renommée en acheverAmelioration(Royaume),
+        // vous pourrez ici finaliser le chantier comme dans vos autres tests :
+        // maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
         maison.ameliorer(royaume);
        
         assertEquals(2, maison.getNiveau());
