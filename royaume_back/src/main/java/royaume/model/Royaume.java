@@ -3,22 +3,69 @@ package royaume.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "royaume")
 public class Royaume {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotBlank
+	@Size(min=2, max=50)
 	private String nom;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "peuple", nullable = false)
 	private Population peuple;
+	@Min(1)
+	@Max(10)
+	@NotNull
 	private int niveau = 1;
+	@PositiveOrZero
+	@NotNull
 	private int populationDisponible = 100;
+	@PositiveOrZero
+	@NotNull
 	private int populationOuvriere = 0;
+	@PositiveOrZero
+	@NotNull
 	private int populationEnEntrainement = 0;
+	@PositiveOrZero
+	@NotNull
 	private int populationMilitaire = 0;
+	
+	@NotNull
 	private boolean enRuine = false;
-	private List<QuantiteRessource> ressources = creerRessourcesParDefaut();
+	
+	@NotNull
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "ressources", columnDefinition = "json", nullable = false)
+	@Valid
+	private List<@NotNull @Valid QuantiteRessource> ressources = creerRessourcesParDefaut();
 
 	// =========================================================================
 	// Constructeurs
@@ -27,8 +74,6 @@ public class Royaume {
 	public Royaume() {}
 
 	public Royaume(Integer id, String nom, Population peuple) {
-		checkId(id);
-		checkNom(nom);
 		validerPeuple(peuple);
 		this.id = id;
 		this.nom = nom;
@@ -38,11 +83,8 @@ public class Royaume {
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
-		checkId(id);
-		checkNom(nom);
+		
 		validerPeuple(peuple);
-		checkNiveau(niveau);
-		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
 		this.id = id;
 		this.nom = nom;
 		this.peuple = peuple;
@@ -193,7 +235,6 @@ public class Royaume {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -202,7 +243,6 @@ public class Royaume {
 	}
 
 	public void setNom(String nom) {
-		checkNom(nom);
 		this.nom = nom;
 	}
 
@@ -231,7 +271,6 @@ public class Royaume {
 	}
 
 	public void setNiveau(int niveau) {
-		checkNiveau(niveau);
 		this.niveau = niveau;
 	}
 
@@ -240,7 +279,6 @@ public class Royaume {
 	}
 
 	public void setPopulationDisponible(int populationDisponible) {
-		checkPopulation(populationDisponible, "disponible");
 		this.populationDisponible = populationDisponible;
 	}
 
@@ -249,7 +287,6 @@ public class Royaume {
 	}
 
 	public void setPopulationOuvriere(int populationOuvriere) {
-		checkPopulation(populationOuvriere, "ouvrière");
 		this.populationOuvriere = populationOuvriere;
 	}
 
@@ -258,7 +295,6 @@ public class Royaume {
 	}
 
 	public void setPopulationEnEntrainement(int populationEnEntrainement) {
-		checkPopulation(populationEnEntrainement, "en entraînement");
 		this.populationEnEntrainement = populationEnEntrainement;
 	}
 
@@ -267,7 +303,6 @@ public class Royaume {
 	}
 
 	public void setPopulationMilitaire(int populationMilitaire) {
-		checkPopulation(populationMilitaire, "militaire");
 		this.populationMilitaire = populationMilitaire;
 	}
 
@@ -311,22 +346,10 @@ public class Royaume {
 		));
 	}
 
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id ne peut pas être inférieur ou égal à 0.");
-		}
-	}
-
-	private void checkNom(String nom) {
-		if (nom == null || nom.isBlank()) {
-			throw new IllegalArgumentException("Le nom du royaume ne peut pas être vide ou blanc.");
-		}
-	}
+	
 
 	private void validerPeuple(Population peuple) {
-		if (peuple == null) {
-			throw new IllegalArgumentException("Le peuple du royaume ne peut pas être null.");
-		}
+		
 		if (!(peuple instanceof Canards
 				|| peuple instanceof Gobelins
 				|| peuple instanceof Licornes
@@ -336,33 +359,12 @@ public class Royaume {
 		}
 	}
 
-	private void checkNiveau(int niveau) {
-		if (niveau < 1 || niveau > 10) {
-			throw new IllegalArgumentException("Le niveau du royaume doit être compris entre 1 et 10.");
-		}
-	}
-
-	private void checkPopulations(int populationDisponible, int populationOuvriere,
-			int populationEnEntrainement, int populationMilitaire) {
-		checkPopulation(populationDisponible, "disponible");
-		checkPopulation(populationOuvriere, "ouvrière");
-		checkPopulation(populationEnEntrainement, "en entraînement");
-		checkPopulation(populationMilitaire, "militaire");
-	}
-
-	private void checkPopulation(int valeur, String nomChamp) {
-		if (valeur < 0) {
-			throw new IllegalArgumentException("La population " + nomChamp + " ne peut pas être négative.");
-		}
-	}
+	
+	
 
 	private void validerRessources(List<QuantiteRessource> initiales) {
 		if (initiales != null) {
-			for (QuantiteRessource qr : initiales) {
-				if (qr == null) {
-					throw new IllegalArgumentException("La liste de ressources ne peut pas contenir d'élément null.");
-				}
-			}
+			
 			long nbDistinctes = initiales.stream()
 					.map(QuantiteRessource::getRessource)
 					.distinct()
