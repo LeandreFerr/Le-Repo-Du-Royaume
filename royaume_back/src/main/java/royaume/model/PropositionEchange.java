@@ -3,10 +3,34 @@ package royaume.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PropositionEchange {
+import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
+@Table(name="proposition_echange")
+public class PropositionEchange {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
+	@NotNull
+	@DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
+	@Column(name="date_creation", nullable=false)
 	private LocalDateTime dateCreation;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name="statut-echange",nullable=false)
 	private StatutEchange statut = StatutEchange.EN_ATTENTE;
 
 	private Royaume expediteur;
