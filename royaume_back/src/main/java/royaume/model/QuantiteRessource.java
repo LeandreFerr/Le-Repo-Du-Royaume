@@ -2,7 +2,10 @@ package royaume.model;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -12,6 +15,8 @@ public class QuantiteRessource {
 	@PositiveOrZero
 	private int quantite;
 	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ressource", nullable = false)
 	private Ressource ressource;
 	
 	
