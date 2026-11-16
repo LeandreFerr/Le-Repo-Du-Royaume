@@ -48,6 +48,8 @@ class IDAORoyaumeTest {
 
         entityManager.persist(peuple);
         entityManager.flush();
+        assertNotNull(peuple.getId());
+
 
         // =====================================================
         // GIVEN : création d'un royaume
@@ -94,6 +96,8 @@ class IDAORoyaumeTest {
         // =====================================================
 
         assertNotNull(royaumeRelu);
+
+        
 
         assertAll(
 

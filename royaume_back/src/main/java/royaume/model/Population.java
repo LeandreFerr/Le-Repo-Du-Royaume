@@ -2,12 +2,23 @@ package royaume.model;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "type_population", discriminatorType = DiscriminatorType.STRING)
 public abstract class Population {
 
 	// =========================================================================
@@ -17,9 +28,18 @@ public abstract class Population {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
+	@NotBlank
+	@Size(max = 50)
+	@Column(nullable = false)
 	protected String nom;
+	@NotBlank
+	@Size(max = 50)
+	@Column(name = "titre_souverain", nullable = false)
 	protected String titreSouverain;
+	@NotNull
+	@DecimalMin("0.0")
 	protected Double attraction;
+	@Column(name = "capacite_speciale")
 	protected String capaciteSpeciale;
 
 	// =========================================================================
@@ -33,11 +53,11 @@ public abstract class Population {
 	}
 
 	public Population(Integer id, String nom, String titreSouverain, Double attraction, String capaciteSpeciale) {
-		checkId(id);
+		/*checkId(id);
 		checkNom(nom);
 		checkTitreSouverain(titreSouverain);
 		checkAttraction(attraction);
-		checkCapaciteSpeciale(capaciteSpeciale);
+		checkCapaciteSpeciale(capaciteSpeciale);*/
 
 		this.id = id;
 		this.nom = nom;
@@ -95,7 +115,7 @@ public abstract class Population {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
+		//checkId(id);
 		this.id = id;
 	}
 
@@ -104,7 +124,7 @@ public abstract class Population {
 	}
 
 	public void setNom(String nom) {
-		checkNom(nom);
+		//checkNom(nom);
 		this.nom = nom;
 	}
 
@@ -113,7 +133,7 @@ public abstract class Population {
 	}
 
 	public void setTitreSouverain(String titreSouverain) {
-		checkTitreSouverain(titreSouverain);
+		//checkTitreSouverain(titreSouverain);
 		this.titreSouverain = titreSouverain;
 	}
 
@@ -122,7 +142,7 @@ public abstract class Population {
 	}
 
 	public void setAttraction(Double attraction) {
-		checkAttraction(attraction);
+		//checkAttraction(attraction);
 		this.attraction = attraction;
 	}
 
@@ -131,14 +151,14 @@ public abstract class Population {
 	}
 
 	public void setCapaciteSpeciale(String capaciteSpeciale) {
-		checkCapaciteSpeciale(capaciteSpeciale);
+		//checkCapaciteSpeciale(capaciteSpeciale);
 		this.capaciteSpeciale = capaciteSpeciale;
 	}
 
 	// =========================================================================
 	// Validations des invariants
 	// =========================================================================
-
+/*
 	private void checkId(Integer id) {
 		if (id != null && id <= 0) {
 			throw new IllegalArgumentException("L'id ne peut pas être inférieur ou égal à 0.");
@@ -173,7 +193,7 @@ public abstract class Population {
 		if (capaciteSpeciale != null && capaciteSpeciale.isBlank()) {
 			throw new IllegalArgumentException("La capacité spéciale ne peut pas être une chaîne blanche.");
 		}
-	}
+	}*/
 
 	// =========================================================================
 	// Object
