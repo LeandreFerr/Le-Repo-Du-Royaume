@@ -42,5 +42,11 @@ import royaume.model.Population;
 
 	        assertEquals(Canards.class, relue.getClass());
 	        assertEquals("Canards", relue.getNom());
+	        
+	        Population trouvee = populationRepository
+	                .findByNom("Canards")
+	                .orElseThrow();
+
+	        assertEquals(Canards.class, trouvee.getClass());
 	    }
 	}
