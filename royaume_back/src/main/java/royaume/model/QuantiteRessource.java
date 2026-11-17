@@ -9,7 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Embeddable
+// @Embeddable -> Contredit @JdbcTypeCode(SqlTypes.JSON) ? 
 public class QuantiteRessource {
 
 	@PositiveOrZero
