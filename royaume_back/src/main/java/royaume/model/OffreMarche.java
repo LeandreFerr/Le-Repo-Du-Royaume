@@ -37,7 +37,7 @@ public class OffreMarche {
 	
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	@Column(name="statut-offre",nullable=false)
+	@Column(name="statut_offre",nullable=false)
 	private StatutOffre statut = StatutOffre.DISPONIBLE;
 
 	@NotNull
