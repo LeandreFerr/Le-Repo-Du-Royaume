@@ -21,12 +21,6 @@ public class BatimentFactory {
     }
     
     
-    /*
-     * [REVIEW TICKET 1] On peut retirer les paramètres `int capaciteLogement` et
-     * `double bonusCroissance` de cette signature : ils ne sont plus utilisés dans
-     * la méthode (on retire capaciteLogement -> la Maison agit comme un générateur 
-     * de population, et le bonus est déjà calculé par niveau).
-     */
     public static Maison creerMaison(
             Royaume royaume,
             Integer id,

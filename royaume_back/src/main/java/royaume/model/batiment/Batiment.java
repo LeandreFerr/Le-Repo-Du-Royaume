@@ -122,13 +122,9 @@ public abstract class Batiment {
 	// Ne pas mélanger avec fonction construire un bâtiment ! 
 	public void reparer(int montant, int nbouvriersAssignes, Royaume royaume) {
 		
-		// [REVIEW TICKET 2] : Pensez à vérifier si le bâtiment est déjà en chantier 
-		// On ne peut pas réparer un batiment en construction.
-		// Sinon on dit que ça gele la construction le temps de la réparation.
-		
 		if (this.isEnConstruction()) {
 		    throw new IllegalStateException(
-		        "Impossible d'améliorer : le bâtiment est déjà en construction."
+		        "Impossible de réparer : le bâtiment est déjà en construction."
 		    );
 		}
 
@@ -172,8 +168,6 @@ public abstract class Batiment {
 	
 	public void ameliorer(int nbouvriersAssignes, Royaume royaume) {
 		
-		// [REVIEW TICKET 2] : Même chose ici, vérifier si le bâtiment est déjà en chantier
-		
 		if (this.isEnConstruction()) {
 		    throw new IllegalStateException(
 		        "Impossible d'améliorer : le bâtiment est déjà en construction."
@@ -202,8 +196,6 @@ public abstract class Batiment {
 	        }
 	    }
 	    
-	    // [REVIEW TICKET 2 - Réponse question Trello]
-	    // Débiter les ressources directement ici au lancement du chantier, c'est nickel !
 	    // Débiter les ressources du royaume
 	    
 	    for (QuantiteRessource cout : couts) {
@@ -217,14 +209,6 @@ public abstract class Batiment {
 	//////////////////////////////////////////////
 	/// 
     /// // Version qui sera appelée quand le chantier se finalise
-	/*
-	 * [REVIEW TICKET 2 - Par rapport à vos commentaires Trello]
-	 * Pour que ce soit plus clair, je pense que ça serait bien de renommer celle-ci en
-	 * `void acheverAmelioration(Royaume royaume)` avec une visibilité au niveau du package
-	 * (sans `public`, comme vous l'avez fait pour les constructeurs avec BatimentFactory).
-	 * Comme ça, seul ChantierConstruction.finaliser() pourra l'appeler et personne ne
-	 * pourra l'appeler par erreur depuis l'extérieur !
-	 */
 	void acheverAmelioration(Royaume royaume) {
 
 	    if (royaume == null) {

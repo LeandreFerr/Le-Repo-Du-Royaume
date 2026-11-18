@@ -5,19 +5,6 @@ import java.time.LocalDateTime;
 
 import royaume.model.Royaume;
 
-/*
- * ============================================================================
- * [REVIEW TICKET 2 - Logique de chantier de construction]
- * ============================================================================
- * Franchement super boulot sur toute la mécanique des chantiers et la gestion du temps !
- * - Le recalcul dynamique de dateFinPrevue uniquement sur le temps restant
- *   (sans fausser le temps déjà écoulé) lors d'un ajout/retrait d'ouvriers est
- *   super bien pensé et très bien testé.
- * - Les surcharges avec `LocalDateTime maintenant` (calculerTempsRestant,
- *   estPretAAchever, finaliser, assignerOuvriers, retirerOuvriers) c'est top
- *   pour les tests unitaires et ça permettra de brancher l'horloge du jeu directement.
- * ============================================================================
- */
 public class ChantierConstruction {
 
     private Integer id;
@@ -290,9 +277,6 @@ public class ChantierConstruction {
       
         
         batiment.setEnConstruction(false);    // --> Simili :  termine = true;
-        // [REVIEW TICKET 2 - Votre commentaire Trello]
-        // Super d'avoir pensé à actualiser le bonus de croissance ici dès que le chantier
-        // de la Maison (construction ou amélioration) est terminé !
         if (batiment instanceof Maison maison) {
             maison.actualiserBonus(royaume);
         }
