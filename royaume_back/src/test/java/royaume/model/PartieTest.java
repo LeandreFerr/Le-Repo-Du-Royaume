@@ -12,7 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,9 +22,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 @DisplayName("Tests unitaires rigoureux - Classe Partie")
 public class PartieTest {
 
+	private static Validator validator;
+
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
     private Partie partie;
     private Royaume royaume1;
     private Royaume royaume2;
@@ -115,18 +129,38 @@ public class PartieTest {
 
         @ParameterizedTest
         @ValueSource(ints = { 0, 1, -1, -10 })
-        @DisplayName("Le constructeur complet rejette un maxJoueurs < 2 via IllegalArgumentException")
+        @DisplayName("Le Validator détecte un maxJoueurs inférieur à 2")
         void testConstructeurCompletRejetteMaxJoueursInvalide(int maxInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Partie(1, "Invalide", null, 1.0, maxInvalide, null, null, null, null, null));
+            // Given
+            Partie p = new Partie(
+                    1, "Invalide", LocalDateTime.now(), 1.0,
+                    maxInvalide, null, null, null, null, null
+            );
+
+            // When
+            Set<ConstraintViolation<Partie>> violations = validator.validate(p);
+
+            // Then
+            assertTrue(violations.stream()
+                    .anyMatch(v -> v.getPropertyPath().toString().equals("maxJoueurs")));
         }
 
         @ParameterizedTest
         @ValueSource(doubles = { 0.0, -0.5, -2.0, Double.NaN, Double.POSITIVE_INFINITY })
-        @DisplayName("Le constructeur complet rejette une vitesse <= 0 ou non finie via IllegalArgumentException")
+        @DisplayName("Le Validator détecte une vitesse de jeu invalide")
         void testConstructeurCompletRejetteVitesseInvalide(double vitesseInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Partie(1, "Invalide", null, vitesseInvalide, 4, null, null, null, null, null));
+            // Given
+            Partie p = new Partie(
+                    1, "Invalide", LocalDateTime.now(), vitesseInvalide,
+                    4, null, null, null, null, null
+            );
+
+            // When
+            Set<ConstraintViolation<Partie>> violations = validator.validate(p);
+
+            // Then
+            assertTrue(violations.stream()
+                    .anyMatch(v -> v.getPropertyPath().toString().equals("vitesseJeu")));
         }
     }
 
@@ -582,44 +616,66 @@ public class PartieTest {
     @DisplayName("Validation de la configuration et des setters")
     class ConfigurationEtSettersTests {
 
-        @ParameterizedTest
-        @ValueSource(ints = { 0, 1, -1, -50 })
-        @DisplayName("setMaxJoueurs rejette toute valeur < 2 via IllegalArgumentException sans altérer l'état")
-        void testSetMaxJoueursValidation(int maxInvalide) {
-            partie.setMaxJoueurs(8);
+    	@ParameterizedTest
+    	@ValueSource(ints = { 0, 1, -1, -50 })
+    	@DisplayName("setMaxJoueurs accepte les valeurs invalides mais Validator les détecte")
+    	void testSetMaxJoueursValidation(int maxInvalide) {
+    	    // Given
+    	    partie.setMaxJoueurs(8);
 
-            assertThrows(IllegalArgumentException.class, () -> partie.setMaxJoueurs(maxInvalide));
-            assertEquals(8, partie.getMaxJoueurs());
-        }
+    	    // When
+    	    partie.setMaxJoueurs(maxInvalide);
+    	    Set<ConstraintViolation<Partie>> violations = validator.validate(partie);
 
-        @ParameterizedTest
-        @ValueSource(doubles = { 0.0, -1.0, -5.5, Double.NaN, Double.POSITIVE_INFINITY })
-        @DisplayName("setVitesseJeu rejette toute valeur <= 0 ou non finie via IllegalArgumentException")
-        void testSetVitesseJeuValidation(double vitesseInvalide) {
-            partie.setVitesseJeu(1.5);
+    	    // Then
+    	    assertTrue(violations.stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("maxJoueurs")));
+    	}
 
-            assertThrows(IllegalArgumentException.class, () -> partie.setVitesseJeu(vitesseInvalide));
-            assertEquals(1.5, partie.getVitesseJeu());
-        }
+    	@ParameterizedTest
+    	@ValueSource(doubles = { 0.0, -1.0, -5.5 })
+    	@DisplayName("setVitesseJeu accepte les valeurs inférieures à 0.1 mais Validator les détecte")
+    	void testSetVitesseJeuValidation(double vitesseInvalide) {
+    	    // Given
+    	    partie.setVitesseJeu(1.5);
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t\n" })
-        @DisplayName("setNom rejette une chaîne vide ou blanche via IllegalArgumentException")
-        void testSetNomValidationChaineBlanche(String nomInvalide) {
-            partie.setNom("Valide");
+    	    // When
+    	    partie.setVitesseJeu(vitesseInvalide);
+    	    Set<ConstraintViolation<Partie>> violations = validator.validate(partie);
 
-            assertThrows(IllegalArgumentException.class, () -> partie.setNom(nomInvalide));
-            assertEquals("Valide", partie.getNom());
-        }
+    	    // Then
+    	    assertTrue(violations.stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("vitesseJeu")));
+    	}
 
-        @Test
-        @DisplayName("setNom rejette null via IllegalArgumentException")
-        void testSetNomRejetteNull() {
-            partie.setNom("Valide");
+    	@ParameterizedTest
+    	@ValueSource(strings = { "", "   ", "\t\n" })
+    	@DisplayName("setNom accepte une chaîne blanche mais Validator la détecte")
+    	void testSetNomValidationChaineBlanche(String nomInvalide) {
+    	    // Given
+    	    partie.setNom("Valide");
 
-            assertThrows(IllegalArgumentException.class, () -> partie.setNom(null));
-            assertEquals("Valide", partie.getNom());
-        }
+    	    // When
+    	    partie.setNom(nomInvalide);
+    	    Set<ConstraintViolation<Partie>> violations = validator.validate(partie);
+
+    	    // Then
+    	    assertTrue(violations.stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("nom")));
+    	}
+
+    	@Test
+    	@DisplayName("setNom accepte null mais Validator le détecte")
+    	void testSetNomRejetteNull() {
+    	    partie.setNom("Valide");
+
+    	    partie.setNom(null);
+
+    	    Set<ConstraintViolation<Partie>> violations = validator.validate(partie);
+
+    	    assertTrue(violations.stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("nom")));
+    	}
 
         @ParameterizedTest
         @ValueSource(ints = { 0, -1, -99 })

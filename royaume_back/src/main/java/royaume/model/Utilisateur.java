@@ -37,7 +37,6 @@ public class Utilisateur {
     @Column(nullable = false, unique = true, length = 100)
 	private String email;
 	@NotBlank
-	@NotNull
     @Size(min = 6)
     @Column(nullable = false)
 	private String password;
