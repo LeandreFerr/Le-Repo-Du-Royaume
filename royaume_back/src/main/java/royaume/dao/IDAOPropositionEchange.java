@@ -11,6 +11,5 @@ import royaume.model.StatutEchange;
 
 public interface IDAOPropositionEchange extends JpaRepository<PropositionEchange, Integer> {
 	
-	@Query("Find by Destinataire and Statut")
-	List<PropositionEchange> findByDestinataireeAndStatut(Royaume destinataire, StatutEchange statut);
+	List<PropositionEchange> findByDestinataireAndStatut(Royaume destinataire, StatutEchange statut);
 }
