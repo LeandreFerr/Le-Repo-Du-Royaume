@@ -74,6 +74,8 @@ public class Message {
 	public boolean estGlobal() {
 		return destinataire == null;
 	}
+	
+	
 
 	// =========================================================================
 	// Getters & Setters

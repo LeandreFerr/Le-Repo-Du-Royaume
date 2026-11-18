@@ -200,7 +200,10 @@ public class Partie {
 		messages.add(message);
 		return true;
 	}
-
+	
+	public void supprimerMessage(Message message) {
+	    messages.remove(message);
+	}
 	// =========================================================================
 	// Getters & Setters
 	// =========================================================================
