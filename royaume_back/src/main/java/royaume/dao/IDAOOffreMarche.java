@@ -11,9 +11,6 @@ import royaume.model.StatutOffre;
 
 public interface IDAOOffreMarche extends JpaRepository<OffreMarche, Integer> {
 
-	@Query("Find offre by statut")
 	List<OffreMarche> findByStatut(StatutOffre statut);
-	
-	@Query("Find offre by statut et type de ressource proposee")
-	List<OffreMarche> findbyStatutAndProposeRessource (StatutOffre statut, Ressource ressource);
+	List<OffreMarche> findByStatutAndProposeRessource (StatutOffre statut, Ressource ressource);
 }
