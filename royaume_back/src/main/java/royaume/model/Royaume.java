@@ -1,7 +1,14 @@
 package royaume.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import royaume.model.batiment.Batiment;
+import royaume.model.batiment.BatimentFactory;
+import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.Chateau;
+import royaume.model.batiment.Maison;
 
 public class Royaume {
 
@@ -18,7 +25,9 @@ public class Royaume {
 	private int populationEnEntrainement = 0;
 	private int populationMilitaire = 0;
 	private boolean enRuine = false;
+	private double bonusCroissance = 0.0;
 	private List<QuantiteRessource> ressources = creerRessourcesParDefaut();
+	private List<Batiment> batiments = new ArrayList<>();
 
 	// =========================================================================
 	// Constructeurs
@@ -33,6 +42,7 @@ public class Royaume {
 		this.id = id;
 		this.nom = nom;
 		this.peuple = peuple;
+		BatimentFactory.creerChateauInitial(this);
 	}
 
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
@@ -53,6 +63,31 @@ public class Royaume {
 		this.populationMilitaire = populationMilitaire;
 		this.enRuine = enRuine;
 		setRessources(ressources);
+		BatimentFactory.creerChateauInitial(this);
+	}
+
+	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
+			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
+			List<QuantiteRessource> ressources, List<Batiment> batiments) {
+		checkId(id);
+		checkNom(nom);
+		validerPeuple(peuple);
+		checkNiveau(niveau);
+		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
+		this.id = id;
+		this.nom = nom;
+		this.peuple = peuple;
+		this.niveau = niveau;
+		this.populationDisponible = populationDisponible;
+		this.populationOuvriere = populationOuvriere;
+		this.populationEnEntrainement = populationEnEntrainement;
+		this.populationMilitaire = populationMilitaire;
+		this.enRuine = enRuine;
+		setRessources(ressources);
+		this.batiments = batiments != null ? new ArrayList<>(batiments) : new ArrayList<>();
+		if (getChateau() == null) {
+			BatimentFactory.creerChateauInitial(this);
+		}
 	}
 
 	// =========================================================================
@@ -111,7 +146,8 @@ public class Royaume {
 		if (!Double.isFinite(taux) || taux < -1.0) {
 			throw new IllegalArgumentException("Le taux de croissance doit être un nombre fini supérieur ou égal à -1.0.");
 		}
-		long resultat = Math.round(populationDisponible * (1.0 + taux));
+		double tauxTotal = taux + bonusCroissance;
+		long resultat = Math.round(populationDisponible * (1.0 + tauxTotal));
 		populationDisponible = Math.toIntExact(resultat);
 	}
 
@@ -180,8 +216,127 @@ public class Royaume {
 		}
 
 		setNiveau(niveauSuivant);
+		Chateau chateau = getChateau();
+		if (chateau != null) {
+			chateau.ameliorer();
+			chateau.alerteNiveau10();
+		}
 		System.out.println("Le royaume atteint le niveau " + this.niveau);
 		return true;
+	}
+
+	// ------------------------- Gestion des bâtiments & ouvriers (Module 4) -------------------------
+
+	public Chateau getChateau() {
+		return batiments.stream()
+				.filter(Chateau.class::isInstance)
+				.map(Chateau.class::cast)
+				.findFirst()
+				.orElse(null);
+	}
+
+	public double getBonusCroissance() {
+		return bonusCroissance;
+	}
+
+	public void ajouterBonusCroissance(double bonus) {
+		bonusCroissance += bonus;
+	}
+
+	public void retirerBonusCroissance(double bonus) {
+		bonusCroissance = Math.max(0.0, bonusCroissance - bonus);
+	}
+
+	public void ajouterBatiment(Batiment batiment) {
+		if (batiment == null) {
+			throw new IllegalArgumentException("Le bâtiment ne peut pas être null");
+		}
+
+		if (batiment instanceof Chateau) {
+			boolean chateauExiste = batiments.stream().anyMatch(Chateau.class::isInstance);
+			if (chateauExiste) {
+				throw new IllegalArgumentException("Un château existe déjà dans ce royaume");
+			}
+		}
+
+		if (batiment instanceof BatimentProduction production) {
+			boolean ressourceExiste = batiments.stream()
+					.filter(BatimentProduction.class::isInstance)
+					.map(BatimentProduction.class::cast)
+					.anyMatch(b -> b.getTypeRessource() == production.getTypeRessource());
+
+			if (ressourceExiste) {
+				throw new IllegalArgumentException("Un bâtiment produit déjà cette ressource dans ce royaume");
+			}
+		}
+
+		batiments.add(batiment);
+	}
+
+	public void retirerBatiment(Batiment batiment) {
+		if (batiment == null) {
+			return;
+		}
+
+		if (batiment instanceof Chateau) {
+			this.enRuine = true;
+			return;
+		}
+
+		if (batiment instanceof Maison maison) {
+			retirerBonusCroissance(maison.getBonusPropre());
+		}
+
+		batiments.remove(batiment);
+	}
+
+	public boolean estEnRuine() {
+		Chateau chateau = getChateau();
+		if (chateau != null && chateau.getPointsDeVie() == 0) {
+			this.enRuine = true;
+		}
+		return this.enRuine;
+	}
+
+	public Batiment getBatimentParId(Integer id) {
+		return batiments.stream()
+				.filter(b -> b.getId() != null && b.getId().equals(id))
+				.findFirst()
+				.orElse(null);
+	}
+
+	public void recevoirDegats(Batiment batiment, int degats) {
+		if (batiment == null || !batiments.contains(batiment)) {
+			throw new IllegalArgumentException("Ce bâtiment n'appartient pas à ce royaume.");
+		}
+
+		batiment.subirDegats(degats);
+
+		if (batiment.getPointsDeVie() == 0) {
+			retirerBatiment(batiment);
+		}
+	}
+
+	public void affecterOuvriers(int nombre) {
+		if (nombre <= 0) {
+			throw new IllegalArgumentException("Le nombre d'ouvriers doit être positif.");
+		}
+
+		if (populationDisponible < nombre) {
+			throw new IllegalStateException("Population disponible insuffisante.");
+		}
+
+		populationDisponible -= nombre;
+		populationOuvriere += nombre;
+	}
+
+	public void libererOuvriers(int nombre) {
+		if (nombre <= 0 || populationOuvriere < nombre) {
+			throw new IllegalArgumentException("Impossible de libérer ces ouvriers.");
+		}
+
+		populationOuvriere -= nombre;
+		populationDisponible += nombre;
 	}
 
 	// =========================================================================
@@ -296,6 +451,10 @@ public class Royaume {
 					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
 			}
 		}
+	}
+
+	public List<Batiment> getBatiments() {
+		return Collections.unmodifiableList(batiments);
 	}
 
 	// =========================================================================
