@@ -2,18 +2,51 @@ package royaume.model;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "utilisateur")
 public class Utilisateur {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotBlank
+	@Size(min = 3, max = 30)
+	@Column(nullable = false, unique = true, length = 30)
 	private String pseudo;
+	@NotBlank
+    @Email
+    @Size(max = 100)
+    @Column(nullable = false, unique = true, length = 100)
 	private String email;
+	@NotBlank
+	@NotNull
+    @Size(min = 6)
+    @Column(nullable = false)
 	private String password;
+    @Column(nullable = false)
 	private boolean online = false;
+    @Column(nullable = false)
 	private boolean admin = false;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "royaume_id", nullable = true)
 	private Royaume royaume;
 
 	// =========================================================================
@@ -24,10 +57,7 @@ public class Utilisateur {
 
 	public Utilisateur(Integer id, String pseudo, String email, String password, boolean online, boolean admin,
 			Royaume royaume) {
-		checkId(id);
-		checkPseudo(pseudo);
-		checkEmail(email);
-		checkPassword(password);
+		
 		this.id = id;
 		this.pseudo = pseudo;
 		this.email = email;
@@ -69,7 +99,6 @@ public class Utilisateur {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -78,7 +107,6 @@ public class Utilisateur {
 	}
 
 	public void setPseudo(String pseudo) {
-		checkPseudo(pseudo);
 		this.pseudo = pseudo;
 	}
 
@@ -87,7 +115,6 @@ public class Utilisateur {
 	}
 
 	public void setEmail(String email) {
-		checkEmail(email);
 		this.email = email;
 	}
 
@@ -96,7 +123,6 @@ public class Utilisateur {
 	}
 
 	public void setPassword(String password) {
-		checkPassword(password);
 		this.password = password;
 	}
 
@@ -124,33 +150,7 @@ public class Utilisateur {
 		this.royaume = royaume;
 	}
 
-	// =========================================================================
-	// Méthodes helpers & Validations
-	// =========================================================================
-
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id de l'utilisateur doit être strictement positif.");
-		}
-	}
-
-	private void checkPseudo(String pseudo) {
-		if (pseudo == null || pseudo.isBlank()) {
-			throw new IllegalArgumentException("Le pseudo de l'utilisateur ne peut pas être vide ou blanc.");
-		}
-	}
-
-	private void checkEmail(String email) {
-		if (email == null || email.isBlank()) {
-			throw new IllegalArgumentException("L'email de l'utilisateur ne peut pas être vide ou blanc.");
-		}
-	}
-
-	private void checkPassword(String password) {
-		if (password == null || password.isBlank()) {
-			throw new IllegalArgumentException("Le mot de passe ne peut pas être vide ou blanc.");
-		}
-	}
+	
 
 	// =========================================================================
 	// Égalité & HashCode

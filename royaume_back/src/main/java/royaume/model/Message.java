@@ -2,19 +2,51 @@ package royaume.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+@Entity
+@Table(name = "message")
 public class Message {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotBlank
+    @Size(max = 1000)
+    @Column(nullable = false, length = 1000)
 	private String contenu;
+	@NotNull
+	@Column(name = "date_envoi", nullable = false)
 	private LocalDateTime dateEnvoi;
+    @Column(nullable = false)
 	private boolean lu = false;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "partie_id", nullable = false)
 	private Partie partie;
+    
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "expediteur_id", nullable = false)
 	private Utilisateur expediteur;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destinataire_id", nullable = true)
 	private Utilisateur destinataire;
 
 	// =========================================================================
@@ -25,10 +57,7 @@ public class Message {
 
 	public Message(Integer id, String contenu, LocalDateTime dateEnvoi, boolean lu, Partie partie,
 			Utilisateur expediteur, Utilisateur destinataire) {
-		checkId(id);
-		checkContenu(contenu);
-		checkExpediteur(expediteur);
-		checkDestinataire(expediteur, destinataire);
+		
 		this.id = id;
 		this.contenu = contenu;
 		this.dateEnvoi = dateEnvoi;
@@ -55,7 +84,6 @@ public class Message {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -64,7 +92,6 @@ public class Message {
 	}
 
 	public void setContenu(String contenu) {
-		checkContenu(contenu);
 		this.contenu = contenu;
 	}
 
@@ -97,7 +124,6 @@ public class Message {
 	}
 
 	public void setExpediteur(Utilisateur expediteur) {
-		checkExpediteur(expediteur);
 		this.expediteur = expediteur;
 	}
 
@@ -106,37 +132,9 @@ public class Message {
 	}
 
 	public void setDestinataire(Utilisateur destinataire) {
-		checkDestinataire(this.expediteur, destinataire);
 		this.destinataire = destinataire;
 	}
 
-	// =========================================================================
-	// Méthodes helpers & Validations
-	// =========================================================================
-
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id du message doit être strictement positif.");
-		}
-	}
-
-	private void checkContenu(String contenu) {
-		if (contenu == null || contenu.isBlank()) {
-			throw new IllegalArgumentException("Le contenu du message ne peut pas être vide ou blanc.");
-		}
-	}
-
-	private void checkExpediteur(Utilisateur expediteur) {
-		if (expediteur == null) {
-			throw new IllegalArgumentException("L'expéditeur du message ne peut pas être null.");
-		}
-	}
-
-	private void checkDestinataire(Utilisateur expediteur, Utilisateur destinataire) {
-		if (expediteur != null && destinataire != null && expediteur.equals(destinataire)) {
-			throw new IllegalArgumentException("Un utilisateur ne peut pas s'envoyer un message privé à lui-même.");
-		}
-	}
 
 	// =========================================================================
 	// Représentation

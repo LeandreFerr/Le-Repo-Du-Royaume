@@ -5,24 +5,74 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+@Entity
+@Table(name = "partie")
 public class Partie {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
-
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotBlank
+    @Size(min = 2, max = 100)
+    @Column(nullable = false, length = 100)
 	private String nom;
+	@NotNull
+    @Column(name = "date_creation", nullable = false)
 	private LocalDateTime dateCreation;
+	@DecimalMin("0.1")
+    @Column(name = "vitesse_jeu", nullable = false)
 	private double vitesseJeu = 1.0;
+	@Min(2)
+    @Column(name = "max_joueurs", nullable = false)
 	private int maxJoueurs = 10;
-
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vainqueur_id", nullable = true)
 	private Utilisateur vainqueur;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "type_victoire")
 	private TypeVictoire typeVictoire;
 
+	@OneToMany(mappedBy = "partie",
+	            cascade = CascadeType.ALL,
+	             orphanRemoval = true)
 	private List<Message> messages = new ArrayList<>();
+	
+	@ManyToMany
+    @JoinTable(
+        name = "partie_royaumes",
+        joinColumns = @JoinColumn(name = "partie_id"),
+        inverseJoinColumns = @JoinColumn(name = "royaume_id"))
 	private List<Royaume> royaumes = new ArrayList<>();
 
+	@NotNull
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
 	private StatutPartie statut = StatutPartie.EN_ATTENTE;
 
 	// =========================================================================
@@ -34,12 +84,6 @@ public class Partie {
 	public Partie(Integer id, String nom, LocalDateTime dateCreation, double vitesseJeu, int maxJoueurs,
 			Utilisateur vainqueur, TypeVictoire typeVictoire, List<Message> messages,
 			List<Royaume> royaumes, StatutPartie statut) {
-		checkId(id);
-		if (nom != null) {
-			checkNom(nom);
-		}
-		checkVitesseJeu(vitesseJeu);
-		checkMaxJoueurs(maxJoueurs);
 
 		this.id = id;
 		this.nom = nom;
@@ -166,7 +210,6 @@ public class Partie {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -175,7 +218,6 @@ public class Partie {
 	}
 
 	public void setNom(String nom) {
-		checkNom(nom);
 		this.nom = nom;
 	}
 
@@ -192,7 +234,6 @@ public class Partie {
 	}
 
 	public void setVitesseJeu(double vitesseJeu) {
-		checkVitesseJeu(vitesseJeu);
 		this.vitesseJeu = vitesseJeu;
 	}
 
@@ -201,7 +242,6 @@ public class Partie {
 	}
 
 	public void setMaxJoueurs(int maxJoueurs) {
-		checkMaxJoueurs(maxJoueurs);
 		this.maxJoueurs = maxJoueurs;
 	}
 
@@ -245,34 +285,7 @@ public class Partie {
 		this.messages = (messages != null) ? new ArrayList<>(messages) : new ArrayList<>();
 	}
 
-	// =========================================================================
-	// Méthodes helpers & Validations
-	// =========================================================================
-
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id de la partie doit être strictement positif.");
-		}
-	}
-
-	private void checkNom(String nom) {
-		if (nom == null || nom.isBlank()) {
-			throw new IllegalArgumentException("Le nom de la partie ne peut pas être vide ou blanc.");
-		}
-	}
-
-	private void checkMaxJoueurs(int maxJoueurs) {
-		if (maxJoueurs < 2) {
-			throw new IllegalArgumentException("Le nombre maximal de joueurs doit être d'au moins 2.");
-		}
-	}
-
-	private void checkVitesseJeu(double vitesseJeu) {
-		if (!Double.isFinite(vitesseJeu) || vitesseJeu <= 0.0) {
-			throw new IllegalArgumentException("La vitesse de jeu doit être un nombre strictement positif.");
-		}
-	}
-
+	
 	// =========================================================================
 	// Représentation
 	// =========================================================================
