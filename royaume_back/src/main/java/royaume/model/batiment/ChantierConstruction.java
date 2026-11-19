@@ -3,20 +3,49 @@ package royaume.model.batiment;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import royaume.model.Royaume;
-
+@Entity
+@Table(name = "chantier")
 public class ChantierConstruction {
-
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "batiment_id",
+                nullable = false,
+                unique = true)
     private Batiment batiment;
     private Royaume royaume;
+    @Positive
+	@NotNull
+	@Column(name = "nb_ouvriers_minimum", nullable = false)
     private int ouvriersMinimum = 1;
+    @PositiveOrZero
+	@NotNull
+	@Column(name = "ouvriers_assignes", nullable = false)
     private int ouvriersAssignes = 0;
+    @PositiveOrZero
+	@NotNull
+	@Column(name = "temps_de_base", nullable = false)
     private int tempsBaseSecondes;
+	@Column(name = "est_une_amelioration", nullable = false)
     private boolean amelioration = false;
-
-    private LocalDateTime dateDebut;				 // Ajout regle dateFin > dateDebut 
+	@Column(name = "date_debut", nullable = false)
+    private LocalDateTime dateDebut;				 // Ajout regle dateFin > dateDebut
+	@Column(name = "date_fin", nullable = false)
     private LocalDateTime dateFinPrevue;  
     											//  getTempsConstruction()/ ouvriersAssigne = dateFinPrevu
   

@@ -3,23 +3,68 @@ package royaume.model.batiment;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 
+@Entity
+@Table(name = "batiment")
 public abstract class Batiment {
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	protected Integer id;
+	@Column(nullable = false)
+	@NotBlank
+	@Size(min=2, max=50)
 	protected String nom;
+	@Column(nullable = false)
+	@Min(1)
+	@Max(10)
+	@NotNull
 	protected int niveau = 1;
+	@Column(name = "point_de_vie", nullable = false)
+	@PositiveOrZero
+	@NotNull
 	protected int pointsDeVie;
+	@Column(name = "point_de_vie_max", nullable = false)
+	@Positive
+	@NotNull
 	protected int pointsDeVieMax;
+	@Column(name = "en_construction", nullable = false)
 	protected boolean enConstruction = false; // A passer à true dans Chantier mais là init à false.
+	
+	@OneToOne(mappedBy = "batiment",
+		      cascade = CascadeType.ALL,
+		      orphanRemoval = true,
+		      fetch = FetchType.LAZY)
 	private ChantierConstruction chantier; // ça c'est optionnel ET nullable :  quand ya pas besion ;  on peut le mettre null
 	
 	protected int montantReparationEnCours = 0;
 	
-	
+	/////////////////////////
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "royaume_id", nullable = false)
+	protected Royaume royaume;
+	//////////////////////////////////////////////////////
+	/// 
 	public Batiment(Integer id, String nom, int niveau, int pointsDeVie, int pointsDeVieMax, boolean enConstruction) {
 		this.id = id;
 		this.nom = nom;
