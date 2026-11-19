@@ -28,6 +28,7 @@ public class Royaume {
 	private double bonusCroissance = 0.0;
 	private List<QuantiteRessource> ressources = creerRessourcesParDefaut();
 	private List<Batiment> batiments = new ArrayList<>();
+	private EmplacementCarte emplacement;
 
 	// =========================================================================
 	// Constructeurs
@@ -88,6 +89,30 @@ public class Royaume {
 		if (getChateau() == null) {
 			BatimentFactory.creerChateauInitial(this);
 		}
+	}
+
+	// Constructeur pour pouvoir attacher un emplacement au royaume
+
+	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
+			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
+			List<QuantiteRessource> ressources, EmplacementCarte emplacement) {
+		checkId(id);
+		checkNom(nom);
+		validerPeuple(peuple);
+		checkNiveau(niveau);
+		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
+		this.id = id;
+		this.nom = nom;
+		this.peuple = peuple;
+		this.niveau = niveau;
+		this.populationDisponible = populationDisponible;
+		this.populationOuvriere = populationOuvriere;
+		this.populationEnEntrainement = populationEnEntrainement;
+		this.populationMilitaire = populationMilitaire;
+		this.enRuine = enRuine;
+		setRessources(ressources);
+		this.emplacement = emplacement;
+		BatimentFactory.creerChateauInitial(this);
 	}
 
 	// =========================================================================
@@ -455,6 +480,30 @@ public class Royaume {
 
 	public List<Batiment> getBatiments() {
 		return Collections.unmodifiableList(batiments);
+	}
+
+	public EmplacementCarte getEmplacement() {
+		return emplacement;
+	}
+
+	public void setEmplacement(EmplacementCarte emplacement) {
+		this.emplacement = emplacement;
+	}
+
+	public int getX() {
+		if (emplacement == null) {
+			throw new IllegalStateException("Le royaume n'est rattaché à aucun emplacement.");
+		}
+
+		return emplacement.getCoordX();
+	}
+
+	public int getY() {
+		if (emplacement == null) {
+			throw new IllegalStateException("Le royaume n'est rattaché à aucun emplacement.");
+		}
+
+		return emplacement.getCoordY();
 	}
 
 	// =========================================================================
