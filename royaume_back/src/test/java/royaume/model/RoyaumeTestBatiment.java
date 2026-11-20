@@ -18,6 +18,11 @@ import royaume.model.batiment.ChantierConstruction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
 
+import royaume.model.Peuple.Population;
+import royaume.model.Peuple.Canards;
+import royaume.model.Peuple.Princesses;
+
+
 class RoyaumeTestBatiment {
 
     private static final Population PEUPLE_TEST = new Canards(1, "Canards", "Archiduc", 0.05);

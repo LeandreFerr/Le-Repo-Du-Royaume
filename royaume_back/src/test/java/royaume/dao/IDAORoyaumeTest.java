@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import jakarta.persistence.EntityManager;
-import royaume.model.Canards;
-import royaume.model.Population;
+import royaume.model.Peuple.Canards;
+import royaume.model.Peuple.Population;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
