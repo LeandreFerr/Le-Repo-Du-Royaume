@@ -7,7 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import royaume.model.QuantiteRessource;
 
@@ -16,12 +15,10 @@ import royaume.model.QuantiteRessource;
 public class Chateau extends Batiment{
 	@Min(1)
 	@Max(10)
-	@NotNull
 	@Column(name = "niveau_palier_debloque", nullable = false)
 	private int niveauPalierDebloque;
 	@PositiveOrZero
-	@NotNull
-	@Column(name = "bonus_defense", nullable = false)
+	@Column(name = "bonus_defense_royaume", nullable = false)
 	private double bonusDefenseRoyaume;
 	
 	
@@ -43,7 +40,9 @@ public class Chateau extends Batiment{
 		this.bonusDefenseRoyaume = 0.0;
 	}
 
-
+	protected Chateau() {
+		super();
+		}
 	
 	public int getNiveauPalierDebloque() {
 		return niveauPalierDebloque;

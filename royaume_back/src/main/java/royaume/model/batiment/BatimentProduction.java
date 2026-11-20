@@ -22,7 +22,6 @@ public class BatimentProduction extends Batiment{
 	@Column(name = "ressource_produite", nullable = false)
 	private Ressource typeRessource;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "production_base_par_heure", nullable = false)
 	private int productionBaseHeure;  
 	
@@ -36,7 +35,9 @@ public class BatimentProduction extends Batiment{
 		this.typeRessource = typeRessource;
 		this.productionBaseHeure = productionBaseHeure;
 	}
-
+	protected BatimentProduction() {
+	    super();
+	}
 
 
 	/*

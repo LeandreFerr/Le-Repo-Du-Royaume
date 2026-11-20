@@ -4,7 +4,6 @@ import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import royaume.config.ConfigurationPalliersBatiment;
 import royaume.model.QuantiteRessource;
@@ -17,7 +16,6 @@ public class Maison extends Batiment {
  // Le bonus global -> déplacer vers Royaume + pas en static :  sinon c'est commun a tout les royaumes
     //private static double bonusCroissance = 0.0;  
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "bonus_propre_croissance_pop", nullable = false)
     private double bonusPropre =0.0;
     
@@ -31,7 +29,9 @@ public class Maison extends Batiment {
        // Maison.bonusCroissance += 0.12;  -> avec retirerBonus et ajouterBonus pour si maison detruite
     }
      
-     
+     protected Maison() {
+    	    super();
+    	}
      /////////////////////  A faire à chaque fois que la maison change de niveau + a la creation
      public void actualiserBonus(Royaume royaume) {
 

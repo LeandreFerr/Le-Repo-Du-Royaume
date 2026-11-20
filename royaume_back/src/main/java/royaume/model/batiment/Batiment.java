@@ -10,6 +10,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
@@ -27,6 +29,7 @@ import royaume.model.Royaume;
 
 @Entity
 @Table(name = "batiment")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Batiment {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,15 +41,12 @@ public abstract class Batiment {
 	@Column(nullable = false)
 	@Min(1)
 	@Max(10)
-	@NotNull
 	protected int niveau = 1;
 	@Column(name = "point_de_vie", nullable = false)
 	@PositiveOrZero
-	@NotNull
 	protected int pointsDeVie;
 	@Column(name = "point_de_vie_max", nullable = false)
 	@Positive
-	@NotNull
 	protected int pointsDeVieMax;
 	@Column(name = "en_construction", nullable = false)
 	protected boolean enConstruction = false; // A passer à true dans Chantier mais là init à false.
@@ -57,6 +57,7 @@ public abstract class Batiment {
 		      fetch = FetchType.LAZY)
 	private ChantierConstruction chantier; // ça c'est optionnel ET nullable :  quand ya pas besion ;  on peut le mettre null
 	
+	@Column(name = "montant_reparation_en_cours", nullable = false)
 	protected int montantReparationEnCours = 0;
 	
 	/////////////////////////
@@ -141,12 +142,21 @@ public abstract class Batiment {
 		this.montantReparationEnCours = montantReparationEnCours;
 	}
 	
+	public Royaume getRoyaume() {
+		return royaume;
+	}
+
+	public void setRoyaume(Royaume royaume) {
+		this.royaume = royaume;
+	}
+
 	
 	//___________________________________________________________________
 	
 	
 
 
+	
 	public void subirDegats(int degats) {
 	
 	    if (degats < 0) {

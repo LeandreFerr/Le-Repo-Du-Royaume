@@ -10,9 +10,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import royaume.model.Royaume;
@@ -28,17 +28,16 @@ public class ChantierConstruction {
                 nullable = false,
                 unique = true)
     private Batiment batiment;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "royaume_id", nullable = false)
     private Royaume royaume;
     @Positive
-	@NotNull
 	@Column(name = "nb_ouvriers_minimum", nullable = false)
     private int ouvriersMinimum = 1;
     @PositiveOrZero
-	@NotNull
 	@Column(name = "ouvriers_assignes", nullable = false)
     private int ouvriersAssignes = 0;
     @PositiveOrZero
-	@NotNull
 	@Column(name = "temps_de_base", nullable = false)
     private int tempsBaseSecondes;
 	@Column(name = "est_une_amelioration", nullable = false)
@@ -99,6 +98,8 @@ public class ChantierConstruction {
 
         initialiserDateFin()  ;
         
+    }
+    protected ChantierConstruction() {
     }
 
     // ---------------- MÉTHODES MÉTIER ----------------

@@ -56,27 +56,21 @@ public class Royaume {
 	private Population peuple;
 	@Min(1)
 	@Max(10)
-	@NotNull
 	@Column(nullable = false)
 	private int niveau = 1;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_disponible", nullable = false)
 	private int populationDisponible = 100;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_ouvriere", nullable = false)
 	private int populationOuvriere = 0;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_entrainement", nullable = false)
 	private int populationEnEntrainement = 0;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
 
-	@NotNull
 	@Column(name = "en_ruine", nullable = false)
 	private boolean enRuine = false;
 
@@ -347,14 +341,14 @@ public class Royaume {
 				throw new IllegalArgumentException("Un bâtiment produit déjà cette ressource dans ce royaume");
 			}
 		}
-
+	    batiment.setRoyaume(this);
 		batiments.add(batiment);
 	}
 
 	public void retirerBatiment(Batiment batiment) {
-		if (batiment == null) {
-			return;
-		}
+		 if (batiment == null || !batiments.contains(batiment)) {
+		        return;
+		    }
 
 		if (batiment instanceof Chateau) {
 			this.enRuine = true;
@@ -366,6 +360,7 @@ public class Royaume {
 		}
 
 		batiments.remove(batiment);
+        batiment.setRoyaume(null);
 	}
 
 	public boolean estEnRuine() {
