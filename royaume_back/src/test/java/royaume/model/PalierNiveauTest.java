@@ -1,6 +1,13 @@
 package royaume.model;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
+import java.util.Set;
+
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import org.junit.jupiter.api.BeforeAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -22,7 +29,15 @@ import royaume.config.ConfigurationPaliers;
 
 @DisplayName("Tests unitaires complets de PalierNiveau et montée de niveau (Module 3)")
 public class PalierNiveauTest {
+	
+	private static Validator validator;
 
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
+	
 	private static final Population PEUPLE_TEST = new Canards(1, "Canards", "Archiduc", 0.05);
 
 	private Royaume royaume;
@@ -363,6 +378,10 @@ public class PalierNiveauTest {
 	// 5. Invariants, Encapsulation & POJO de PalierNiveau
 	// =========================================================================
 
+	// =========================================================================
+	// 5. Invariants, Encapsulation & POJO de PalierNiveau
+	// =========================================================================
+
 	@Nested
 	@DisplayName("5. Invariants et encapsulation de PalierNiveau")
 	class InvariantsPalierNiveauTests {
@@ -371,6 +390,7 @@ public class PalierNiveauTest {
 		@DisplayName("Constructeur par défaut (JPA) instancie avec valeurs saines")
 		void testConstructeurParDefautJPA() {
 			PalierNiveau p = new PalierNiveau();
+
 			assertAll(
 				() -> assertNull(p.getId()),
 				() -> assertEquals(0, p.getNiveau()),
@@ -381,27 +401,59 @@ public class PalierNiveauTest {
 		}
 
 		@ParameterizedTest
-		@ValueSource(ints = { 0, -1, -50 })
-		@DisplayName("checkId rejette les id non positifs")
-		void testIdInvalide(int idInvalide) {
-			assertThrows(IllegalArgumentException.class,
-				() -> new PalierNiveau(idInvalide, 2, 100, List.of()));
-		}
-
-		@ParameterizedTest
 		@ValueSource(ints = { 0, 1, 11, 25, -1 })
-		@DisplayName("checkNiveau rejette les niveaux hors [2, 10]")
+		@DisplayName("Bean Validation rejette les niveaux hors [2, 10]")
 		void testNiveauInvalide(int niveauInvalide) {
-			assertThrows(IllegalArgumentException.class,
-				() -> new PalierNiveau(1, niveauInvalide, 100, List.of()));
+
+			// Given
+			PalierNiveau palier = new PalierNiveau(1, niveauInvalide, 100, List.of());
+
+			// When
+			Set<ConstraintViolation<PalierNiveau>> violations =
+					validator.validate(palier);
+
+			// Then
+			assertFalse(violations.isEmpty(),
+					"La validation doit échouer pour un niveau hors [2, 10]");
+
+			assertTrue(violations.stream().anyMatch(v ->
+					v.getPropertyPath().toString().equals("niveau")));
 		}
 
 		@ParameterizedTest
 		@ValueSource(ints = { -1, -10, -500 })
-		@DisplayName("checkPopulationRequise rejette les populations négatives")
+		@DisplayName("Bean Validation rejette les populations négatives")
 		void testPopulationRequiseNegative(int popInvalide) {
-			assertThrows(IllegalArgumentException.class,
-				() -> new PalierNiveau(1, 2, popInvalide, List.of()));
+
+			// Given
+			PalierNiveau palier = new PalierNiveau(1, 2, popInvalide, List.of());
+
+			// When
+			Set<ConstraintViolation<PalierNiveau>> violations =
+					validator.validate(palier);
+
+			// Then
+			assertFalse(violations.isEmpty(),
+					"La population requise ne peut pas être négative");
+
+			assertTrue(violations.stream().anyMatch(v ->
+					v.getPropertyPath().toString().equals("populationRequise")));
+		}
+
+		@Test
+		@DisplayName("Bean Validation accepte les valeurs limites autorisées")
+		void testValeursLimitesValides() {
+
+			// Given
+			PalierNiveau palier = new PalierNiveau(1, 2, 0, List.of());
+
+			// When
+			Set<ConstraintViolation<PalierNiveau>> violations =
+					validator.validate(palier);
+
+			// Then
+			assertTrue(violations.isEmpty(),
+					"Le niveau 2 et une population de 0 doivent être acceptés");
 		}
 
 		@Test
@@ -417,18 +469,27 @@ public class PalierNiveauTest {
 			);
 
 			PalierNiveau p = new PalierNiveau(1, 2, 100, List.of());
+
 			assertAll(
-				() -> assertThrows(IllegalArgumentException.class, () -> p.setPrerequis(avecNull)),
-				() -> assertThrows(IllegalArgumentException.class, () -> p.setPrerequis(avecDoublon))
+				() -> assertThrows(IllegalArgumentException.class,
+						() -> p.setPrerequis(avecNull)),
+				() -> assertThrows(IllegalArgumentException.class,
+						() -> p.setPrerequis(avecDoublon))
 			);
 		}
 
 		@Test
 		@DisplayName("getPrerequis retourne une vue protégée contre les mutations directes")
 		void testEncapsulationDefensivePrerequis() {
-			PalierNiveau p = new PalierNiveau(1, 2, 100, List.of(new QuantiteRessource(50, Ressource.OR)));
+			PalierNiveau p = new PalierNiveau(
+					1, 2, 100,
+					List.of(new QuantiteRessource(50, Ressource.OR))
+			);
+
 			assertThrows(UnsupportedOperationException.class,
-				() -> p.getPrerequis().add(new QuantiteRessource(10, Ressource.BOIS)));
+					() -> p.getPrerequis().add(
+							new QuantiteRessource(10, Ressource.BOIS)
+					));
 		}
 
 		@Test
@@ -443,4 +504,5 @@ public class PalierNiveauTest {
 			assertFalse(p1.equals(p3));
 		}
 	}
+
 }
