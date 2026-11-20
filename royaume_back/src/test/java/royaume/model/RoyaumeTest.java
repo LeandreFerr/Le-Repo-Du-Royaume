@@ -13,7 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,10 +24,24 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 @DisplayName("Tests unitaires exhaustifs — Royaume (Socle & Module 2)")
 class RoyaumeTest {
+	private static Validator validator;
 
-    private static final Population PEUPLE_TEST = new Canards(1, "Canards", "Archiduc", 0.05);
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory =
+	            Validation.buildDefaultValidatorFactory();
+
+	    validator = factory.getValidator();
+	}
+
+    private static final Population PEUPLE_TEST = new Canards(null, "Canards", "Archiduc", 0.05);
     private Royaume royaume;
 
     @BeforeEach
@@ -100,7 +116,7 @@ class RoyaumeTest {
             );
         }
 
-        @Test
+       /* @Test
         @DisplayName("Les constructeurs rejettent formellement un peuple null via IllegalArgumentException")
         void testConstructeursRejettentPeupleNull() {
             List<QuantiteRessource> vide = new ArrayList<>();
@@ -110,6 +126,34 @@ class RoyaumeTest {
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> new Royaume(1, "Avalon", null, 1, 100, 0, 0, 0, false, vide))
             );
+        }*/
+        @Test
+        @DisplayName("Bean Validation détecte un peuple null")
+        void testConstructeursRejettentPeupleNull() {
+
+            // Given
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            Royaume r1 = new Royaume(1, "Avalon", null);
+
+            Royaume r2 = new Royaume(
+                    1, "Avalon", null,
+                    1, 100, 0, 0, 0, false, vide
+            );
+
+            // When
+            Set<ConstraintViolation<Royaume>> violations1 =
+                    validator.validate(r1);
+
+            Set<ConstraintViolation<Royaume>> violations2 =
+                    validator.validate(r2);
+
+            // Then
+            assertTrue(violations1.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("peuple")));
+
+            assertTrue(violations2.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("peuple")));
         }
 
         @Test
@@ -151,7 +195,7 @@ class RoyaumeTest {
             assertThrows(IllegalArgumentException.class, () -> new Royaume(1, "Terre", fauxPeuple));
         }
 
-        @ParameterizedTest
+        /*@ParameterizedTest
         @ValueSource(ints = { 0, -1, -99, Integer.MIN_VALUE })
         @DisplayName("Les constructeurs rejettent un id <= 0 via IllegalArgumentException")
         void testConstructeursRejettentIdNonPositif(int idInvalide) {
@@ -163,8 +207,62 @@ class RoyaumeTest {
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> new Royaume(idInvalide, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, vide))
             );
-        }
+        }*/
 
+        @ParameterizedTest
+        @ValueSource(ints = { 0, -1, -99, Integer.MIN_VALUE })
+        @DisplayName("Bean Validation détecte un id non positif")
+        void testConstructeursRejettentIdNonPositif(int idInvalide) {
+
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            Royaume r1 = new Royaume(idInvalide, "Avalon", PEUPLE_TEST);
+
+            Royaume r2 = new Royaume(
+                    idInvalide, "Avalon", PEUPLE_TEST,
+                    1, 100, 0, 0, 0, false, vide
+            );
+
+            assertAll(
+                () -> assertTrue(validator.validate(r1).stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("id"))),
+
+                () -> assertTrue(validator.validate(r2).stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("id")))
+            );
+        }
+        
+        @Test
+        @DisplayName("Bean Validation détecte un nom null, vide ou blanc")
+        void testConstructeursRejettentNomInvalide() {
+
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            List<String> nomsInvalides = Arrays.asList(
+                    null,
+                    "",
+                    "   \t\n "
+            );
+
+            for (String nom : nomsInvalides) {
+
+                Royaume r1 = new Royaume(1, nom, PEUPLE_TEST);
+
+                Royaume r2 = new Royaume(
+                        1, nom, PEUPLE_TEST,
+                        1, 100, 0, 0, 0, false, vide
+                );
+
+                assertAll(
+                    () -> assertTrue(validator.validate(r1).stream().anyMatch(v ->
+                            v.getPropertyPath().toString().equals("nom"))),
+
+                    () -> assertTrue(validator.validate(r2).stream().anyMatch(v ->
+                            v.getPropertyPath().toString().equals("nom")))
+                );
+            }
+        }
+        /*
         @Test
         @DisplayName("Les constructeurs rejettent un nom null, vide ou blanc via IllegalArgumentException")
         void testConstructeursRejettentNomInvalide() {
@@ -179,8 +277,27 @@ class RoyaumeTest {
                 () -> assertThrows(IllegalArgumentException.class,
                         () -> new Royaume(1, "   ", PEUPLE_TEST, 1, 100, 0, 0, 0, false, vide))
             );
-        }
+        }*/
 
+        @ParameterizedTest
+        @ValueSource(ints = { 0, -1, -10, Integer.MIN_VALUE, 11, 50 })
+        @DisplayName("Bean Validation détecte un niveau hors de l'intervalle [1, 10]")
+        void testConstructeurCompletRejetteNiveauInvalide(int niveauInvalide) {
+
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            Royaume r = new Royaume(
+                    1, "Avalon", PEUPLE_TEST,
+                    niveauInvalide, 100, 0, 0, 0, false, vide
+            );
+
+            Set<ConstraintViolation<Royaume>> violations =
+                    validator.validate(r);
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("niveau")));
+        }
+        /*
         @ParameterizedTest
         @ValueSource(ints = { 0, -1, -10, Integer.MIN_VALUE, 11, 50 })
         @DisplayName("Le constructeur complet rejette un niveau hors de l'intervalle [1, 10] via IllegalArgumentException")
@@ -189,8 +306,49 @@ class RoyaumeTest {
 
             assertThrows(IllegalArgumentException.class,
                     () -> new Royaume(1, "Avalon", PEUPLE_TEST, niveauInvalide, 100, 0, 0, 0, false, vide));
-        }
+        }*/
 
+        @Test
+        @DisplayName("Bean Validation accepte les populations à 0 et détecte les valeurs négatives")
+        void testConstructeurCompletValidationPopulations() {
+
+            List<QuantiteRessource> vide = new ArrayList<>();
+
+            // Cas valide
+            Royaume desert = new Royaume(
+                    1, "Désert", PEUPLE_TEST,
+                    1, 0, 0, 0, 0, false, vide
+            );
+
+            assertTrue(validator.validate(desert).isEmpty());
+
+            // Cas invalides
+            List<Royaume> royaumesInvalides = List.of(
+                    new Royaume(1, "R", PEUPLE_TEST, 1, -1, 0, 0, 0, false, vide),
+                    new Royaume(1, "R", PEUPLE_TEST, 1, 0, -1, 0, 0, false, vide),
+                    new Royaume(1, "R", PEUPLE_TEST, 1, 0, 0, -1, 0, false, vide),
+                    new Royaume(1, "R", PEUPLE_TEST, 1, 0, 0, 0, -1, false, vide)
+            );
+
+            String[] proprietes = {
+                    "populationDisponible",
+                    "populationOuvriere",
+                    "populationEnEntrainement",
+                    "populationMilitaire"
+            };
+
+            for (int i = 0; i < royaumesInvalides.size(); i++) {
+
+                final String propriete = proprietes[i];
+
+                Set<ConstraintViolation<Royaume>> violations =
+                        validator.validate(royaumesInvalides.get(i));
+
+                assertTrue(violations.stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals(propriete)));
+            }
+        }
+        /*
         @Test
         @DisplayName("Le constructeur complet accepte 0 sur toutes les catégories de population mais rejette toute valeur négative")
         void testConstructeurCompletValidationPopulations() {
@@ -216,7 +374,7 @@ class RoyaumeTest {
                         () -> new Royaume(1, "R", PEUPLE_TEST, 1, 0, 0, 0, -1, false, vide),
                         "populationMilitaire négative interdite")
             );
-        }
+        }*/
 
         @Test
         @DisplayName("Passer une liste ressources null au constructeur complet initialise une collection vide non null")
@@ -321,7 +479,55 @@ class RoyaumeTest {
     @Nested
     @DisplayName("Setters et protection contre les états invalides")
     class SettersTests {
+    	@Test
+    	@DisplayName("setId permet la modification mais Bean Validation détecte les valeurs non positives")
+    	void testSetIdValidation() {
 
+    	    // 0 : invalide
+    	    royaume.setId(0);
+
+    	    assertTrue(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
+
+    	    // -5 : invalide
+    	    royaume.setId(-5);
+
+    	    assertTrue(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
+
+    	    // null : autorisé par @Positive
+    	    royaume.setId(null);
+
+    	    assertFalse(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
+
+    	    // 42 : valide
+    	    royaume.setId(42);
+
+    	    assertEquals(42, royaume.getId());
+
+    	    assertFalse(validator.validate(royaume).stream()
+    	            .anyMatch(v -> v.getPropertyPath().toString().equals("id")));
+    	}
+    	@Test
+    	void diagnosticValidationId() {
+
+    	    royaume.setId(0);
+
+    	    Set<ConstraintViolation<Royaume>> violations =
+    	            validator.validate(royaume);
+
+    	    System.out.println("ID actuel : " + royaume.getId());
+    	    System.out.println("Nombre de violations : " + violations.size());
+
+    	    violations.forEach(v ->
+    	            System.out.println(
+    	                    "Champ : " + v.getPropertyPath()
+    	                    + " | Message : " + v.getMessage()
+    	            )
+    	    );
+    	}
+    	/*
         @Test
         @DisplayName("setId accepte null ou un entier > 0, mais rejette <= 0 sans modifier l'id existant")
         void testSetIdValidation() {
@@ -334,8 +540,28 @@ class RoyaumeTest {
 
             royaume.setId(42);
             assertEquals(42, royaume.getId());
-        }
+        }*/
 
+    	@Test
+    	@DisplayName("setNom permet la modification mais Bean Validation détecte les noms invalides")
+    	void testSetNomValidation() {
+
+    	    List<String> nomsInvalides = Arrays.asList(null, "", "   ");
+
+    	    for (String nom : nomsInvalides) {
+
+    	        royaume.setNom(nom);
+
+    	        assertTrue(validator.validate(royaume).stream().anyMatch(v ->
+    	                v.getPropertyPath().toString().equals("nom")));
+    	    }
+
+    	    royaume.setNom("Minas Tirith");
+
+    	    assertTrue(validator.validate(royaume).isEmpty());
+    	    assertEquals("Minas Tirith", royaume.getNom());
+    	}
+    	/*
         @Test
         @DisplayName("setNom rejette null ou une chaîne blanche sans écraser l'ancien nom")
         void testSetNomValidation() {
@@ -347,7 +573,8 @@ class RoyaumeTest {
             royaume.setNom("Minas Tirith");
             assertEquals("Minas Tirith", royaume.getNom());
         }
-
+*/
+    	
         @Test
         @DisplayName("Le peuple d'un royaume est immuable : setPeuple et setPopulation lèvent UnsupportedOperationException")
         void testPeupleImmuableApresConstruction() {
@@ -373,14 +600,50 @@ class RoyaumeTest {
             assertThrows(UnsupportedOperationException.class, () -> royaumeVide.setPopulation(teuteus));
             assertSame(PEUPLE_TEST, royaumeVide.getPeuple());
         }
-
+/*
         @Test
         @DisplayName("setPeuple sur un royaume instancié par défaut rejette null et un peuple non officiel")
         void testSetPeupleValidationSurRoyaumeVide() {
             Royaume royaumeVide = new Royaume();
             assertThrows(IllegalArgumentException.class, () -> royaumeVide.setPeuple(null));
         }
+*/
+        @Test
+        @DisplayName("Bean Validation détecte un peuple null sur un royaume vide")
+        void testSetPeupleValidationSurRoyaumeVide() {
 
+            Royaume royaumeVide = new Royaume();
+
+            assertNull(royaumeVide.getPeuple());
+
+            // Given / When
+            royaumeVide.setPeuple(null);
+
+            // Then
+            assertTrue(validator.validate(royaumeVide).stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("peuple")));
+        }
+        
+        @ParameterizedTest
+        @ValueSource(ints = { 0, -1, -50, 11, 50 })
+        @DisplayName("Bean Validation détecte les niveaux hors de [1, 10]")
+        void testSetNiveauValidation(int niveauInvalide) {
+
+            royaume.setNiveau(niveauInvalide);
+
+            Set<ConstraintViolation<Royaume>> violations =
+                    validator.validate(royaume);
+
+            assertTrue(violations.stream().anyMatch(v ->
+                    v.getPropertyPath().toString().equals("niveau")));
+
+            royaume.setNiveau(10);
+
+            assertTrue(validator.validate(royaume).isEmpty());
+            assertEquals(10, royaume.getNiveau());
+        }
+        /*
+        
         @ParameterizedTest
         @ValueSource(ints = { 0, -1, -50, 11, 50 })
         @DisplayName("setNiveau rejette les valeurs < 1 ou > 10 sans modifier le niveau actuel")
@@ -390,8 +653,43 @@ class RoyaumeTest {
 
             royaume.setNiveau(10);
             assertEquals(10, royaume.getNiveau());
-        }
+        }*/
+        
+        @Test
+        @DisplayName("Bean Validation détecte les populations négatives et accepte zéro")
+        void testSettersPopulationValidation() {
 
+            royaume.setPopulationDisponible(-1);
+            royaume.setPopulationOuvriere(-1);
+            royaume.setPopulationEnEntrainement(-1);
+            royaume.setPopulationMilitaire(-1);
+
+            Set<ConstraintViolation<Royaume>> violations =
+                    validator.validate(royaume);
+
+            assertAll(
+                () -> assertTrue(violations.stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("populationDisponible"))),
+
+                () -> assertTrue(violations.stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("populationOuvriere"))),
+
+                () -> assertTrue(violations.stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("populationEnEntrainement"))),
+
+                () -> assertTrue(violations.stream().anyMatch(v ->
+                        v.getPropertyPath().toString().equals("populationMilitaire")))
+            );
+
+            // Remise à zéro : toutes les valeurs sont maintenant valides
+            royaume.setPopulationDisponible(0);
+            royaume.setPopulationOuvriere(0);
+            royaume.setPopulationEnEntrainement(0);
+            royaume.setPopulationMilitaire(0);
+
+            assertTrue(validator.validate(royaume).isEmpty());
+        }
+/*
         @Test
         @DisplayName("Les 4 setters de population acceptent 0 mais rejettent les valeurs négatives en préservant l'état")
         void testSettersPopulationValidation() {
@@ -416,7 +714,7 @@ class RoyaumeTest {
 
             royaume.setPopulationDisponible(0);
             assertEquals(0, royaume.getPopulationDisponible());
-        }
+        }*/
 
         @Test
         @DisplayName("setRessources vérifie l'absence de null et de doublons et clone défensivement")

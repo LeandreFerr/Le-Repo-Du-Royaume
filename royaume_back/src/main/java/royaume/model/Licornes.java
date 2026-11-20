@@ -1,5 +1,10 @@
 package royaume.model;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+
+@Entity
+@DiscriminatorValue("Licornes")
 public class Licornes extends Population {
 
 	public Licornes() {

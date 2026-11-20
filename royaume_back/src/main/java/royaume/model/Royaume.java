@@ -4,30 +4,92 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
 
+@Entity
+@Table(name = "royaume")
 public class Royaume {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
 
+	@Id
+	@Positive
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotBlank
+	@Size(min = 2, max = 50)
+	@Column(name = "nom_du_royaume", nullable = false)
 	private String nom;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "peuple", nullable = false)
+	@NotNull
+	@Valid
 	private Population peuple;
+	@Min(1)
+	@Max(10)
+	@NotNull
+	@Column(nullable = false)
 	private int niveau = 1;
+	@PositiveOrZero
+	@NotNull
+	@Column(name = "population_disponible", nullable = false)
 	private int populationDisponible = 100;
+	@PositiveOrZero
+	@NotNull
+	@Column(name = "population_ouvriere", nullable = false)
 	private int populationOuvriere = 0;
+	@PositiveOrZero
+	@NotNull
+	@Column(name = "population_entrainement", nullable = false)
 	private int populationEnEntrainement = 0;
+	@PositiveOrZero
+	@NotNull
+	@Column(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
+
+	@NotNull
+	@Column(name = "en_ruine", nullable = false)
 	private boolean enRuine = false;
+
+	@Column(name = "bonus_croissance", nullable = false)
 	private double bonusCroissance = 0.0;
-	private List<QuantiteRessource> ressources = creerRessourcesParDefaut();
+
+	@NotNull
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "ressources", columnDefinition = "json", nullable = false)
+	private List<@NotNull @Valid QuantiteRessource> ressources = creerRessourcesParDefaut();
+
+	@Transient
 	private List<Batiment> batiments = new ArrayList<>();
+
+	@Transient
 	private EmplacementCarte emplacement;
 
 	// =========================================================================
@@ -37,8 +99,6 @@ public class Royaume {
 	public Royaume() {}
 
 	public Royaume(Integer id, String nom, Population peuple) {
-		checkId(id);
-		checkNom(nom);
 		validerPeuple(peuple);
 		this.id = id;
 		this.nom = nom;
@@ -49,11 +109,7 @@ public class Royaume {
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources) {
-		checkId(id);
-		checkNom(nom);
 		validerPeuple(peuple);
-		checkNiveau(niveau);
-		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
 		this.id = id;
 		this.nom = nom;
 		this.peuple = peuple;
@@ -70,11 +126,7 @@ public class Royaume {
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources, List<Batiment> batiments) {
-		checkId(id);
-		checkNom(nom);
 		validerPeuple(peuple);
-		checkNiveau(niveau);
-		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
 		this.id = id;
 		this.nom = nom;
 		this.peuple = peuple;
@@ -96,11 +148,7 @@ public class Royaume {
 	public Royaume(Integer id, String nom, Population peuple, int niveau, int populationDisponible,
 			int populationOuvriere, int populationEnEntrainement, int populationMilitaire, boolean enRuine,
 			List<QuantiteRessource> ressources, EmplacementCarte emplacement) {
-		checkId(id);
-		checkNom(nom);
 		validerPeuple(peuple);
-		checkNiveau(niveau);
-		checkPopulations(populationDisponible, populationOuvriere, populationEnEntrainement, populationMilitaire);
 		this.id = id;
 		this.nom = nom;
 		this.peuple = peuple;
@@ -373,7 +421,6 @@ public class Royaume {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -382,7 +429,6 @@ public class Royaume {
 	}
 
 	public void setNom(String nom) {
-		checkNom(nom);
 		this.nom = nom;
 	}
 
@@ -411,7 +457,6 @@ public class Royaume {
 	}
 
 	public void setNiveau(int niveau) {
-		checkNiveau(niveau);
 		this.niveau = niveau;
 	}
 
@@ -420,7 +465,6 @@ public class Royaume {
 	}
 
 	public void setPopulationDisponible(int populationDisponible) {
-		checkPopulation(populationDisponible, "disponible");
 		this.populationDisponible = populationDisponible;
 	}
 
@@ -429,7 +473,6 @@ public class Royaume {
 	}
 
 	public void setPopulationOuvriere(int populationOuvriere) {
-		checkPopulation(populationOuvriere, "ouvrière");
 		this.populationOuvriere = populationOuvriere;
 	}
 
@@ -438,7 +481,6 @@ public class Royaume {
 	}
 
 	public void setPopulationEnEntrainement(int populationEnEntrainement) {
-		checkPopulation(populationEnEntrainement, "en entraînement");
 		this.populationEnEntrainement = populationEnEntrainement;
 	}
 
@@ -447,7 +489,6 @@ public class Royaume {
 	}
 
 	public void setPopulationMilitaire(int populationMilitaire) {
-		checkPopulation(populationMilitaire, "militaire");
 		this.populationMilitaire = populationMilitaire;
 	}
 
@@ -464,17 +505,29 @@ public class Royaume {
 				.map(r -> new QuantiteRessource(r.getQuantite(), r.getRessource()))
 				.toList();
 	}
+	/*
+	 * public void setRessources(List<QuantiteRessource> ressources) {
+	 * validerRessources(ressources); this.ressources = creerRessourcesParDefaut();
+	 * for (QuantiteRessource qr : ressources) { this.ressources.stream() .filter(r
+	 * -> r.getRessource() == qr.getRessource()) .findFirst() .ifPresent(r ->
+	 * r.setQuantite(qr.getQuantite())); } }
+	 */
 
 	public void setRessources(List<QuantiteRessource> ressources) {
-		validerRessources(ressources);
+
 		this.ressources = creerRessourcesParDefaut();
-		if (ressources != null) {
-			for (QuantiteRessource qr : ressources) {
-				this.ressources.stream()
-					.filter(r -> r.getRessource() == qr.getRessource())
-					.findFirst()
-					.ifPresent(r -> r.setQuantite(qr.getQuantite()));
-			}
+
+		if (ressources == null) {
+			return;
+		}
+
+		validerRessources(ressources);
+
+		for (QuantiteRessource qr : ressources) {
+			this.ressources.stream()
+				.filter(r -> r.getRessource() == qr.getRessource())
+				.findFirst()
+				.ifPresent(r -> r.setQuantite(qr.getQuantite()));
 		}
 	}
 
@@ -519,21 +572,10 @@ public class Royaume {
 		));
 	}
 
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id ne peut pas être inférieur ou égal à 0.");
-		}
-	}
-
-	private void checkNom(String nom) {
-		if (nom == null || nom.isBlank()) {
-			throw new IllegalArgumentException("Le nom du royaume ne peut pas être vide ou blanc.");
-		}
-	}
-
 	private void validerPeuple(Population peuple) {
+		// Juste pour les test JPA : null sera détecté par Jakarta Bean Validation
 		if (peuple == null) {
-			throw new IllegalArgumentException("Le peuple du royaume ne peut pas être null.");
+			return;
 		}
 		if (!(peuple instanceof Canards
 				|| peuple instanceof Gobelins
@@ -544,40 +586,41 @@ public class Royaume {
 		}
 	}
 
-	private void checkNiveau(int niveau) {
-		if (niveau < 1 || niveau > 10) {
-			throw new IllegalArgumentException("Le niveau du royaume doit être compris entre 1 et 10.");
-		}
-	}
-
-	private void checkPopulations(int populationDisponible, int populationOuvriere,
-			int populationEnEntrainement, int populationMilitaire) {
-		checkPopulation(populationDisponible, "disponible");
-		checkPopulation(populationOuvriere, "ouvrière");
-		checkPopulation(populationEnEntrainement, "en entraînement");
-		checkPopulation(populationMilitaire, "militaire");
-	}
-
-	private void checkPopulation(int valeur, String nomChamp) {
-		if (valeur < 0) {
-			throw new IllegalArgumentException("La population " + nomChamp + " ne peut pas être négative.");
-		}
-	}
-
+	/*
+	 * 
+	 * private void validerRessources(List<QuantiteRessource> initiales) { if
+	 * (initiales != null) {
+	 * 
+	 * long nbDistinctes = initiales.stream() .map(QuantiteRessource::getRessource)
+	 * .distinct() .count(); if (nbDistinctes != initiales.size()) { throw new
+	 * IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource."
+	 * ); } } }
+	 * 
+	 */
 	private void validerRessources(List<QuantiteRessource> initiales) {
-		if (initiales != null) {
-			for (QuantiteRessource qr : initiales) {
-				if (qr == null) {
-					throw new IllegalArgumentException("La liste de ressources ne peut pas contenir d'élément null.");
-				}
-			}
-			long nbDistinctes = initiales.stream()
-					.map(QuantiteRessource::getRessource)
-					.distinct()
-					.count();
-			if (nbDistinctes != initiales.size()) {
-				throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs quantiteRessource d'un même type de ressource.");
-			}
+
+		if (initiales == null) {
+			return;
+		}
+
+		// 1. Vérifier qu'aucun élément n'est null
+		if (initiales.stream().anyMatch(qr -> qr == null)) {
+			throw new IllegalArgumentException("La liste des ressources ne peut pas contenir d'élément null.");
+		}
+
+		// 2. Vérifier que chaque ressource possède un type
+		if (initiales.stream().anyMatch(qr -> qr.getRessource() == null)) {
+			throw new IllegalArgumentException("Une QuantiteRessource doit posséder un type de ressource.");
+		}
+
+		// 3. Vérifier qu'il n'y a pas de doublons
+		long nbDistinctes = initiales.stream()
+				.map(QuantiteRessource::getRessource)
+				.distinct()
+				.count();
+
+		if (nbDistinctes != initiales.size()) {
+			throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs QuantiteRessource d'un même type de ressource.");
 		}
 	}
 

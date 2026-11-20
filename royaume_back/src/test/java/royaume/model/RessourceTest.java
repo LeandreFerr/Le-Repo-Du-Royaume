@@ -22,9 +22,7 @@ import org.junit.jupiter.api.Test;
 class RessourceTest {
 
     private static final Class<?>[] CLASSES_SOCLE = {
-            Ressource.class,
-            QuantiteRessource.class,
-            Royaume.class
+            Ressource.class
     };
 
     @Test
