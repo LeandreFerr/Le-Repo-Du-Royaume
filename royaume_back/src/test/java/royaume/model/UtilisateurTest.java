@@ -9,6 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -16,9 +19,23 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 @DisplayName("Tests unitaires rigoureux - Classe Utilisateur")
 public class UtilisateurTest {
 
+	
+	private static Validator validator;
+
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
+	
     private Utilisateur utilisateur;
     private Royaume royaume;
 
@@ -32,70 +49,76 @@ public class UtilisateurTest {
     // 1. État initial & Constructeurs
     // =========================================================================
 
-    @Nested
-    @DisplayName("État initial et constructeurs")
-    class EtatInitialEtConstructeursTests {
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, -99 })
+    @DisplayName("Le constructeur accepte un id invalide car aucune contrainte Bean Validation ne lui est associée")
+    void testConstructeurCompletRejetteIdInvalide(int idInvalide) {
+        Utilisateur user = new Utilisateur(
+                idInvalide, "Arthur", "arthur@camelot.fr",
+                "excalibur123", false, false, royaume
+        );
 
-        @Test
-        @DisplayName("Le constructeur par défaut initialise un utilisateur hors-ligne et non admin")
-        void testEtatInitialParDefaut() {
-            // Given / When
-            Utilisateur nouveau = new Utilisateur();
+        assertEquals(idInvalide, user.getId());
+    }
 
-            // Then
-            assertAll(
-                () -> assertFalse(nouveau.isOnline(), "Un utilisateur nouvellement instancié doit être hors-ligne"),
-                () -> assertFalse(nouveau.isAdmin(), "Un utilisateur ne doit pas être administrateur par défaut"),
-                () -> assertNull(nouveau.getRoyaume(), "Aucun royaume rattaché par défaut")
-            );
-        }
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t\n" })
+    @DisplayName("Le Validator détecte un pseudo vide ou blanc")
+    void testConstructeurCompletRejettePseudoBlanc(String pseudoInvalide) {
+        // Given
+        Utilisateur user = new Utilisateur(
+                1, pseudoInvalide, "arthur@camelot.fr",
+                "excalibur123", false, false, royaume
+        );
 
-        @Test
-        @DisplayName("Le constructeur complet initialise fidèlement tous les champs")
-        void testConstructeurCompletNominal() {
-            assertAll(
-                () -> assertEquals(1, utilisateur.getId()),
-                () -> assertEquals("Arthur", utilisateur.getPseudo()),
-                () -> assertEquals("arthur@camelot.fr", utilisateur.getEmail()),
-                () -> assertEquals("excalibur123", utilisateur.getPassword()),
-                () -> assertFalse(utilisateur.isOnline()),
-                () -> assertFalse(utilisateur.isAdmin()),
-                () -> assertSame(royaume, utilisateur.getRoyaume())
-            );
-        }
+        // When
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(user);
 
-        @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -99 })
-        @DisplayName("Le constructeur complet rejette un id <= 0 via IllegalArgumentException")
-        void testConstructeurCompletRejetteIdInvalide(int idInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Utilisateur(idInvalide, "Arthur", "arthur@camelot.fr", "excalibur123", false, false, royaume));
-        }
+        // Then
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t\n" })
-        @DisplayName("Le constructeur complet rejette un pseudo vide ou blanc via IllegalArgumentException")
-        void testConstructeurCompletRejettePseudoBlanc(String pseudoInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Utilisateur(1, pseudoInvalide, "arthur@camelot.fr", "excalibur123", false, false, royaume));
-        }
+    @Test
+    @DisplayName("Le Validator détecte un pseudo null")
+    void testConstructeurCompletRejettePseudoNull() {
+        Utilisateur user = new Utilisateur(
+                1, null, "arthur@camelot.fr",
+                "excalibur123", false, false, royaume
+        );
 
-        @Test
-        @DisplayName("Le constructeur complet rejette un pseudo null via IllegalArgumentException")
-        void testConstructeurCompletRejettePseudoNull() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Utilisateur(1, null, "arthur@camelot.fr", "excalibur123", false, false, royaume));
-        }
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(user);
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t" })
-        @DisplayName("Le constructeur complet rejette un email ou un mot de passe blanc via IllegalArgumentException")
-        void testConstructeurCompletRejetteEmailEtPasswordBlancs(String chaineBlanche) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Utilisateur(1, "Arthur", chaineBlanche, "excalibur123", false, false, royaume));
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Utilisateur(1, "Arthur", "arthur@camelot.fr", chaineBlanche, false, false, royaume));
-        }
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t" })
+    @DisplayName("Le Validator détecte un email ou un mot de passe blanc")
+    void testConstructeurCompletRejetteEmailEtPasswordBlancs(String chaineBlanche) {
+        // Email invalide
+        Utilisateur userEmail = new Utilisateur(
+                1, "Arthur", chaineBlanche,
+                "excalibur123", false, false, royaume
+        );
+
+        Set<ConstraintViolation<Utilisateur>> violationsEmail = validator.validate(userEmail);
+
+        assertTrue(violationsEmail.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+
+        // Mot de passe invalide
+        Utilisateur userPassword = new Utilisateur(
+                1, "Arthur", "arthur@camelot.fr",
+                chaineBlanche, false, false, royaume
+        );
+
+        Set<ConstraintViolation<Utilisateur>> violationsPassword = validator.validate(userPassword);
+
+        assertTrue(violationsPassword.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("password")));
     }
 
     // =========================================================================
@@ -205,62 +228,137 @@ public class UtilisateurTest {
     // 4. Validation des mutateurs et invariants
     // =========================================================================
 
-    @Nested
-    @DisplayName("Validation des mutateurs et des invariants")
-    class InvariantsSettersTests {
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t" })
+    @DisplayName("setPseudo accepte une chaîne blanche mais Validator la détecte")
+    void testSetPseudoRejetteBlanc(String pseudoInvalide) {
+        utilisateur.setPseudo(pseudoInvalide);
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t" })
-        @DisplayName("setPseudo rejette les chaînes blanches via IllegalArgumentException")
-        void testSetPseudoRejetteBlanc(String pseudoInvalide) {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setPseudo(pseudoInvalide));
-            assertEquals("Arthur", utilisateur.getPseudo());
-        }
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
 
-        @Test
-        @DisplayName("setPseudo rejette null via IllegalArgumentException")
-        void testSetPseudoRejetteNull() {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setPseudo(null));
-            assertEquals("Arthur", utilisateur.getPseudo());
-        }
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t" })
-        @DisplayName("setEmail rejette les chaînes blanches via IllegalArgumentException")
-        void testSetEmailRejetteBlanc(String emailInvalide) {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setEmail(emailInvalide));
-            assertEquals("arthur@camelot.fr", utilisateur.getEmail());
-        }
+    @Test
+    @DisplayName("setPseudo accepte null mais Validator le détecte")
+    void testSetPseudoRejetteNull() {
+        utilisateur.setPseudo(null);
 
-        @Test
-        @DisplayName("setEmail rejette null via IllegalArgumentException")
-        void testSetEmailRejetteNull() {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setEmail(null));
-            assertEquals("arthur@camelot.fr", utilisateur.getEmail());
-        }
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t" })
-        @DisplayName("setPassword rejette les chaînes blanches via IllegalArgumentException")
-        void testSetPasswordRejetteBlanc(String mdpInvalide) {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setPassword(mdpInvalide));
-            assertEquals("excalibur123", utilisateur.getPassword());
-        }
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
 
-        @Test
-        @DisplayName("setPassword rejette null via IllegalArgumentException")
-        void testSetPasswordRejetteNull() {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setPassword(null));
-            assertEquals("excalibur123", utilisateur.getPassword());
-        }
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t" })
+    @DisplayName("setEmail accepte une chaîne blanche mais Validator la détecte")
+    void testSetEmailRejetteBlanc(String emailInvalide) {
+        utilisateur.setEmail(emailInvalide);
 
-        @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -50 })
-        @DisplayName("setId rejette les identifiants <= 0 via IllegalArgumentException")
-        void testSetIdRejetteNonPositif(int idInvalide) {
-            assertThrows(IllegalArgumentException.class, () -> utilisateur.setId(idInvalide));
-            assertEquals(1, utilisateur.getId());
-        }
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+    }
+
+    @Test
+    @DisplayName("setEmail accepte null mais Validator le détecte")
+    void testSetEmailRejetteNull() {
+        utilisateur.setEmail(null);
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t" })
+    @DisplayName("setPassword accepte une chaîne blanche mais Validator la détecte")
+    void testSetPasswordRejetteBlanc(String mdpInvalide) {
+        utilisateur.setPassword(mdpInvalide);
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("password")));
+    }
+
+    @Test
+    @DisplayName("setPassword accepte null mais Validator le détecte")
+    void testSetPasswordRejetteNull() {
+        utilisateur.setPassword(null);
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("password")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, -50 })
+    @DisplayName("setId accepte les identifiants invalides")
+    void testSetIdRejetteNonPositif(int idInvalide) {
+        utilisateur.setId(idInvalide);
+
+        assertEquals(idInvalide, utilisateur.getId());
+    }
+    
+    @Test
+    @DisplayName("Le Validator détecte un email au format invalide")
+    void testEmailFormatInvalide() {
+        utilisateur.setEmail("arthur-pas-un-email");
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un pseudo trop court")
+    void testPseudoTropCourt() {
+        utilisateur.setPseudo("Ab");
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un pseudo trop long")
+    void testPseudoTropLong() {
+        utilisateur.setPseudo("A".repeat(31));
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("pseudo")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un mot de passe trop court")
+    void testPasswordTropCourt() {
+        utilisateur.setPassword("abc");
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("password")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un email trop long")
+    void testEmailTropLong() {
+        utilisateur.setEmail("a".repeat(90) + "@example.com");
+
+        Set<ConstraintViolation<Utilisateur>> violations = validator.validate(utilisateur);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
     }
 
     // =========================================================================
