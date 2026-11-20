@@ -10,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,9 +20,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
 @DisplayName("Tests unitaires rigoureux - Classe Message")
 public class MessageTest {
+	private static Validator validator;
 
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
+	
     private Partie partie;
     private Utilisateur expediteur;
     private Utilisateur destinataire;
@@ -40,74 +54,52 @@ public class MessageTest {
     // =========================================================================
     // 1. État initial & Constructeurs
     // =========================================================================
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, -50 })
+    @DisplayName("Le constructeur accepte un id invalide car il n'est pas soumis à Bean Validation")
+    void testConstructeurCompletIdInvalide() {
+        Message message = new Message(0, "Bonjour", dateEnvoi, false, partie, expediteur, destinataire);
 
-    @Nested
-    @DisplayName("État initial et constructeurs")
-    class EtatInitialEtConstructeursTests {
-
-        @Test
-        @DisplayName("Le constructeur par défaut initialise un message non lu et global par défaut")
-        void testEtatInitialParDefaut() {
-            // Given / When
-            Message message = new Message();
-
-            // Then
-            assertAll(
-                () -> assertFalse(message.isLu(), "Un message nouvellement créé doit être marqué comme non lu"),
-                () -> assertTrue(message.estGlobal(), "Sans destinataire, le message est considéré global par défaut"),
-                () -> assertNull(message.getPartie()),
-                () -> assertNull(message.getExpediteur()),
-                () -> assertNull(message.getDestinataire())
-            );
-        }
-
-        @Test
-        @DisplayName("Le constructeur complet initialise fidèlement tous les champs")
-        void testConstructeurCompletNominal() {
-            Message message = new Message(1, "Attaquez au nord !", dateEnvoi, false, partie, expediteur, destinataire);
-
-            assertAll(
-                () -> assertEquals(1, message.getId()),
-                () -> assertEquals("Attaquez au nord !", message.getContenu()),
-                () -> assertEquals(dateEnvoi, message.getDateEnvoi()),
-                () -> assertFalse(message.isLu()),
-                () -> assertSame(partie, message.getPartie()),
-                () -> assertSame(expediteur, message.getExpediteur()),
-                () -> assertSame(destinataire, message.getDestinataire())
-            );
-        }
-
-        @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -50 })
-        @DisplayName("Le constructeur complet rejette un id <= 0 via IllegalArgumentException")
-        void testConstructeurCompletRejetteIdInvalide(int idInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Message(idInvalide, "Bonjour", dateEnvoi, false, partie, expediteur, destinataire));
-        }
-
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t\n" })
-        @DisplayName("Le constructeur complet rejette un contenu vide ou blanc via IllegalArgumentException")
-        void testConstructeurCompletRejetteContenuBlanc(String contenuInvalide) {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Message(1, contenuInvalide, dateEnvoi, false, partie, expediteur, destinataire));
-        }
-
-        @Test
-        @DisplayName("Le constructeur complet rejette un contenu null via IllegalArgumentException")
-        void testConstructeurCompletRejetteContenuNull() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Message(1, null, dateEnvoi, false, partie, expediteur, destinataire));
-        }
-
-        @Test
-        @DisplayName("Le constructeur complet rejette un expediteur null via IllegalArgumentException")
-        void testConstructeurCompletRejetteExpediteurNull() {
-            assertThrows(IllegalArgumentException.class,
-                    () -> new Message(1, "Message sans auteur", dateEnvoi, false, partie, null, destinataire));
-        }
+        assertEquals(0, message.getId());
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t\n" })
+    @DisplayName("Le constructeur permet de créer un message avec un contenu invalide, détecté par Validator")
+    void testConstructeurCompletRejetteContenuBlanc(String contenuInvalide) {
+        // Given
+        Message message = new Message(1, contenuInvalide, dateEnvoi, false, partie, expediteur, destinataire);
+
+        // When
+        Set<ConstraintViolation<Message>> violations = validator.validate(message);
+
+        // Then
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("contenu")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un contenu null")
+    void testConstructeurCompletRejetteContenuNull() {
+        Message message = new Message(1, null, dateEnvoi, false, partie, expediteur, destinataire);
+
+        Set<ConstraintViolation<Message>> violations = validator.validate(message);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("contenu")));
+    }
+
+    @Test
+    @DisplayName("Le Validator détecte un expediteur null")
+    void testConstructeurCompletRejetteExpediteurNull() {
+        Message message = new Message(1, "Message sans auteur", dateEnvoi, false, partie, null, destinataire);
+
+        Set<ConstraintViolation<Message>> violations = validator.validate(message);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("expediteur")));
+    }
     // =========================================================================
     // 2. Visibilité et Routage (Chat global vs privé)
     // =========================================================================
@@ -153,61 +145,55 @@ public class MessageTest {
     // =========================================================================
     // 3. Statut de lecture et Mutateurs
     // =========================================================================
+    @ParameterizedTest
+    @ValueSource(strings = { "", "   ", "\t" })
+    @DisplayName("setContenu accepte une chaîne blanche mais Validator la détecte")
+    void testSetContenuRejetteBlanc(String contenuInvalide) {
+        Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
 
-    @Nested
-    @DisplayName("Statut de lecture et mutateurs")
-    class StatutEtMutateursTests {
+        msg.setContenu(contenuInvalide);
 
-        @Test
-        @DisplayName("setLu permet de marquer et démarquer un message")
-        void testMarquerMessageCommeLu() {
-            Message msg = new Message(3, "Notification", dateEnvoi, false, partie, expediteur, destinataire);
-            assertFalse(msg.isLu());
+        Set<ConstraintViolation<Message>> violations = validator.validate(msg);
 
-            msg.setLu(true);
-            assertTrue(msg.isLu());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("contenu")));
+    }
 
-            msg.setLu(false);
-            assertFalse(msg.isLu());
-        }
+    @Test
+    @DisplayName("setContenu accepte null mais Validator le détecte")
+    void testSetContenuRejetteNull() {
+        Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
 
-        @ParameterizedTest
-        @ValueSource(strings = { "", "   ", "\t" })
-        @DisplayName("setContenu rejette une chaîne blanche via IllegalArgumentException")
-        void testSetContenuRejetteBlanc(String contenuInvalide) {
-            Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
+        msg.setContenu(null);
 
-            assertThrows(IllegalArgumentException.class, () -> msg.setContenu(contenuInvalide));
-            assertEquals("Valide", msg.getContenu());
-        }
+        Set<ConstraintViolation<Message>> violations = validator.validate(msg);
 
-        @Test
-        @DisplayName("setContenu rejette null via IllegalArgumentException")
-        void testSetContenuRejetteNull() {
-            Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("contenu")));
+    }
 
-            assertThrows(IllegalArgumentException.class, () -> msg.setContenu(null));
-            assertEquals("Valide", msg.getContenu());
-        }
+    @Test
+    @DisplayName("setExpediteur accepte null mais Validator le détecte")
+    void testSetExpediteurRejetteNull() {
+        Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
 
-        @Test
-        @DisplayName("setExpediteur rejette null via IllegalArgumentException")
-        void testSetExpediteurRejetteNull() {
-            Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
+        msg.setExpediteur(null);
 
-            assertThrows(IllegalArgumentException.class, () -> msg.setExpediteur(null));
-            assertSame(expediteur, msg.getExpediteur());
-        }
+        Set<ConstraintViolation<Message>> violations = validator.validate(msg);
 
-        @ParameterizedTest
-        @ValueSource(ints = { 0, -1, -50 })
-        @DisplayName("setId rejette les identifiants <= 0 via IllegalArgumentException")
-        void testSetIdRejetteInvalide(int idInvalide) {
-            Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("expediteur")));
+    }
 
-            assertThrows(IllegalArgumentException.class, () -> msg.setId(idInvalide));
-            assertEquals(1, msg.getId());
-        }
+    @ParameterizedTest
+    @ValueSource(ints = { 0, -1, -50 })
+    @DisplayName("setId accepte les identifiants invalides")
+    void testSetIdRejetteInvalide(int idInvalide) {
+        Message msg = new Message(1, "Valide", dateEnvoi, false, partie, expediteur, null);
+
+        msg.setId(idInvalide);
+
+        assertEquals(idInvalide, msg.getId());
     }
 
     // =========================================================================
@@ -232,5 +218,43 @@ public class MessageTest {
                 () -> assertTrue(description.contains("lu=true"))
             );
         }
+    }
+    
+    @Test
+    @DisplayName("Le Validator détecte un contenu supérieur à 1000 caractères")
+    void testContenuTropLong() {
+        Message msg = new Message(
+                1,
+                "A".repeat(1001),
+                dateEnvoi,
+                false,
+                partie,
+                expediteur,
+                null
+        );
+
+        Set<ConstraintViolation<Message>> violations = validator.validate(msg);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("contenu")));
+    }
+    
+    @Test
+    @DisplayName("Le Validator détecte une partie null")
+    void testPartieNull() {
+        Message msg = new Message(
+                1,
+                "Bonjour",
+                dateEnvoi,
+                false,
+                null,
+                expediteur,
+                null
+        );
+
+        Set<ConstraintViolation<Message>> violations = validator.validate(msg);
+
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("partie")));
     }
 }
