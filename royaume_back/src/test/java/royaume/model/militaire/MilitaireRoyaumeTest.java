@@ -319,6 +319,34 @@ class MilitaireRoyaumeTest {
         }
     }
 
+    @Test
+    @DisplayName("Triangle : 3 archers (60) battent 5 lanciers (75) car l'archer écrase le lancier")
+    void testTriangleArcherBatLancier() {
+        attaquant.ajouterTroupes(TypeTroupe.ARCHER, 3);
+        defenseur.ajouterTroupes(TypeTroupe.LANCIER, 5);
+        Attaque a = attaquant.lancerAttaque(defenseur, Map.of(TypeTroupe.ARCHER, 3), 20, T0);
+
+        a.resoudreCombat();
+
+        // attaque 3 x 20 x 1.5 = 90 ; défense 5 x 15 x 0.75 = 56.25
+        assertTrue(a.isVictoireAttaquant());
+    }
+
+    @Test
+    @DisplayName("Multiplicateurs : archer > lancier > cavalier > archer, SPECIAL neutre")
+    void testMultiplicateurs() {
+        assertAll(
+            () -> assertEquals(1.5, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.LANCIER)),
+            () -> assertEquals(1.5, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.CAVALIER)),
+            () -> assertEquals(1.5, TypeTroupe.CAVALIER.multiplicateurContre(TypeTroupe.ARCHER)),
+            () -> assertEquals(0.75, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.ARCHER)),
+            () -> assertEquals(1.0, TypeTroupe.SPECIAL.multiplicateurContre(TypeTroupe.ARCHER)),
+            () -> assertEquals(1.0, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.ARCHER))
+        );
+    }
+
+
+
     // =========================================================================
     // 4. Pillage et retour
     // =========================================================================
@@ -392,6 +420,29 @@ class MilitaireRoyaumeTest {
             Attaque a = preparerAttaqueGagnante();
 
             assertThrows(IllegalStateException.class, a::receptionnerRetour);
+        }
+    }
+
+
+    // =========================================================================
+    // 5. Triangle de force
+    // =========================================================================
+
+    @Nested
+    @DisplayName("Triangle de force des troupes")
+    class TriangleTests {
+
+        @Test
+        @DisplayName("Multiplicateurs : archer > lancier > cavalier > archer, SPECIAL neutre")
+        void testMultiplicateurs() {
+            assertAll(
+                () -> assertEquals(1.5, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.LANCIER)),
+                () -> assertEquals(1.5, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.CAVALIER)),
+                () -> assertEquals(1.5, TypeTroupe.CAVALIER.multiplicateurContre(TypeTroupe.ARCHER)),
+                () -> assertEquals(0.75, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.ARCHER)),
+                () -> assertEquals(1.0, TypeTroupe.SPECIAL.multiplicateurContre(TypeTroupe.ARCHER)),
+                () -> assertEquals(1.0, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.ARCHER))
+            );
         }
     }
 }
