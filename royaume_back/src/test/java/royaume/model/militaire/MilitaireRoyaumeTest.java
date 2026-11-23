@@ -64,12 +64,12 @@ class MilitaireRoyaumeTest {
         r.crediterRessources(Ressource.NOURRITURE, 50);
     }
 
-    /** 10 cavaliers (attaque 150) contre 5 lanciers (défense 75) : victoire de l'attaquant. */
+    /** 10 cavaliers (attaque 150) contre 4 SPECIAL (défense 80) : SPECIAL est neutre dans le triangle. */
     private Attaque preparerAttaqueGagnante() {
         attaquant.ajouterTroupes(TypeTroupe.CAVALIER, 10);
         attaquant.setPopulationMilitaire(10);
-        defenseur.ajouterTroupes(TypeTroupe.LANCIER, 5);
-        defenseur.setPopulationMilitaire(5);
+        defenseur.ajouterTroupes(TypeTroupe.SPECIAL, 4);
+        defenseur.setPopulationMilitaire(4);
         return attaquant.lancerAttaque(defenseur, Map.of(TypeTroupe.CAVALIER, 10), 20, T0);
     }
 
@@ -278,15 +278,15 @@ class MilitaireRoyaumeTest {
 
             a.resoudreCombat();
 
-            // ratio de perte attaquant = 75 / 150 = 0.5 -> 5 survivants
+            // ratio de perte attaquant = 80 / 150 ≈ 0.53 -> 5 cavaliers perdus, 5 survivants
             assertAll(
                 () -> assertTrue(a.isVictoireAttaquant()),
                 () -> assertEquals(5, a.getTroupesEnvoyees().get(0).getQuantite()),
                 () -> assertEquals(5, attaquant.getPopulationMilitaire()),
-                () -> assertEquals(0, troupes(defenseur, TypeTroupe.LANCIER)),
+                () -> assertEquals(0, troupes(defenseur, TypeTroupe.SPECIAL)),
                 () -> assertEquals(0, defenseur.getPopulationMilitaire()),
                 () -> assertEquals(StatutAttaque.RETOUR, a.getStatut()),
-                () -> assertEquals(T0.plusHours(2).plusMinutes(40),a.getDateRetourPrevue())
+                () -> assertEquals(T0.plusHours(2).plusMinutes(40), a.getDateRetourPrevue())
             );
         }
 
@@ -432,17 +432,61 @@ class MilitaireRoyaumeTest {
     @DisplayName("Triangle de force des troupes")
     class TriangleTests {
 
+        private static final double DELTA = 1e-9;
+
         @Test
-        @DisplayName("Multiplicateurs : archer > lancier > cavalier > archer, SPECIAL neutre")
+        @DisplayName("Multiplicateurs : archer > lancier > cavalier > archer (x1.2 / x0.8), SPECIAL neutre")
         void testMultiplicateurs() {
             assertAll(
-                () -> assertEquals(1.5, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.LANCIER)),
-                () -> assertEquals(1.5, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.CAVALIER)),
-                () -> assertEquals(1.5, TypeTroupe.CAVALIER.multiplicateurContre(TypeTroupe.ARCHER)),
-                () -> assertEquals(0.75, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.ARCHER)),
-                () -> assertEquals(1.0, TypeTroupe.SPECIAL.multiplicateurContre(TypeTroupe.ARCHER)),
-                () -> assertEquals(1.0, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.ARCHER))
+                () -> assertEquals(1.2, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.LANCIER), DELTA),
+                () -> assertEquals(1.2, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.CAVALIER), DELTA),
+                () -> assertEquals(1.2, TypeTroupe.CAVALIER.multiplicateurContre(TypeTroupe.ARCHER), DELTA),
+                () -> assertEquals(0.8, TypeTroupe.LANCIER.multiplicateurContre(TypeTroupe.ARCHER), DELTA),
+                () -> assertEquals(0.8, TypeTroupe.CAVALIER.multiplicateurContre(TypeTroupe.LANCIER), DELTA),
+                () -> assertEquals(0.8, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.CAVALIER), DELTA),
+                () -> assertEquals(1.0, TypeTroupe.SPECIAL.multiplicateurContre(TypeTroupe.ARCHER), DELTA),
+                () -> assertEquals(1.0, TypeTroupe.ARCHER.multiplicateurContre(TypeTroupe.ARCHER), DELTA)
             );
+        }
+
+        @Test
+        @DisplayName("Triangle : 3 archers (60 brut) battent 5 lanciers (75 brut) car l'archer écrase le lancier")
+        void testArcherBatLancier() {
+            attaquant.ajouterTroupes(TypeTroupe.ARCHER, 3);
+            defenseur.ajouterTroupes(TypeTroupe.LANCIER, 5);
+            Attaque a = attaquant.lancerAttaque(defenseur, Map.of(TypeTroupe.ARCHER, 3), 20, T0);
+
+            a.resoudreCombat();
+
+            // attaque 3 x 20 x 1.2 = 72 ; défense 5 x 15 x 0.8 = 60
+            // Sans triangle, l'attaquant perdrait (60 < 75) : le test prouve que la règle joue.
+            assertTrue(a.isVictoireAttaquant());
+        }
+
+        @Test
+        @DisplayName("Triangle inversé : 3 archers (60 brut) perdent contre 5 cavaliers (50 brut) car le cavalier écrase l'archer")
+        void testCavalierBatArcher() {
+            attaquant.ajouterTroupes(TypeTroupe.ARCHER, 3);
+            defenseur.ajouterTroupes(TypeTroupe.CAVALIER, 5);
+            Attaque a = attaquant.lancerAttaque(defenseur, Map.of(TypeTroupe.ARCHER, 3), 20, T0);
+
+            a.resoudreCombat();
+
+            // attaque 3 x 20 x 0.8 = 48 ; défense 5 x 10 x 1.2 = 60
+            // Sans triangle, l'attaquant gagnerait (60 > 50) : le test prouve que la règle joue.
+            assertFalse(a.isVictoireAttaquant());
+        }
+
+        @Test
+        @DisplayName("SPECIAL est neutre : même puissance qu'en brut, des deux côtés")
+        void testSpecialNeutre() {
+            attaquant.ajouterTroupes(TypeTroupe.SPECIAL, 5);       // 5 x 20 = 100
+            defenseur.ajouterTroupes(TypeTroupe.LANCIER, 6);       // 6 x 15 x 1.0 = 90
+            Attaque a = attaquant.lancerAttaque(defenseur, Map.of(TypeTroupe.SPECIAL, 5), 20, T0);
+
+            a.resoudreCombat();
+
+            assertTrue(a.isVictoireAttaquant()); // 100 > 90
         }
     }
 }
