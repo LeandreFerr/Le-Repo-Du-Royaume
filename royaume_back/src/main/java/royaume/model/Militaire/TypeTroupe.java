@@ -3,6 +3,8 @@ package royaume.model.Militaire;
 import royaume.model.Ressource;
 import java.util.Map;
 
+
+        // temps pour former une troupe
         public enum TypeTroupe {
         ARCHER(1, "Archer", CategorieUnite.ARCHER, 20, 5, 10, 15,
                 Map.of(Ressource.OR, 10, Ressource.BOIS, 10, Ressource.NOURRITURE, 10)),

@@ -723,6 +723,8 @@ public class Royaume {
 	}
 
 	/** Les troupes quittent la garnison (elles restent comptées dans populationMilitaire). */
+	// passer par un contingent (un groupe de troupe)
+	// (contingent fait office de map)   //  c'est bon ?
 	public Attaque lancerAttaque(Royaume cible, Map<TypeTroupe, Integer> troupes,
 								double distance, LocalDateTime maintenant) {
 		// Vérification avant retrait, pour ne pas vider la garnison à moitié

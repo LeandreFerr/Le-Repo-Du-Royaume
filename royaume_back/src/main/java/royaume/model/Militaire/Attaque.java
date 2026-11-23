@@ -32,6 +32,7 @@ public class Attaque {
         this.dateImpact = dateDepart.plus(tempsTrajet);
     }
 
+
     /** Durée = distance / vitesse de l'unité la plus lente. */
     public Duration calculerTempsAller(double distance) {
         int vitesseMin = troupesEnvoyees.stream()

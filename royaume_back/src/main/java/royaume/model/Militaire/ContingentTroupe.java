@@ -1,6 +1,8 @@
 package royaume.model.Militaire;
 
 public class ContingentTroupe {
+    //ajoute id // voir le bd
+    
     private final TypeTroupe type;
     private int quantite;
 
