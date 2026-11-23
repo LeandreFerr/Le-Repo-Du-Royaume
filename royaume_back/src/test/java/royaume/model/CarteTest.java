@@ -67,11 +67,19 @@ public class CarteTest {
 
     @Test
     void constructeurCompletDoitInitialiserTousLesAttributs() {
-        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, carte);
-        EmplacementCarte e2 = new EmplacementCarte(2, 20, 10, carte);
+        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, null);
+
+        EmplacementCarte e2 = new EmplacementCarte(2, 20, 10, null);
+
         List<EmplacementCarte> liste = new ArrayList<>(List.of(e1, e2));
 
-        Carte c = new Carte(200, 120, 100, 60, null, liste);
+        Carte c = new Carte(
+                200,
+                120,
+                100,
+                60,
+                null,
+                liste);
 
         assertAll(
                 () -> assertEquals(200, c.getLargeur()),
@@ -79,9 +87,17 @@ public class CarteTest {
                 () -> assertEquals(100, c.getCentreX()),
                 () -> assertEquals(60, c.getCentreY()),
                 () -> assertNull(c.getPartie()),
-                () -> assertEquals(2, c.getEmplacements().size()),
-                () -> assertSame(e1, c.getEmplacements().get(0)),
-                () -> assertSame(e2, c.getEmplacements().get(1)));
+                () -> assertEquals(
+                        2,
+                        c.getEmplacements().size()),
+                () -> assertSame(
+                        e1,
+                        c.getEmplacements().get(0)),
+                () -> assertSame(
+                        e2,
+                        c.getEmplacements().get(1)),
+                () -> assertSame(c, e1.getCarte()),
+                () -> assertSame(c, e2.getCarte()));
     }
 
     @Test
@@ -94,13 +110,28 @@ public class CarteTest {
 
     @Test
     void constructeurCompletDoitCopierLaListeFournie() {
-        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, carte);
+        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, null);
+
         List<EmplacementCarte> liste = new ArrayList<>(List.of(e1));
 
-        Carte c = new Carte(200, 120, 100, 60, null, liste);
+        Carte c = new Carte(
+                200,
+                120,
+                100,
+                60,
+                null,
+                liste);
+
         liste.clear();
 
-        assertEquals(1, c.getEmplacements().size());
+        assertAll(
+                () -> assertEquals(
+                        1,
+                        c.getEmplacements().size()),
+                () -> assertSame(
+                        e1,
+                        c.getEmplacements().get(0)),
+                () -> assertSame(c, e1.getCarte()));
     }
 
     @Test
@@ -231,33 +262,189 @@ public class CarteTest {
     @Test
     void setEmplacementsDoitRemplacerLesEmplacementsExistants() {
         carte.genererEmplacements(3);
-        EmplacementCarte nouveau = new EmplacementCarte(1, 5, 5, carte);
 
-        carte.setEmplacements(new ArrayList<>(List.of(nouveau)));
+        List<EmplacementCarte> anciens = new ArrayList<>(carte.getEmplacements());
 
-        assertEquals(1, carte.getEmplacements().size());
-        assertSame(nouveau, carte.getEmplacements().get(0));
+        EmplacementCarte nouveau = new EmplacementCarte(1, 5, 5, null);
+
+        carte.setEmplacements(
+                new ArrayList<>(List.of(nouveau)));
+
+        assertAll(
+                () -> assertEquals(
+                        1,
+                        carte.getEmplacements().size()),
+                () -> assertSame(
+                        nouveau,
+                        carte.getEmplacements().get(0)),
+                () -> assertSame(
+                        carte,
+                        nouveau.getCarte()));
+
+        for (EmplacementCarte ancien : anciens) {
+            assertNull(ancien.getCarte());
+        }
     }
 
     @Test
     void setEmplacementsNullDoitRemplacerParUneListeVide() {
         carte.genererEmplacements(3);
 
+        List<EmplacementCarte> anciens = new ArrayList<>(carte.getEmplacements());
+
         carte.setEmplacements(null);
 
         assertNotNull(carte.getEmplacements());
         assertTrue(carte.getEmplacements().isEmpty());
+
+        for (EmplacementCarte ancien : anciens) {
+            assertNull(ancien.getCarte());
+        }
     }
 
     @Test
     void setEmplacementsDoitCopierLaListeFournie() {
-        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, carte);
+        EmplacementCarte e1 = new EmplacementCarte(1, 10, 10, null);
+
         List<EmplacementCarte> liste = new ArrayList<>(List.of(e1));
 
         carte.setEmplacements(liste);
         liste.clear();
 
-        assertEquals(1, carte.getEmplacements().size());
+        assertAll(
+                () -> assertEquals(
+                        1,
+                        carte.getEmplacements().size()),
+                () -> assertSame(
+                        e1,
+                        carte.getEmplacements().get(0)),
+                () -> assertSame(
+                        carte,
+                        e1.getCarte()));
+    }
+    // =====================================================================
+    // Ajouter et supprimer des emplacements : relation bidirectionnelle JPA
+    // =====================================================================
+
+    @Test
+    void ajouterEmplacementDoitSynchroniserLesDeuxCotesDeLaRelation() {
+        EmplacementCarte emplacement = new EmplacementCarte(1, 10, 20, null);
+
+        carte.ajouterEmplacement(emplacement);
+
+        assertAll(
+                () -> assertTrue(
+                        carte.getEmplacements()
+                                .contains(emplacement)),
+                () -> assertSame(
+                        carte,
+                        emplacement.getCarte()));
+    }
+
+    @Test
+    void ajouterDeuxFoisLeMemeEmplacementNeDoitPasLeDupliquer() {
+        EmplacementCarte emplacement = new EmplacementCarte(1, 10, 20, null);
+
+        carte.ajouterEmplacement(emplacement);
+        carte.ajouterEmplacement(emplacement);
+
+        assertAll(
+                () -> assertEquals(
+                        1,
+                        carte.getEmplacements().size()),
+                () -> assertSame(
+                        carte,
+                        emplacement.getCarte()));
+    }
+
+    @Test
+    void ajouterEmplacementNullDoitLeverUneException() {
+        IllegalArgumentException exception = assertThrows(
+                IllegalArgumentException.class,
+                () -> carte.ajouterEmplacement(null));
+
+        assertEquals(
+                "L'emplacement ne peut pas être null.",
+                exception.getMessage());
+    }
+
+    @Test
+    void supprimerEmplacementDoitSynchroniserLesDeuxCotesDeLaRelation() {
+        carte.genererEmplacements(3);
+
+        EmplacementCarte emplacement = carte.getEmplacements().get(0);
+
+        carte.supprimerEmplacement(emplacement);
+
+        assertAll(
+                () -> assertFalse(
+                        carte.getEmplacements()
+                                .contains(emplacement)),
+                () -> assertNull(
+                        emplacement.getCarte()));
+    }
+
+    @Test
+    void supprimerEmplacementOccupeDoitLibererLeRoyaume() {
+        carte.genererEmplacements(1);
+
+        Royaume royaume = new Royaume();
+
+        EmplacementCarte emplacement = carte.placerRoyaume(royaume);
+
+        carte.supprimerEmplacement(emplacement);
+
+        assertAll(
+                () -> assertTrue(
+                        carte.getEmplacements().isEmpty()),
+                () -> assertNull(
+                        emplacement.getCarte()),
+                () -> assertNull(
+                        emplacement.getRoyaume()),
+                () -> assertFalse(
+                        emplacement.isOccupe()),
+                () -> assertNull(
+                        royaume.getEmplacement()));
+    }
+
+    @Test
+    void supprimerEmplacementNullNeDoitRienModifier() {
+        carte.genererEmplacements(3);
+
+        List<EmplacementCarte> avant = new ArrayList<>(carte.getEmplacements());
+
+        assertDoesNotThrow(
+                () -> carte.supprimerEmplacement(null));
+
+        assertEquals(
+                avant,
+                carte.getEmplacements());
+    }
+
+    @Test
+    void supprimerUnEmplacementAbsentNeDoitPasLeDetacherDeSonAutreCarte() {
+        Carte autreCarte = new Carte();
+
+        EmplacementCarte emplacement = new EmplacementCarte(
+                1,
+                10,
+                20,
+                autreCarte);
+
+        autreCarte.ajouterEmplacement(emplacement);
+
+        carte.supprimerEmplacement(emplacement);
+
+        assertAll(
+                () -> assertSame(
+                        autreCarte,
+                        emplacement.getCarte()),
+                () -> assertTrue(
+                        autreCarte.getEmplacements()
+                                .contains(emplacement)),
+                () -> assertFalse(
+                        carte.getEmplacements()
+                                .contains(emplacement)));
     }
 
     // =====================================================================

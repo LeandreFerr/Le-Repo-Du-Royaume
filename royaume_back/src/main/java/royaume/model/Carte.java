@@ -40,7 +40,8 @@ public class Carte {
     private List<EmplacementCarte> emplacements = new ArrayList<>();
 
     @Transient
-    private final EmplacementCarte emplacementMarche = new EmplacementCarte(0, 50, 50, this);
+    private final EmplacementCarte emplacementMarche =
+            new EmplacementCarte(0, 50, 50, this);
 
     // =========================================================================
     // Constructeurs
@@ -49,7 +50,12 @@ public class Carte {
     public Carte() {
     }
 
-    public Carte(int largeur, int hauteur, int centreX, int centreY, Partie partie,
+    public Carte(
+            int largeur,
+            int hauteur,
+            int centreX,
+            int centreY,
+            Partie partie,
             List<EmplacementCarte> emplacements) {
 
         this.largeur = largeur;
@@ -57,7 +63,8 @@ public class Carte {
         this.centreX = centreX;
         this.centreY = centreY;
         this.partie = partie;
-        this.emplacements = emplacements != null ? new ArrayList<>(emplacements) : new ArrayList<>();
+
+        setEmplacements(emplacements);
     }
 
     // =========================================================================
@@ -65,11 +72,10 @@ public class Carte {
     // =========================================================================
 
     public double calculerDistanceEntre(Royaume r1, Royaume r2) {
-
         if (r1 == null || r2 == null) {
-            throw new IllegalArgumentException(
-                    "Les deux royaumes doivent être renseignés.");
+            throw new IllegalArgumentException("Les deux royaumes doivent être renseignés.");
         }
+
         return calculerDistance(
                 r1.getX(),
                 r1.getY(),
@@ -78,27 +84,27 @@ public class Carte {
     }
 
     public Optional<EmplacementCarte> getPremierEmplacementLibre() {
-        return emplacements.stream().filter(e -> !e.isOccupe()).findFirst();
+        return emplacements.stream()
+                .filter(emplacement -> !emplacement.isOccupe())
+                .findFirst();
     }
 
     public void genererEmplacements(int nombre) {
         if (nombre < 1 || nombre > 10) {
-            throw new IllegalArgumentException(
-                    "Le nombre d'emplacements (" + nombre
-                            + ") doit être compris entre 1 et 10.");
+            throw new IllegalArgumentException("Le nombre d'emplacements (" + nombre + ") doit être compris entre 1 et 10.");
         }
 
         int rayon = Math.min(largeur, hauteur) / 2 - 10;
 
         if (rayon <= 0) {
-            throw new IllegalStateException(
-                    "La carte est trop petite pour générer les emplacements.");
+            throw new IllegalStateException("La carte est trop petite pour générer les emplacements.");
         }
 
-        // Libération des royaumes éventuellement déjà placés
+        for (EmplacementCarte emplacement :
+                new ArrayList<>(emplacements)) {
 
-        emplacements.forEach(EmplacementCarte::liberer);
-        emplacements.clear();
+            supprimerEmplacement(emplacement);
+        }
 
         double angleEntreEmplacements = 2 * Math.PI / nombre;
         double angleInitial = -Math.PI / 2;
@@ -110,10 +116,10 @@ public class Carte {
             int y = centreY + (int) Math.round(rayon * Math.sin(angle));
 
             EmplacementCarte emplacement = new EmplacementCarte(
-                    i + 1,
-                    x,
-                    y,
-                    this);
+                            i + 1,
+                            x,
+                            y,
+                            this);
 
             ajouterEmplacement(emplacement);
         }
@@ -126,33 +132,25 @@ public class Carte {
             int nombre,
             boolean avecDecalageAleatoire) {
 
-        // Appel de la méthode existante
         genererEmplacements(nombre);
 
         if (!avecDecalageAleatoire) {
             return;
         }
 
-        // Décalage des emplacements déjà générés
         for (EmplacementCarte emplacement : emplacements) {
-            emplacement.setCoordX(
-                    emplacement.getCoordX() + genererDecalageAleatoire());
-
-            emplacement.setCoordY(
-                    emplacement.getCoordY() + genererDecalageAleatoire());
+            emplacement.setCoordX( emplacement.getCoordX() + genererDecalageAleatoire());
+            emplacement.setCoordY( emplacement.getCoordY()+ genererDecalageAleatoire());
         }
     }
 
     public EmplacementCarte placerRoyaume(Royaume royaume) {
-
         if (royaume == null) {
-            throw new IllegalArgumentException(
-                    "Le royaume à placer ne peut pas être null.");
+            throw new IllegalArgumentException("Le royaume à placer ne peut pas être null.");
         }
 
         EmplacementCarte emplacement = getPremierEmplacementLibre()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Aucun emplacement libre sur la carte."));
+        .orElseThrow(() -> new IllegalStateException("Aucun emplacement libre sur la carte."));
 
         emplacement.assignerRoyaume(royaume);
 
@@ -162,12 +160,14 @@ public class Carte {
     
     public void ajouterEmplacement(EmplacementCarte emplacement) {
         if (emplacement == null) {
-            throw new IllegalArgumentException(
-                    "L'emplacement ne peut pas être null.");
+            throw new IllegalArgumentException("L'emplacement ne peut pas être null.");
+        }
+
+        if (!emplacements.contains(emplacement)) {
+            emplacements.add(emplacement);
         }
 
         emplacement.setCarte(this);
-        emplacements.add(emplacement);
     }
 
     public void supprimerEmplacement(EmplacementCarte emplacement) {
@@ -175,25 +175,38 @@ public class Carte {
             return;
         }
 
+        if (!emplacements.contains(emplacement)) {
+            return;
+        }
+
+        emplacement.liberer();
         emplacements.remove(emplacement);
         emplacement.setCarte(null);
     }
 
     // =========================================================================
-    // Getters & Setters
+    // Getters et setters
     // =========================================================================
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public int getLargeur() {
         return largeur;
     }
 
-    public int getHauteur() {
-        return hauteur;
-    }
-
     public void setLargeur(int largeur) {
         checkDimension(largeur, "largeur");
         this.largeur = largeur;
+    }
+
+    public int getHauteur() {
+        return hauteur;
     }
 
     public void setHauteur(int hauteur) {
@@ -229,40 +242,57 @@ public class Carte {
         return emplacements;
     }
 
-    public void setEmplacements(List<EmplacementCarte> emplacements) {
-        this.emplacements = emplacements != null ? new ArrayList<>(emplacements) : new ArrayList<>();
+    public void setEmplacements(
+            List<EmplacementCarte> nouveauxEmplacements) {
+
+        for (EmplacementCarte emplacement :
+                new ArrayList<>(this.emplacements)) {
+
+            supprimerEmplacement(emplacement);
+        }
+
+        if (nouveauxEmplacements == null) {
+            return;
+        }
+
+        List<EmplacementCarte> copie =
+                new ArrayList<>(nouveauxEmplacements);
+
+        for (EmplacementCarte emplacement : copie) {
+            ajouterEmplacement(emplacement);
+        }
     }
 
     public EmplacementCarte getEmplacementMarche() {
         return emplacementMarche;
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     // =========================================================================
-    // Méthodes helpers & Validations
+    // Méthodes helpers et validations
     // =========================================================================
 
-    private double calculerDistance(int x1, int y1, int x2, int y2) {
+    private double calculerDistance(
+            int x1,
+            int y1,
+            int x2,
+            int y2) {
+
         return Math.hypot(
                 (double) x2 - x1,
                 (double) y2 - y1);
     }
 
-    private static void checkDimension(int valeur, String nom) {
+    private static void checkDimension(
+            int valeur,
+            String nom) {
+
         if (valeur <= 0) {
             throw new IllegalArgumentException("La " + nom + " de la carte doit être strictement positive.");
         }
     }
 
     private int genererDecalageAleatoire() {
-        int valeur = ThreadLocalRandom.current().nextInt(2, 5);
+        int valeur =  ThreadLocalRandom.current().nextInt(2, 5);
 
         return ThreadLocalRandom.current().nextBoolean()
                 ? valeur
@@ -275,8 +305,13 @@ public class Carte {
 
     @Override
     public String toString() {
-        return "Carte [largeur=" + largeur + ", hauteur=" + hauteur + ", centreX=" + centreX + ", centreY=" + centreY
-                + ", partie=" + partie + ", emplacements=" + emplacements + "]";
+        return "Carte [id=" + id
+                + ", largeur=" + largeur
+                + ", hauteur=" + hauteur
+                + ", centreX=" + centreX
+                + ", centreY=" + centreY
+                + ", partie=" + partie
+                + ", emplacements=" + emplacements
+                + "]";
     }
-
 }
