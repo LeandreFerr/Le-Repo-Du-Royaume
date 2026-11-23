@@ -81,8 +81,9 @@ public class RoyaumeApplication {
 		                    null
 		                );
 
-		                utilisateur = utilisateurDAO.save(utilisateur);
-
+						if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
+							utilisateurDAO.save(utilisateur);
+						}
 		                System.out.println("Utilisateur créé : " + utilisateur);
 
 		    
