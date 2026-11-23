@@ -25,15 +25,15 @@ server.port=8080
 
 # Option A : Configuration classique (Windows MySQL Installer / Docker standard)
 # Port 3306, utilisateur 'root', mot de passe 'root'
-spring.datasource.url=jdbc:mysql://localhost:3306/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=root
+#spring.datasource.url=jdbc:mysql://localhost:3306/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+#spring.datasource.username=root
+#spring.datasource.password=root
 
 # Option B : Pour les utilisateurs de MAMP (Mac / Windows)
 # Attention : MAMP utilise par défaut le port 8889 pour MySQL (et mdp 'root')
-# spring.datasource.url=jdbc:mysql://localhost:8889/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
-# spring.datasource.username=root
-# spring.datasource.password=root
+spring.datasource.url=jdbc:mysql://localhost:8889/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=root
+spring.datasource.password=root
 
 # Option C : Pour WampServer, XAMPP ou Mac Homebrew (sans mot de passe)
 # Port 3306, utilisateur 'root', mot de passe VIDE

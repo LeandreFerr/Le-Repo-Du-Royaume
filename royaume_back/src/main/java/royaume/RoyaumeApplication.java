@@ -1,6 +1,22 @@
 package royaume;
 
+import java.util.List;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import royaume.dao.IDAOPopulation;
+import royaume.dao.IDAORoyaume;
+import royaume.model.Royaume;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Gobelins;
+import royaume.model.peuple.Licornes;
+import royaume.model.peuple.Population;
+import royaume.model.peuple.Princesses;
+import royaume.model.peuple.Teuteus;
+/*
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class RoyaumeApplication {
@@ -9,7 +25,8 @@ public class RoyaumeApplication {
         SpringApplication.run(RoyaumeApplication.class, args);
     }
 }
-/*
+*/
+
 @SpringBootApplication
 public class RoyaumeApplication {
 
@@ -54,4 +71,4 @@ public class RoyaumeApplication {
 		    
 		};
 }
-}*/
+}
