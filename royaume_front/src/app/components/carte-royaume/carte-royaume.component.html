@@ -1,0 +1,111 @@
+<div
+  #viewportContainer
+  class="carte-viewport"
+  [class.is-dragging]="dragPreview !== null"
+  [class.is-interactive]="autoriserDeplacement"
+>
+  <canvas
+    #mapCanvas
+    class="carte-canvas"
+    data-testid="map-canvas"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseLeave()"
+    (wheel)="onWheel($event)"
+    (contextmenu)="onContextMenu($event)"
+    aria-label="Carte procédurale 2.5D du Royaume"
+  ></canvas>
+
+  <!-- Barre d'outils flottante -->
+  <div class="carte-hud-toolbar" role="toolbar" aria-label="Contrôles de caméra de la carte">
+    <div class="hud-group">
+      <button
+        type="button"
+        class="hud-btn"
+        (click)="zoomIn()"
+        title="Zoom avant (Molette haut)"
+        aria-label="Zoom avant"
+      >
+        ＋
+      </button>
+      <span class="hud-value" data-testid="hud-zoom">{{ zoomPercentage }}%</span>
+      <button
+        type="button"
+        class="hud-btn"
+        (click)="zoomOut()"
+        title="Zoom arrière (Molette bas)"
+        aria-label="Zoom arrière"
+      >
+        －
+      </button>
+    </div>
+
+    <div class="hud-divider"></div>
+
+    <div class="hud-group">
+      <button
+        type="button"
+        class="hud-btn hud-btn-text"
+        [class.active]="clampedInclinaison === 0"
+        (click)="setInclinaison(0)"
+        title="Vue 2D zénithale (0°)"
+      >
+        2D
+      </button>
+      <button
+        type="button"
+        class="hud-btn hud-btn-text"
+        [class.active]="clampedInclinaison === 40"
+        (click)="setInclinaison(40)"
+        title="Vue diorama 2.5D (40°)"
+      >
+        2.5D
+      </button>
+      <button
+        type="button"
+        class="hud-btn hud-btn-text"
+        [class.active]="clampedInclinaison === 55"
+        (click)="setInclinaison(55)"
+        title="Vue rasante (55°)"
+      >
+        55°
+      </button>
+      <span class="hud-badge" data-testid="hud-tilt" title="Angle d'inclinaison 2.5D">
+        📐 {{ clampedInclinaison }}°
+      </span>
+    </div>
+
+    <div class="hud-divider"></div>
+
+    <button
+      type="button"
+      class="hud-btn hud-btn-reset"
+      (click)="resetView()"
+      title="Réinitialiser la caméra"
+    >
+      🧭 Centrer
+    </button>
+  </div>
+
+  <!-- Barre d'état inférieure (Coordonnées & Aperçu Drag & Drop) -->
+  <div class="carte-hud-Status">
+    @if (dragPreview) {
+      <span class="status-pill status-drag" data-testid="hud-drag-preview">
+        ✥ Déplacement Royaume #{{ dragPreview.numero }} → ({{ dragPreview.coordX }}, {{ dragPreview.coordY }})
+      </span>
+    } @else if (hoveredWorldCoords) {
+      <span class="status-pill" data-testid="hud-coords">
+        📍 X: {{ hoveredWorldCoords.x }} · Y: {{ hoveredWorldCoords.y }}
+      </span>
+    } @else {
+      <span class="status-pill" data-testid="hud-coords-idle">
+        📍 Carte {{ carte.largeur }}×{{ carte.hauteur }} · Marché ({{ carte.centreX }}, {{ carte.centreY }})
+      </span>
+    }
+
+    <span class="status-pill status-hint">
+      🖱️ Glisser : Pan / Royaume · Clic droit : Inclinaison · Molette : Zoom
+    </span>
+  </div>
+</div>

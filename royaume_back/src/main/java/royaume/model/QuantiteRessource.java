@@ -2,9 +2,21 @@ package royaume.model;
 
 import java.util.Objects;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
+// @Embeddable -> Contredit @JdbcTypeCode(SqlTypes.JSON) ? 
 public class QuantiteRessource {
 
+	@PositiveOrZero
+	@Column(nullable = false)
 	private int quantite;
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "ressource", nullable = false)
 	private Ressource ressource;
 	
 	
@@ -12,16 +24,12 @@ public class QuantiteRessource {
 	
 	
 	public QuantiteRessource(int quantite, Ressource ressource) {
-		if (quantite < 0) {
-			throw new IllegalArgumentException("La quantité initiale ne peut pas être négative.");
-		} else if (ressource == null) {
-			throw new IllegalArgumentException("La ressource ne peut pas être null.");
-		}
+		
 		this.quantite = quantite;
 		this.ressource = ressource;
 	}
 	
-	
+	//operations métiers doivent garder leur propre controle de validation (different des getter et setter)
 	public void ajouter(int montant) {
 		if (montant <= 0) {
         	throw new IllegalArgumentException("Le montant à ajouter doit être strictement positif.");
@@ -46,24 +54,17 @@ public class QuantiteRessource {
 	public int getQuantite() {
 		return quantite;
 	}
+	
 	public void setQuantite(int quantite) {
-		if (quantite >= 0) {
 			this.quantite = quantite;
-		} else {
-			throw new IllegalArgumentException("La quantité ne peut pas être négative.");
-		}
-		
 	}
+	
 	public Ressource getRessource() {
 		return ressource;
 	}
+	
 	public void setRessource(Ressource ressource) {
-		if (ressource != null) {
 			this.ressource = ressource;
-		} else {
-			throw new IllegalArgumentException("La ressource ne peut pas être null.");
-		}
-		
 	}
 	
 	@Override

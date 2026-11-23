@@ -6,23 +6,35 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
+import royaume.model.peuple.*;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 @DisplayName("Tests unitaires robustes de la hiérarchie Population (Module 2)")
 public class PopulationTest {
+	private static Validator validator;
 
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
 	// =========================================================================
 	// 1. Hiérarchie et Polymorphisme
 	// =========================================================================
@@ -134,81 +146,156 @@ public class PopulationTest {
 	// 3. Validation des invariants
 	// =========================================================================
 
-	@Nested
-	@DisplayName("3. Validation des invariants")
-	class ValidationInvariantsTests {
 
-		@Test
-		@DisplayName("Constructeur rejette un nom null ou blanc")
-		void testConstructeurRejetteNomInvalide() {
-			assertThrows(IllegalArgumentException.class, () -> new Canards(1, null, "Seigneur", 0.0));
-			assertThrows(IllegalArgumentException.class, () -> new Canards(1, "", "Seigneur", 0.0));
-			assertThrows(IllegalArgumentException.class, () -> new Canards(1, "   ", "Seigneur", 0.0));
-		}
+@Nested
+@DisplayName("3. Validation des invariants")
+class ValidationInvariantsTests {
 
-		@Test
-		@DisplayName("Constructeur rejette un titre souverain null ou blanc")
-		void testConstructeurRejetteTitreInvalide() {
-			assertThrows(IllegalArgumentException.class, () -> new Gobelins(1, "Gobelins", null, 0.0));
-			assertThrows(IllegalArgumentException.class, () -> new Gobelins(1, "Gobelins", "", 0.0));
-			assertThrows(IllegalArgumentException.class, () -> new Gobelins(1, "Gobelins", "   ", 0.0));
-		}
+    @Test
+    @DisplayName("Bean Validation détecte un nom null, vide ou blanc")
+    void testConstructeurRejetteNomInvalide() {
 
-		@Test
-		@DisplayName("Constructeur rejette une attraction null, négative ou infinie/NaN")
-		void testConstructeurRejetteAttractionInvalide() {
-			assertAll(
-				() -> assertThrows(IllegalArgumentException.class, () -> new Teuteus(1, "Teuteus", "Roi", null)),
-				() -> assertThrows(IllegalArgumentException.class, () -> new Teuteus(1, "Teuteus", "Roi", -0.01)),
-				() -> assertThrows(IllegalArgumentException.class, () -> new Teuteus(1, "Teuteus", "Roi", Double.NaN)),
-				() -> assertThrows(IllegalArgumentException.class, () -> new Teuteus(1, "Teuteus", "Roi", Double.POSITIVE_INFINITY)),
-				() -> assertThrows(IllegalArgumentException.class, () -> new Teuteus(1, "Teuteus", "Roi", Double.NEGATIVE_INFINITY))
-			);
-		}
+        List<String> nomsInvalides = Arrays.asList(
+            null, "", "   "
+        );
 
-		@ParameterizedTest
-		@ValueSource(ints = { 0, -1, -50, Integer.MIN_VALUE })
-		@DisplayName("Constructeur rejette un id non positif")
-		void testConstructeurRejetteIdNonPositif(int idInvalide) {
-			assertThrows(IllegalArgumentException.class, () -> new Princesses(idInvalide, "Princesses", "Reine", 0.0));
-		}
+        for (String nom : nomsInvalides) {
+            Population population =
+                new Canards(1, nom, "Seigneur", 0.0);
 
-		@Test
-		@DisplayName("Constructeur autorise un id null pour les entités non persistées")
-		void testConstructeurAutoriseIdNull() {
-			Canards canards = new Canards(null, "Canards", "Chef", 0.0);
-			assertEquals(null, canards.getId());
-		}
+            Set<ConstraintViolation<Population>> violations =
+                validator.validate(population);
 
-		@Test
-		@DisplayName("Setters valident strictement leurs entrées")
-		void testSettersValidation() {
-			Population canards = new Canards(1, "Canards", "Chef", 0.0);
+            assertTrue(violations.stream().anyMatch(v ->
+                v.getPropertyPath().toString().equals("nom")));
+        }
+    }
 
-			assertThrows(IllegalArgumentException.class, () -> canards.setId(0));
-			assertThrows(IllegalArgumentException.class, () -> canards.setId(-5));
-			assertThrows(IllegalArgumentException.class, () -> canards.setNom(null));
-			assertThrows(IllegalArgumentException.class, () -> canards.setNom("  "));
-			assertThrows(IllegalArgumentException.class, () -> canards.setTitreSouverain(null));
-			assertThrows(IllegalArgumentException.class, () -> canards.setTitreSouverain(""));
-			assertThrows(IllegalArgumentException.class, () -> canards.setAttraction(null));
-			assertThrows(IllegalArgumentException.class, () -> canards.setAttraction(-0.5));
-			assertThrows(IllegalArgumentException.class, () -> canards.setCapaciteSpeciale("   "));
+    @Test
+    @DisplayName("Bean Validation détecte un nom dépassant 50 caractères")
+    void testNomTropLong() {
 
-			// Modifications valides
-			canards.setId(10);
-			canards.setNom("Super Canards");
-			canards.setTitreSouverain("Grand Duc");
-			canards.setAttraction(0.10);
-			canards.setCapaciteSpeciale("voler en v");
+        String nom = "A".repeat(51);
 
-			assertEquals(10, canards.getId());
-			assertEquals("Super Canards", canards.getNom());
-			assertEquals("Grand Duc", canards.getTitreSouverain());
-			assertEquals(0.10, canards.getAttraction());
-			assertEquals("voler en v", canards.getCapaciteSpeciale());
-		}
-	}
+        Population population =
+            new Canards(1, nom, "Seigneur", 0.0);
+
+        assertTrue(validator.validate(population).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("nom")));
+    }
+
+    @Test
+    @DisplayName("Bean Validation détecte un titre souverain null ou blanc")
+    void testConstructeurRejetteTitreInvalide() {
+
+        List<String> titresInvalides = Arrays.asList(
+            null, "", "   "
+        );
+
+        for (String titre : titresInvalides) {
+            Population population =
+                new Gobelins(1, "Gobelins", titre, 0.0);
+
+            assertTrue(validator.validate(population).stream()
+                .anyMatch(v ->
+                    v.getPropertyPath().toString().equals("titreSouverain")));
+        }
+    }
+
+    @Test
+    @DisplayName("Bean Validation détecte un titre souverain dépassant 50 caractères")
+    void testTitreTropLong() {
+
+        Population population =
+            new Canards(1, "Canards", "A".repeat(51), 0.0);
+
+        assertTrue(validator.validate(population).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("titreSouverain")));
+    }
+
+    @Test
+    @DisplayName("Bean Validation détecte une attraction null ou négative")
+    void testConstructeurRejetteAttractionInvalide() {
+
+        Population attractionNull =
+            new Teuteus(1, "Teuteus", "Roi", null);
+
+        Population attractionNegative =
+            new Teuteus(1, "Teuteus", "Roi", -0.01);
+
+        assertAll(
+            () -> assertTrue(validator.validate(attractionNull).stream()
+                .anyMatch(v ->
+                    v.getPropertyPath().toString().equals("attraction"))),
+
+            () -> assertTrue(validator.validate(attractionNegative).stream()
+                .anyMatch(v ->
+                    v.getPropertyPath().toString().equals("attraction")))
+        );
+    }
+
+    @Test
+    @DisplayName("Bean Validation accepte une attraction égale à zéro")
+    void testAttractionZeroAutorisee() {
+
+        Population population =
+            new Canards(1, "Canards", "Seigneur", 0.0);
+
+        assertTrue(validator.validate(population).isEmpty());
+    }
+
+    @Test
+    @DisplayName("Bean Validation accepte une capacité spéciale nullable")
+    void testCapaciteSpecialeNullable() {
+
+        Population population =
+            new Canards(1, "Canards", "Seigneur", 0.0);
+
+        population.setCapaciteSpeciale(null);
+
+        assertFalse(validator.validate(population).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("capaciteSpeciale")));
+    }
+
+    @Test
+    @DisplayName("Les setters permettent les modifications mais Bean Validation détecte les erreurs")
+    void testSettersValidation() {
+
+        Population canards =
+            new Canards(1, "Canards", "Chef", 0.0);
+
+        canards.setNom("");
+        assertTrue(validator.validate(canards).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("nom")));
+
+        canards.setNom("Super Canards");
+        canards.setTitreSouverain("");
+        assertTrue(validator.validate(canards).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("titreSouverain")));
+
+        canards.setTitreSouverain("Grand Duc");
+        canards.setAttraction(-0.5);
+        assertTrue(validator.validate(canards).stream()
+            .anyMatch(v ->
+                v.getPropertyPath().toString().equals("attraction")));
+
+        canards.setAttraction(0.10);
+        canards.setCapaciteSpeciale("voler en v");
+
+        assertTrue(validator.validate(canards).isEmpty());
+
+        assertEquals("Super Canards", canards.getNom());
+        assertEquals("Grand Duc", canards.getTitreSouverain());
+        assertEquals(0.10, canards.getAttraction());
+        assertEquals("voler en v", canards.getCapaciteSpeciale());
+    }
+}
+
 
 	// =========================================================================
 	// 4. Cycle Poule - Renard - Vipère

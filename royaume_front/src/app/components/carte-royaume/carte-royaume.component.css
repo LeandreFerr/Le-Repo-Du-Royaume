@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+}
+
+.carte-viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 460px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #1e2820 0%, #101511 100%);
+  border: 2px solid #5c4328;
+  box-shadow:
+    inset 0 0 28px rgba(0, 0, 0, 0.75),
+    0 10px 28px rgba(0, 0, 0, 0.45);
+  user-select: none;
+}
+
+.carte-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.carte-viewport.is-dragging .carte-canvas,
+.carte-canvas:active {
+  cursor: grabbing;
+}
+
+/* Barre d'outils flottante */
+.carte-hud-toolbar {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(24, 18, 12, 0.86);
+  border: 1px solid rgba(217, 167, 74, 0.45);
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  color: #f5ebd6;
+  font-size: 0.82rem;
+  z-index: 5;
+}
+
+.hud-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.hud-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(217, 167, 74, 0.3);
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 167, 74, 0.35);
+  background: rgba(45, 33, 21, 0.9);
+  color: #f5ebd6;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.hud-btn:hover {
+  background: rgba(180, 123, 40, 0.35);
+  border-color: #fbbf24;
+  color: #fffbeb;
+}
+
+.hud-btn.active {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  border-color: #fde68a;
+  color: #fffbeb;
+}
+
+.hud-value {
+  min-width: 44px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #fde68a;
+}
+
+.hud-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.14);
+  color: #fde68a;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Barre d'état inférieure */
+.carte-hud-Status {
+  position: absolute;
+  bottom: 12px;
+  left: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  pointer-events: none;
+  z-index: 5;
+  flex-wrap: wrap;
+}
+
+.status-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(24, 18, 12, 0.84);
+  border: 1px solid rgba(217, 167, 74, 0.38);
+  color: #f5ebd6;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
+}
+
+.status-drag {
+  background: rgba(180, 83, 9, 0.92);
+  border-color: #fde68a;
+  color: #fffbeb;
+  font-weight: 700;
+}
+
+.status-hint {
+  color: #d6c7ae;
+  font-size: 0.75rem;
+}

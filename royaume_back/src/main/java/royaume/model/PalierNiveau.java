@@ -5,15 +5,43 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+
+@Entity
+@Table(name = "palier_niveau")
 public class PalierNiveau {
 
 	// =========================================================================
 	// Attributs
 	// =========================================================================
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	@NotNull
+	@Min(2)
+	@Max(10)
+	@Column(nullable = false, unique = true)
 	private int niveau;
+	@NotNull
+	@PositiveOrZero
+	@Column(nullable = false)
 	private int populationRequise;
+	@NotNull
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(nullable = false, columnDefinition = "json")
 	private List<QuantiteRessource> prerequis = new ArrayList<>();
 
 	// =========================================================================
@@ -23,9 +51,7 @@ public class PalierNiveau {
 	public PalierNiveau() {}
 
 	public PalierNiveau(Integer id, int niveau, int populationRequise, List<QuantiteRessource> prerequis) {
-		checkId(id);
-		checkNiveau(niveau);
-		checkPopulationRequise(populationRequise);
+		
 		setPrerequis(prerequis);
 		this.id = id;
 		this.niveau = niveau;
@@ -90,7 +116,6 @@ public class PalierNiveau {
 	}
 
 	public void setId(Integer id) {
-		checkId(id);
 		this.id = id;
 	}
 
@@ -99,7 +124,6 @@ public class PalierNiveau {
 	}
 
 	public void setNiveau(int niveau) {
-		checkNiveau(niveau);
 		this.niveau = niveau;
 	}
 
@@ -108,7 +132,6 @@ public class PalierNiveau {
 	}
 
 	public void setPopulationRequise(int populationRequise) {
-		checkPopulationRequise(populationRequise);
 		this.populationRequise = populationRequise;
 	}
 
@@ -141,28 +164,6 @@ public class PalierNiveau {
 		this.prerequis = prerequis.stream()
 				.map(q -> new QuantiteRessource(q.getQuantite(), q.getRessource()))
 				.toList();
-	}
-
-	// =========================================================================
-	// Validations des invariants
-	// =========================================================================
-
-	private void checkId(Integer id) {
-		if (id != null && id <= 0) {
-			throw new IllegalArgumentException("L'id du palier doit être strictement positif.");
-		}
-	}
-
-	private void checkNiveau(int niveau) {
-		if (niveau < 2 || niveau > 10) {
-			throw new IllegalArgumentException("Le niveau cible du palier doit être compris entre 2 et 10.");
-		}
-	}
-
-	private void checkPopulationRequise(int populationRequise) {
-		if (populationRequise < 0) {
-			throw new IllegalArgumentException("La population requise ne peut pas être négative.");
-		}
 	}
 
 	// =========================================================================

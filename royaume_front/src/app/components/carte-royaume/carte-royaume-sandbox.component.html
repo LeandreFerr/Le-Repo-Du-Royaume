@@ -1,0 +1,391 @@
+<div class="sandbox-shell">
+  <!-- En-tête Royal -->
+  <header class="sandbox-header">
+    <div class="brand-block">
+      <span class="brand-crest" aria-hidden="true">🏰</span>
+      <div>
+        <h1 class="brand-title">Cartographie du Royaume</h1>
+        <p class="brand-subtitle">
+          Générateur procédural 2.5D · Fiefs de Voronoï, Routes commerciales A* &amp; Marché central
+        </p>
+      </div>
+    </div>
+
+    <div class="header-badges">
+      <span class="header-pill">
+        🗺️ <strong>{{ currentArchetypeMeta.label }}</strong>
+      </span>
+      <span class="header-pill">
+        👑 <strong>{{ occupiedCount }}</strong> Occupé(s) · <strong>{{ freeCount }}</strong> Libre(s)
+      </span>
+      <button
+        type="button"
+        class="btn-medieval btn-java-toggle"
+        (click)="toggleJavaSnippet()"
+        data-testid="toggle-java-btn"
+      >
+        📜 {{ showJavaSnippet ? 'Masquer Code Java' : 'Code Java (Carte.java)' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Corps principal : Carte 2.5D + Panneau de contrôle latéral -->
+  <main class="sandbox-main">
+    <section class="map-stage" aria-label="Zone d'affichage de la carte 2.5D">
+      <div class="map-frame">
+        <app-carte-royaume
+          [carte]="carte"
+          [seed]="seed"
+          [archetype]="archetype"
+          [inclinaison]="inclinaison"
+          [autoriserDeplacement]="autoriserDeplacement"
+          [selectedEmplacementNumero]="selectedEmplacementNumero"
+          [showLabels]="showLabels"
+          [showBorders]="showBorders"
+          [showRoutes]="showRoutes"
+          (inclinaisonChange)="onInclinaisonChange($event)"
+          (emplacementSelectionne)="onEmplacementSelectionneDepuisCarte($event)"
+          (emplacementDeplace)="onEmplacementDeplaceDepuisCarte($event)"
+          (marcheSelectionne)="onMarcheSelectionneDepuisCarte()"
+          (carteGeneree)="onCarteGeneree($event)"
+        ></app-carte-royaume>
+      </div>
+
+      <!-- Panneau d'export Java optionnel -->
+      @if (showJavaSnippet) {
+        <section class="java-export-panel" data-testid="java-snippet-panel">
+          <div class="java-export-header">
+            <div>
+              <strong>☕ Snippet d'initialisation Back-End (`Carte.java` / `EmplacementCarte.java`)</strong>
+              <span class="java-export-hint">Compatible avec le modèle Java `royaume.model.Carte`</span>
+            </div>
+            <button
+              type="button"
+              class="btn-medieval btn-sm"
+              (click)="copyJavaToClipboard()"
+              data-testid="copy-java-btn"
+            >
+              {{ javaCopied ? '✅ Copié !' : '📋 Copier le Java' }}
+            </button>
+          </div>
+          <pre class="java-code-block"><code>{{ javaSnippet }}</code></pre>
+        </section>
+      }
+    </section>
+
+    <!-- Panneau de contrôle latéral -->
+    <aside class="control-sidebar" aria-label="Panneau de contrôle du bac à sable">
+      <!-- 1. Seed & Génération -->
+      <section class="panel-card">
+        <h2 class="panel-title">🌱 Seed Procédurale</h2>
+        <div class="seed-row">
+          <input
+            type="text"
+            class="medieval-input seed-input"
+            [ngModel]="seed"
+            (ngModelChange)="onSeedChange($event)"
+            placeholder="Ex: royaume-1"
+            aria-label="Seed procédurale"
+            data-testid="seed-input"
+          />
+          <button
+            type="button"
+            class="btn-medieval"
+            (click)="generateRandomSeed()"
+            title="Générer une nouvelle seed aléatoire"
+            data-testid="random-seed-btn"
+          >
+            🎲 Aléatoire
+          </button>
+          <button
+            type="button"
+            class="btn-medieval btn-secondary"
+            (click)="copySeedToClipboard()"
+            title="Copier la seed actuelle"
+            data-testid="copy-seed-btn"
+          >
+            {{ seedCopied ? '✅ Copié' : '📋 Copier' }}
+          </button>
+        </div>
+      </section>
+
+      <!-- 2. Archétype de Carte (façon Age of Empires) -->
+      <section class="panel-card">
+        <h2 class="panel-title">⛰️ Archétype de Carte</h2>
+        <div class="archetype-grid" role="radiogroup" aria-label="Choix de l'archétype de carte">
+          @for (arch of archetypes; track arch.id) {
+            <button
+              type="button"
+              class="archetype-card"
+              [class.selected]="archetype === arch.id"
+              (click)="selectArchetype(arch.id)"
+              [attr.data-testid]="'archetype-' + arch.id"
+            >
+              <div class="archetype-card-header">
+                <span class="archetype-name">{{ arch.label }}</span>
+                @if (archetype === arch.id) {
+                  <span class="archetype-active-dot">Actif</span>
+                }
+              </div>
+              <p class="archetype-desc">{{ arch.description }}</p>
+            </button>
+          }
+        </div>
+      </section>
+
+      <!-- 3. Inclinaison 2.5D & Calques -->
+      <section class="panel-card">
+        <div class="panel-header-inline">
+          <h2 class="panel-title">📐 Caméra &amp; Inclinaison 2.5D</h2>
+          <span class="value-pill" data-testid="tilt-value-label">{{ inclinaison }}°</span>
+        </div>
+
+        <input
+          type="range"
+          min="0"
+          max="60"
+          step="1"
+          class="medieval-slider"
+          [ngModel]="inclinaison"
+          (ngModelChange)="setInclinaison($event)"
+          aria-label="Angle d'inclinaison 2.5D"
+          data-testid="tilt-slider"
+        />
+
+        <div class="preset-buttons">
+          <button
+            type="button"
+            class="btn-preset"
+            [class.active]="inclinaison === 0"
+            (click)="setInclinaison(0)"
+            data-testid="preset-tilt-0"
+          >
+            0° Vue 2D
+          </button>
+          <button
+            type="button"
+            class="btn-preset"
+            [class.active]="inclinaison === 40"
+            (click)="setInclinaison(40)"
+            data-testid="preset-tilt-40"
+          >
+            40° Vue Jeu
+          </button>
+          <button
+            type="button"
+            class="btn-preset"
+            [class.active]="inclinaison === 55"
+            (click)="setInclinaison(55)"
+            data-testid="preset-tilt-55"
+          >
+            55° Vue Rasante
+          </button>
+        </div>
+
+        <div class="layer-toggles">
+          <label class="toggle-chip">
+            <input type="checkbox" [(ngModel)]="autoriserDeplacement" />
+            <span>Glisser-déposer Royaumes</span>
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" [(ngModel)]="showBorders" />
+            <span>Frontières</span>
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" [(ngModel)]="showRoutes" />
+            <span>Routes &amp; Ponts</span>
+          </label>
+          <label class="toggle-chip">
+            <input type="checkbox" [(ngModel)]="showLabels" />
+            <span>Noms</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- 4. Gestion des Emplacements de Royaumes (1 à 10) -->
+      <section class="panel-card">
+        <div class="panel-header-inline">
+          <h2 class="panel-title">👑 Emplacements de Royaumes</h2>
+          <span class="value-pill" data-testid="emplacement-count-badge">
+            {{ carte.emplacements.length }} / {{ maxEmplacements }}
+          </span>
+        </div>
+
+        <div class="count-control-row">
+          <label for="empCountSlider" class="count-label">Nombre (N) :</label>
+          <input
+            id="empCountSlider"
+            type="range"
+            [min]="minEmplacements"
+            [max]="maxEmplacements"
+            step="1"
+            class="medieval-slider"
+            [ngModel]="nombreEmplacements"
+            (ngModelChange)="onNombreEmplacementsChange($event)"
+            data-testid="emplacement-count-slider"
+          />
+          <span class="count-number">{{ nombreEmplacements }}</span>
+        </div>
+
+        <div class="circle-action-row">
+          <button
+            type="button"
+            class="btn-medieval btn-full"
+            (click)="disposerEnCercle()"
+            data-testid="arrange-circle-btn"
+          >
+            🔄 Disposer en cercle autour du marché
+          </button>
+          <button
+            type="button"
+            class="btn-medieval btn-secondary"
+            [class.active]="inspectingMarche"
+            (click)="selectMarcheCentral()"
+            title="Inspecter le Marché central"
+            data-testid="inspect-market-btn"
+          >
+            ⚖️ Marché
+          </button>
+        </div>
+
+        <div class="emplacement-list" role="list">
+          @for (emp of carte.emplacements; track emp.numero) {
+            @let royaume = getRoyaumeInfo(emp);
+            <div
+              class="emplacement-item"
+              role="listitem"
+              [class.selected]="!inspectingMarche && selectedEmplacementNumero === emp.numero"
+              (click)="selectEmplacement(emp.numero)"
+              [attr.data-testid]="'emplacement-row-' + emp.numero"
+            >
+              <div class="emp-row-top">
+                <div class="emp-identity">
+                  <span
+                    class="emp-color-swatch"
+                    [style.backgroundColor]="emp.occupe ? royaume.couleurPrimaire : '#64748b'"
+                    [style.borderColor]="emp.occupe ? royaume.couleurSecondaire : '#94a3b8'"
+                  ></span>
+                  <span class="emp-num">#{{ emp.numero }}</span>
+                  <strong class="emp-name">
+                    {{ emp.occupe ? royaume.nom : 'Emplacement Libre' }}
+                  </strong>
+                </div>
+
+                <label
+                  class="occupe-switch"
+                  (click)="$event.stopPropagation()"
+                  [title]="emp.occupe ? 'Basculer en emplacement libre' : 'Basculer en royaume occupé'"
+                >
+                  <input
+                    type="checkbox"
+                    [checked]="emp.occupe"
+                    (change)="onToggleOccupe(emp.numero, $any($event.target).checked)"
+                    [attr.data-testid]="'toggle-occupe-' + emp.numero"
+                  />
+                  <span class="switch-pill" [class.is-occupied]="emp.occupe">
+                    {{ emp.occupe ? 'Occupé' : 'Libre' }}
+                  </span>
+                </label>
+              </div>
+
+              <div class="emp-coords-row" (click)="$event.stopPropagation()">
+                <label class="coord-field">
+                  <span>X</span>
+                  <input
+                    type="number"
+                    min="0"
+                    [max]="carte.largeur"
+                    class="coord-input"
+                    [ngModel]="emp.coordX"
+                    (ngModelChange)="onCoordChange(emp.numero, 'x', $event)"
+                    [attr.data-testid]="'coord-x-' + emp.numero"
+                  />
+                </label>
+                <label class="coord-field">
+                  <span>Y</span>
+                  <input
+                    type="number"
+                    min="0"
+                    [max]="carte.hauteur"
+                    class="coord-input"
+                    [ngModel]="emp.coordY"
+                    (ngModelChange)="onCoordChange(emp.numero, 'y', $event)"
+                    [attr.data-testid]="'coord-y-' + emp.numero"
+                  />
+                </label>
+                <span class="emp-market-dist" title="Distance euclidienne au Marché central">
+                  ⚖️ {{ getDistanceToMarket(emp) }} u
+                </span>
+              </div>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- 5. Inspecteur de Royaume / Marché (Fiche de détails) -->
+      @if (inspectionInfo; as info) {
+        <section class="panel-card inspector-card" data-testid="inspector-panel">
+          <div class="panel-header-inline">
+            <h2 class="panel-title">🔍 Inspecteur : {{ info.label }}</h2>
+            <span class="inspector-coords-badge">
+              ({{ info.coordX }}, {{ info.coordY }})
+            </span>
+          </div>
+
+          @if (info.targetType === 'EMPLACEMENT' && selectedEmplacement; as selEmp) {
+            <div class="inspector-summary">
+              <div class="inspector-stat">
+                <span class="stat-label">Statut</span>
+                <strong class="stat-val">
+                  {{ selEmp.occupe ? '🏰 Royaume Occupé' : '🏕️ Emplacement Libre' }}
+                </strong>
+              </div>
+              <div class="inspector-stat">
+                <span class="stat-label">Distance au Marché ({{ carte.centreX }}, {{ carte.centreY }})</span>
+                <strong class="stat-val highlight-gold" data-testid="inspector-market-distance">
+                  {{ info.distanceMarche }} unités
+                </strong>
+              </div>
+            </div>
+          } @else {
+            <div class="inspector-summary">
+              <div class="inspector-stat">
+                <span class="stat-label">Zone franche centrale</span>
+                <strong class="stat-val highlight-gold">
+                  Rayon {{ lastGeneratedMap?.marketFreeZoneRadius ?? 110 }} u · Halle ({{ info.coordX }}, {{ info.coordY }})
+                </strong>
+              </div>
+            </div>
+          }
+
+          <h3 class="inspector-subtitle">
+            📏 Distances aux {{ info.targetType === 'MARCHE' ? 'royaumes' : 'autres royaumes' }}
+          </h3>
+
+          @if (info.distancesRoyaumes.length === 0) {
+            <p class="empty-distances">Aucun autre emplacement à comparer.</p>
+          } @else {
+            <ul class="distance-list" data-testid="inspector-distances-list">
+              @for (entry of info.distancesRoyaumes; track entry.numero) {
+                <li
+                  class="distance-row"
+                  (click)="selectEmplacement(entry.numero)"
+                  [attr.data-testid]="'distance-entry-' + entry.numero"
+                >
+                  <span class="distance-target">
+                    <span
+                      class="emp-color-swatch"
+                      [style.backgroundColor]="entry.couleurPrimaire || '#64748b'"
+                    ></span>
+                    <span>#{{ entry.numero }} · {{ entry.nom }}</span>
+                  </span>
+                  <strong class="distance-value">{{ entry.distance }} u</strong>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
+    </aside>
+  </main>
+</div>
