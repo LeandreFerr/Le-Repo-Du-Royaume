@@ -5,27 +5,26 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+/*@SpringBootApplication
+public class RoyaumeApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(RoyaumeApplication.class, args);
+    }
+}*/
 import org.springframework.context.annotation.Bean;
 
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAORoyaume;
+import royaume.dao.IDAOUtilisateur;
 import royaume.model.Royaume;
+import royaume.model.Utilisateur;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Gobelins;
 import royaume.model.peuple.Licornes;
 import royaume.model.peuple.Population;
 import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
-/*
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-@SpringBootApplication
-public class RoyaumeApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(RoyaumeApplication.class, args);
-    }
-}
-*/
 
 @SpringBootApplication
 public class RoyaumeApplication {
@@ -38,7 +37,8 @@ public class RoyaumeApplication {
 		    @Bean
 		    CommandLineRunner testJPA(
 		            IDAOPopulation populationDAO,
-		            IDAORoyaume royaumeDAO) {
+		            IDAORoyaume royaumeDAO,
+		            IDAOUtilisateur utilisateurDAO) {
 
 		        return args -> {
 
@@ -67,6 +67,23 @@ public class RoyaumeApplication {
 		            	    System.out.println("Population : " + population);
 		            	    System.out.println("Royaume : " + royaume);
 		            	}
+
+		            	  // Création d'un utilisateur
+		                System.out.println("========== TEST UTILISATEUR ==========");
+
+		                Utilisateur utilisateur = new Utilisateur(
+		                    null,
+		                    "Kat",
+		                    "kitkat@test.fr",
+		                    "motdepasse123",
+		                    false,
+		                    true,
+		                    null
+		                );
+
+		                utilisateur = utilisateurDAO.save(utilisateur);
+
+		                System.out.println("Utilisateur créé : " + utilisateur);
 
 		    
 		};
