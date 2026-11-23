@@ -1,6 +1,7 @@
-package royaume.model;
+package royaume.model.peuple;
 
 import java.util.Objects;
+import royaume.model.Ressource;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;

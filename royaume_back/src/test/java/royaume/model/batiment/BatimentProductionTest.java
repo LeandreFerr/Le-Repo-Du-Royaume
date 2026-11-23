@@ -9,8 +9,8 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import royaume.model.Canards;
-import royaume.model.Population;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Population;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;

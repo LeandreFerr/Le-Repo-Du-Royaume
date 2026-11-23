@@ -11,6 +11,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import royaume.model.peuple.Population;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Princesses;
+
 public class PropositionEchangeTest {
 
     private PropositionEchange proposition;

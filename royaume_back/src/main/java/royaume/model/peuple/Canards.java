@@ -1,4 +1,4 @@
-package royaume.model;
+package royaume.model.peuple;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

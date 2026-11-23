@@ -3,6 +3,15 @@ package royaume.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.EnumMap;
+
+
+import royaume.model.militaire.TypeTroupe;
+import royaume.model.peuple.*;
 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -30,6 +39,10 @@ import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
+
+import royaume.model.militaire.ContingentTroupe;
+import royaume.model.militaire.SessionEntrainement;
+import royaume.model.militaire.Attaque;
 
 @Entity
 @Table(name = "royaume")
@@ -91,6 +104,12 @@ public class Royaume {
 
 	@Transient
 	private EmplacementCarte emplacement;
+
+	@Transient
+	private Map<TypeTroupe, ContingentTroupe> garnison = new EnumMap<>(TypeTroupe.class);
+
+	@Transient
+	private List<SessionEntrainement> sessions = new ArrayList<>();
 
 	// =========================================================================
 	// Constructeurs
@@ -623,6 +642,134 @@ public class Royaume {
 			throw new IllegalArgumentException("Il ne peut pas y avoir plusieurs QuantiteRessource d'un même type de ressource.");
 		}
 	}
+
+
+
+	// =========================================================================
+	// Militaire
+	// =========================================================================
+
+	public boolean peutRecruter(TypeTroupe troupe) {
+		return peutEntrainer(troupe, 1);
+	}
+
+	public boolean recruterTroupe(TypeTroupe troupe) {
+		return entrainerTroupe(troupe, 1, LocalDateTime.now());
+	}
+
+	private boolean peutEntrainer(TypeTroupe type, int quantite) {
+		if (type == null) {
+			throw new IllegalArgumentException("Le type de troupe ne peut pas être null.");
+		}
+		if (quantite <= 0) {
+			throw new IllegalArgumentException("La quantité doit être strictement positive.");
+		}
+		if (populationDisponible < quantite) {
+			return false;
+		}
+		for (Map.Entry<Ressource, Integer> e : type.getCout().entrySet()) {
+			if (!aAssezDeRessources(e.getKey(), e.getValue() * quantite)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Débite le coût, bascule les citoyens en entraînement et crée la session. */
+	public boolean entrainerTroupe(TypeTroupe type, int quantite, LocalDateTime maintenant) {
+		if (!peutEntrainer(type, quantite)) {
+			return false;
+		}
+		// Tout est vérifié : pas de risque de paiement partiel
+		type.getCout().forEach((r, c) -> debiterRessources(r, c * quantite));
+
+		populationDisponible -= quantite;
+		populationEnEntrainement += quantite;
+
+		Duration duree = Duration.ofMinutes(5L * quantite);   // à ajuster
+		sessions.add(new SessionEntrainement(type, quantite, maintenant, maintenant.plus(duree)));
+		return true;
+	}
+
+	/** Appelé par SessionEntrainement.finaliserFormation(). */
+	public void terminerFormation(TypeTroupe type, int quantite) {
+		populationEnEntrainement -= quantite;
+		populationMilitaire += quantite;
+		ajouterTroupes(type, quantite);
+	}
+
+	/** À appeler périodiquement (scheduler plus tard). */
+	public void traiterFormations(LocalDateTime maintenant) {
+		sessions.stream()
+				.filter(s -> !s.isFinalisee() && s.estTerminee(maintenant))
+				.forEach(s -> s.finaliserFormation(this));
+	}
+
+	public void ajouterTroupes(TypeTroupe type, int qte) {
+		if (qte <= 0) return;
+		garnison.computeIfAbsent(type, t -> new ContingentTroupe(t, 0)).ajouter(qte);
+	}
+
+	public List<ContingentTroupe> getGarnison() {
+		return List.copyOf(garnison.values());
+	}
+
+	public int getPuissanceDefensive() {
+		return garnison.values().stream()
+				.mapToInt(c -> c.getQuantite() * c.getType().getDefense())
+				.sum();
+	}
+
+	/** Les troupes quittent la garnison (elles restent comptées dans populationMilitaire). */
+	// passer par un contingent (un groupe de troupe)
+	// (contingent fait office de map)   //  c'est bon ?
+	public Attaque lancerAttaque(Royaume cible, Map<TypeTroupe, Integer> troupes,
+								double distance, LocalDateTime maintenant) {
+		// Vérification avant retrait, pour ne pas vider la garnison à moitié
+		for (var e : troupes.entrySet()) {
+			ContingentTroupe c = garnison.get(e.getKey());
+			if (e.getValue() <= 0 || c == null || c.getQuantite() < e.getValue()) {
+				throw new IllegalArgumentException("Effectif insuffisant pour " + e.getKey().getNom());
+			}
+		}
+		List<ContingentTroupe> convoi = new ArrayList<>();
+		for (var e : troupes.entrySet()) {
+			garnison.get(e.getKey()).retirer(e.getValue());
+			convoi.add(new ContingentTroupe(e.getKey(), e.getValue()));
+		}
+		return new Attaque(this, cible, convoi, maintenant, distance);
+	}
+
+	/** Pertes subies par la garnison (ratio entre 0 et 1). */
+	public void appliquerPertes(double ratio) {
+		for (ContingentTroupe c : garnison.values()) {
+			int perdus = (int) Math.round(c.getQuantite() * ratio);
+			c.retirer(perdus);
+			perdreMilitaires(perdus);
+		}
+	}
+
+	public void perdreMilitaires(int nombre) {
+		populationMilitaire = Math.max(0, populationMilitaire - nombre);
+	}
+
+	/** Prélève des ressources dans la limite de la capacité d'emport et des stocks réels. */
+	public List<QuantiteRessource> subirPillage(int capaciteEmportMax) {
+		List<QuantiteRessource> pris = new ArrayList<>();
+		int reste = capaciteEmportMax;
+		for (QuantiteRessource qr : ressources) {
+			int prelevement = Math.min(qr.getQuantite(), reste);
+			if (prelevement > 0) {
+				qr.retirer(prelevement);
+				pris.add(new QuantiteRessource(prelevement, qr.getRessource()));
+				reste -= prelevement;
+			}
+		}
+		return pris;
+	}
+
+
+
 
 	// =========================================================================
 	// Représentation
