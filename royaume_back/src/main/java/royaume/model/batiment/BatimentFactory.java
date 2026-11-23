@@ -12,7 +12,7 @@ public class BatimentFactory {
     public static Chateau creerChateauInitial(Royaume royaume) {
 
         Chateau chateau = new Chateau(
-            1, "chateau", 1, 9000, 9000, false
+            null, "chateau", 1, 9000, 9000, false
         );
 
         royaume.ajouterBatiment(chateau);
@@ -43,7 +43,7 @@ public class BatimentFactory {
             maison.getTempsConstructionBase(),
             false // premier chantier à la création du batiment 
         );
-
+        
         return maison;
     }
 

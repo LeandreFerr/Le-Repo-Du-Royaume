@@ -2,15 +2,27 @@ package royaume.model.batiment;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import royaume.config.ConfigurationPalliersBatiment;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 
-
+@Entity
+@Table(name = "batiment_production")
 public class BatimentProduction extends Batiment{
 
-	
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Column(name = "ressource_produite", nullable = false)
 	private Ressource typeRessource;
+	@PositiveOrZero
+	@Column(name = "production_base_par_heure", nullable = false)
 	private int productionBaseHeure;  
 	
 	
@@ -23,7 +35,9 @@ public class BatimentProduction extends Batiment{
 		this.typeRessource = typeRessource;
 		this.productionBaseHeure = productionBaseHeure;
 	}
-
+	protected BatimentProduction() {
+	    super();
+	}
 
 
 	/*

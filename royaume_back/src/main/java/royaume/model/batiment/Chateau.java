@@ -2,11 +2,23 @@ package royaume.model.batiment;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.PositiveOrZero;
 import royaume.model.QuantiteRessource;
 
+@Entity
+@Table(name = "chateau")
 public class Chateau extends Batiment{
-	
+	@Min(1)
+	@Max(10)
+	@Column(name = "niveau_palier_debloque", nullable = false)
 	private int niveauPalierDebloque;
+	@PositiveOrZero
+	@Column(name = "bonus_defense_royaume", nullable = false)
 	private double bonusDefenseRoyaume;
 	
 	
@@ -28,7 +40,9 @@ public class Chateau extends Batiment{
 		this.bonusDefenseRoyaume = 0.0;
 	}
 
-
+	protected Chateau() {
+		super();
+		}
 	
 	public int getNiveauPalierDebloque() {
 		return niveauPalierDebloque;

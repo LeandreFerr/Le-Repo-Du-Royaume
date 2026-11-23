@@ -16,6 +16,7 @@ import royaume.model.peuple.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +25,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
@@ -67,39 +69,36 @@ public class Royaume {
 	private Population peuple;
 	@Min(1)
 	@Max(10)
-	@NotNull
 	@Column(nullable = false)
 	private int niveau = 1;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_disponible", nullable = false)
 	private int populationDisponible = 100;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_ouvriere", nullable = false)
 	private int populationOuvriere = 0;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_entrainement", nullable = false)
 	private int populationEnEntrainement = 0;
 	@PositiveOrZero
-	@NotNull
 	@Column(name = "population_militaire", nullable = false)
 	private int populationMilitaire = 0;
 
-	@NotNull
 	@Column(name = "en_ruine", nullable = false)
 	private boolean enRuine = false;
 
 	@Column(name = "bonus_croissance", nullable = false)
 	private double bonusCroissance = 0.0;
-
 	@NotNull
 	@JdbcTypeCode(SqlTypes.JSON)
 	@Column(name = "ressources", columnDefinition = "json", nullable = false)
 	private List<@NotNull @Valid QuantiteRessource> ressources = creerRessourcesParDefaut();
 
-	@Transient
+	@OneToMany(
+	        mappedBy = "royaume",
+	        cascade = CascadeType.ALL,
+	        orphanRemoval = true,
+	        fetch = FetchType.LAZY)
 	private List<Batiment> batiments = new ArrayList<>();
 
 	@Transient
@@ -361,14 +360,14 @@ public class Royaume {
 				throw new IllegalArgumentException("Un bâtiment produit déjà cette ressource dans ce royaume");
 			}
 		}
-
+	    batiment.setRoyaume(this);
 		batiments.add(batiment);
 	}
 
 	public void retirerBatiment(Batiment batiment) {
-		if (batiment == null) {
-			return;
-		}
+		 if (batiment == null || !batiments.contains(batiment)) {
+		        return;
+		    }
 
 		if (batiment instanceof Chateau) {
 			this.enRuine = true;
@@ -380,6 +379,7 @@ public class Royaume {
 		}
 
 		batiments.remove(batiment);
+        batiment.setRoyaume(null);
 	}
 
 	public boolean estEnRuine() {
