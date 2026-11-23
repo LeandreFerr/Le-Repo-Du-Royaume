@@ -20,7 +20,6 @@ import royaume.model.batiment.Maison;
 
 import royaume.model.peuple.Population;
 import royaume.model.peuple.Canards;
-import royaume.model.peuple.Princesses;
 
 
 class RoyaumeTestBatiment {

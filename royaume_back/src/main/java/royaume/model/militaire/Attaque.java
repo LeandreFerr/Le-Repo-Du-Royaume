@@ -1,7 +1,6 @@
 package royaume.model.militaire;
 
 import royaume.model.QuantiteRessource;
-import royaume.model.Ressource; // peut devenir inutile, supprime-le si l'IDE le signale
 import royaume.model.Royaume;
 import java.time.Duration;
 import java.time.LocalDateTime;
