@@ -1,18 +1,36 @@
 package royaume.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+
+@Entity 
 public class EmplacementCarte {
 
     // =========================================================================
     // Attributs
     // =========================================================================
 
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private int numero;
     private int coordX;
     private int coordY;
     private boolean occupe = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "carte_id")
     private Carte carte;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "royaume_id", unique = true)
     private Royaume royaume;
 
     // =========================================================================

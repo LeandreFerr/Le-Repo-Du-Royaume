@@ -5,21 +5,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+
+@Entity
 public class Carte {
 
     // =========================================================================
     // Attributs
     // =========================================================================
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     private int largeur = 100;
     private int hauteur = 100;
     private int centreX = 50;
     private int centreY = 50;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "partie_id", unique = true)
     private Partie partie;
 
+    @OneToMany(mappedBy = "carte", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmplacementCarte> emplacements = new ArrayList<>();
 
+    @Transient
     private final EmplacementCarte emplacementMarche = new EmplacementCarte(0, 50, 50, this);
 
     // =========================================================================
@@ -95,7 +115,7 @@ public class Carte {
                     y,
                     this);
 
-            emplacements.add(emplacement);
+            ajouterEmplacement(emplacement);
         }
     }
 
@@ -137,6 +157,26 @@ public class Carte {
         emplacement.assignerRoyaume(royaume);
 
         return emplacement;
+    }
+
+    
+    public void ajouterEmplacement(EmplacementCarte emplacement) {
+        if (emplacement == null) {
+            throw new IllegalArgumentException(
+                    "L'emplacement ne peut pas être null.");
+        }
+
+        emplacement.setCarte(this);
+        emplacements.add(emplacement);
+    }
+
+    public void supprimerEmplacement(EmplacementCarte emplacement) {
+        if (emplacement == null) {
+            return;
+        }
+
+        emplacements.remove(emplacement);
+        emplacement.setCarte(null);
     }
 
     // =========================================================================
@@ -195,6 +235,14 @@ public class Carte {
 
     public EmplacementCarte getEmplacementMarche() {
         return emplacementMarche;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     // =========================================================================
