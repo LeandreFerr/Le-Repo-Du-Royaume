@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import jakarta.persistence.EntityManager;
-import royaume.model.Canards;
-import royaume.model.Population;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Population;
 
 @DataJpaTest
 	class IDAOPopulationTest {

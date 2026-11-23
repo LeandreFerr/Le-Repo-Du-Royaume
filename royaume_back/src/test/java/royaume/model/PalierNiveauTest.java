@@ -27,6 +27,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import royaume.config.ConfigurationPaliers;
 
+import royaume.model.peuple.Population;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Princesses;
+
+
 @DisplayName("Tests unitaires complets de PalierNiveau et montée de niveau (Module 3)")
 public class PalierNiveauTest {
 	
