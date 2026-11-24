@@ -1,20 +1,10 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css',
+  template: '<router-outlet />',
 })
-export class App {
-  private readonly router = inject(Router);
-  readonly title = 'Le Royaume';
-
-  get isSandboxRoute(): boolean {
-    return this.router.url.startsWith('/carte-sandbox');
-  }
-}
-
-export { App as AppComponent };
+export class App {}

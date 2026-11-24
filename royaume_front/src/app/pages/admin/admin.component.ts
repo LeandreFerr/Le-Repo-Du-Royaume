@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CarteRoyaumeComponent } from '../../components/carte-royaume/carte-royaume.component';
 import {
   ARCHETYPES_CARTE,
   ArchetypeCarte,
@@ -26,16 +27,15 @@ import {
   updatePlacementCoords,
 } from '../../services/placement-royaumes.util';
 import { randomSeedString } from '../../services/prng.util';
-import { CarteRoyaumeComponent } from './carte-royaume.component';
 
 @Component({
-  selector: 'app-carte-royaume-sandbox',
+  selector: 'app-admin',
   standalone: true,
   imports: [CommonModule, FormsModule, CarteRoyaumeComponent],
-  templateUrl: './carte-royaume-sandbox.component.html',
-  styleUrl: './carte-royaume-sandbox.component.css',
+  templateUrl: './admin.component.html',
+  styleUrl: './admin.component.css',
 })
-export class CarteRoyaumeSandboxComponent implements OnInit {
+export class AdminComponent implements OnInit {
   readonly archetypes: readonly ArchetypeCarteMetadata[] = ARCHETYPES_CARTE;
   readonly minEmplacements = MIN_EMPLACEMENTS;
   readonly maxEmplacements = MAX_EMPLACEMENTS;
