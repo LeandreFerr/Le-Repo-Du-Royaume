@@ -49,9 +49,10 @@ public class MarcheService {
     public OffreMarche publierOffre(Integer royaumeIdVendeur, QuantiteRessource aVendre, QuantiteRessource aRecevoir) {
         Royaume vendeur = recupererRoyaume(royaumeIdVendeur);
         Marche marche = recupererOuCreerMarche();
-
+        
         OffreMarche offre = marche.publierOffre(vendeur, aVendre, aRecevoir);
 
+        
         return offreMarcheDAO.save(offre);
     }
 }

@@ -126,6 +126,14 @@ public class OffreMarche {
 	public void setDemande(QuantiteRessource demande) {
 		this.demande = demande;
 	}
+	
+	public Marche getMarche() {
+		return marche;
+	}
+
+	public void setMarche(Marche marche) {
+		this.marche = marche;
+	}
 
 	@Override
 	public boolean equals(Object o) {

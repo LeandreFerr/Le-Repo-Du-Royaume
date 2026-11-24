@@ -111,7 +111,7 @@ public class RoyaumeApplication {
 				         QuantiteRessource orVendeur = new QuantiteRessource(500, Ressource.OR);
 				         QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
 				         
-				          marcheService.publierOffre(2,orVendeur, pierreVendeur);
+				         marcheService.publierOffre(2,orVendeur, pierreVendeur);
 				         
 				         
 				         
