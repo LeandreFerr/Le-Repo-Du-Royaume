@@ -3,15 +3,67 @@ package royaume.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class PropositionEchange {
+import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
+@Table(name="proposition_echange")
+public class PropositionEchange {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
+	
+	@NotNull
+	@DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm")
+	@Column(name="date_creation", nullable=false)
 	private LocalDateTime dateCreation;
+	
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name="statut_echange",nullable=false)
 	private StatutEchange statut = StatutEchange.EN_ATTENTE;
 
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "expediteur_id", nullable = false)
 	private Royaume expediteur;
+	
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "destinataire_id", nullable = false)
 	private Royaume destinataire;
+	
+	@NotNull
+	@Valid
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "quantite", column = @Column(name = "offerte_quantite", nullable = false)),
+		@AttributeOverride(name = "ressource", column = @Column(name = "offerte_ressource", nullable = false))
+	})
 	private QuantiteRessource offerte;
+	
+	@NotNull
+	@Valid
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "quantite", column = @Column(name = "demandee_quantite", nullable = false)),
+		@AttributeOverride(name = "ressource", column = @Column(name = "demandee_ressource", nullable = false))
+	})
 	private QuantiteRessource demandee;
 
 	public PropositionEchange() {}

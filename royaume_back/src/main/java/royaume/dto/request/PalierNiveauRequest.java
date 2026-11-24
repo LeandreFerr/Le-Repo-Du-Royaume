@@ -2,12 +2,12 @@ package royaume.dto.request;
 
 import java.util.List;
 
-import royaume.model.QuantiteRessource;
+import royaume.dto.QuantiteRessourceDTO;
 
 public record PalierNiveauRequest(
 	    int niveau,
 	    int populationRequise,
-	    List<QuantiteRessource> prerequis
+	    List<QuantiteRessourceDTO> prerequis
 	) {}
 
 	

@@ -8,8 +8,10 @@ import royaume.model.StatutEchange;
 public record PropositionEchangeResponse(Integer id, 
 		LocalDateTime dateCreation, 
 		StatutEchange statut, 
-		RoyaumeResponse expediteur,
-		RoyaumeResponse destinataire, 
+		Integer expediteurId,
+		String expediteurNom,
+		Integer destinataireId, 
+		String destinataireNom,
 		QuantiteRessourceDTO offerte, 
 		QuantiteRessourceDTO demandee) {
 

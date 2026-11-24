@@ -1,4 +1,4 @@
-package royaume.model.dao;
+package royaume.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import jakarta.persistence.EntityManager;
-import royaume.dao.IDAOMessage;
-import royaume.dao.IDAOPartie;
-import royaume.dao.IDAOUtilisateur;
 import royaume.model.Message;
 import royaume.model.Partie;
 import royaume.model.StatutPartie;

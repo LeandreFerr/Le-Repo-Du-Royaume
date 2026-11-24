@@ -1,5 +1,5 @@
 
-package royaume.model.dao;
+package royaume.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import royaume.dao.IDAOUtilisateur;
 import royaume.model.Utilisateur;
 
 @DataJpaTest

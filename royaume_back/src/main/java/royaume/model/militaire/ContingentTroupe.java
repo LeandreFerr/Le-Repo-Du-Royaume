@@ -1,12 +1,8 @@
 package royaume.model.militaire;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-//@Embeddable
 public class ContingentTroupe {
 
     @NotNull
