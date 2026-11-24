@@ -1,6 +1,7 @@
 package royaume.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,7 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +21,21 @@ import royaume.model.peuple.Population;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Princesses;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+
+
 public class MarcheTest {
+	
+	private static Validator validator;
+
+	@BeforeAll
+	static void setUpValidator() {
+	    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	    validator = factory.getValidator();
+	}
 
     private Marche marche;
     private Royaume vendeur;
@@ -297,6 +314,7 @@ public class MarcheTest {
         assertEquals(150, offre.getDemande().getQuantite());
         assertEquals(Ressource.PIERRE, offre.getDemande().getRessource());
     }
+    
     // ==========================================================
     // Bon fonctionnement de la liste "offres"
     // ==========================================================
@@ -533,4 +551,108 @@ public class MarcheTest {
             .findFirst()
             .orElse(0);
     }
+    
+
+    // ==========================================================
+    // Bean validation
+    // ==========================================================
+
+    
+    @Test
+    @DisplayName("la publication est rejetée si la quantité est négative")
+    void testPublicationRejetteQuantiteNegative() {
+        
+    	// Given : ressource proposée avec quantité négative
+        QuantiteRessource ressourceInvalide = new QuantiteRessource(-10, Ressource.OR);
+        QuantiteRessource demande = new QuantiteRessource(50, Ressource.PIERRE);
+        OffreMarche offre = new OffreMarche(1, LocalDateTime.now(), StatutOffre.DISPONIBLE, vendeur,
+                ressourceInvalide, demande);
+
+        // When
+        Set<ConstraintViolation<OffreMarche>> violations = validator.validate(offre);
+
+        // Then
+        assertFalse(violations.isEmpty(), "La validation doit détecter la quantité négative");
+    }
+    
+    @Test
+    @DisplayName("la publication est rejetée si la ressource est nulle")
+    void testPublicationRejetteRessourceNulle() {
+        
+    	// Given : ressource proposée avec quantité négative
+        QuantiteRessource ressourceInvalide = new QuantiteRessource(10, null);
+        QuantiteRessource demande = new QuantiteRessource(50, Ressource.PIERRE);
+        OffreMarche offre = new OffreMarche(1, LocalDateTime.now(), StatutOffre.DISPONIBLE, vendeur,
+                ressourceInvalide, demande);
+
+        // When
+        Set<ConstraintViolation<OffreMarche>> violations = validator.validate(offre);
+
+        // Then
+        assertFalse(violations.isEmpty(), "La validation doit détecter une ressource");
+    }
+    
+   
+    // pas besoin car dans le constructeur, si le statut est null il passe direct à disponible 
+    
+    /*@Test
+    @DisplayName("La publication est rejetée si le statut est nul")
+    void testPublicationRejetteStatutNul() {
+        // Given : Un statut obligatoire mis à null
+        QuantiteRessource propose = new QuantiteRessource(10, Ressource.OR);
+        QuantiteRessource demande = new QuantiteRessource(50, Ressource.PIERRE);
+        
+        OffreMarche offre = new OffreMarche(
+            1, 
+            LocalDateTime.now(), 
+            null, // Statut obligatoire manquant
+            vendeur, 
+            propose, 
+            demande
+        );
+
+        // When
+        Set<ConstraintViolation<OffreMarche>> violations = validator.validate(offre);
+
+        // Then
+        assertFalse(violations.isEmpty(), "La validation doit détecter que le statut est obligatoire");
+    }*/
+    
+    @Test
+    @DisplayName("La publication est rejetée si la date est nulle")
+    void testPublicationRejetteDateNulle() {
+    	// Given
+    	 QuantiteRessource propose = new QuantiteRessource(10, Ressource.OR);
+         QuantiteRessource demande = new QuantiteRessource(50, Ressource.PIERRE);
+         
+         OffreMarche offre = new OffreMarche(
+             1, 
+             null, 
+             StatutOffre.DISPONIBLE, // Statut obligatoire manquant
+             vendeur, 
+             propose, 
+             demande
+         );
+         
+      // When
+         Set<ConstraintViolation<OffreMarche>> violations = validator.validate(offre);
+
+         // Then
+         assertFalse(violations.isEmpty(), "La validation doit détecter que la date de publication est obligatoire");
+    }
+    
+    @Test
+    @DisplayName("Le marché doit avoir un nom")
+    void testMarcheRejetteNomNull() {
+    	// Given
+    	Marche marche = new Marche(2,null);
+    	
+    	// When
+    	 Set<ConstraintViolation<Marche>> violations = validator.validate(marche);
+
+         // Then
+         assertFalse(violations.isEmpty(), "Le nom du marche est obligatoire");
+    	
+    }
+    
 }
