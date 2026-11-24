@@ -92,7 +92,7 @@ public class RoyaumeApplication {
 		            	        System.out.println("Royaume : " + royaume);
 		            	    }
 		            	
-		            	
+		          
 		            	 Maison maison = batimentService.creerMaison(
 		            	            5,
 		            	            null,
