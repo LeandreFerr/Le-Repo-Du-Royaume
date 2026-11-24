@@ -6,7 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-
+//@Embeddable
 public class ContingentTroupe {
 
     @NotNull
