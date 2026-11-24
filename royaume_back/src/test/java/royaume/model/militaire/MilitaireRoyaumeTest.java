@@ -22,6 +22,10 @@ import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 
+// mvn clean test -Dtest=MilitaireRoyaumeTest
+
+
+
 @DisplayName("Tests unitaires — Module 5 : Système militaire")
 class MilitaireRoyaumeTest {
 
@@ -421,6 +425,40 @@ class MilitaireRoyaumeTest {
 
             assertThrows(IllegalStateException.class, a::receptionnerRetour);
         }
+    
+
+
+        // Repartition pillage
+        @Test
+        @DisplayName("subirPillage répartit équitablement entre les ressources")
+        void testPillageEquilibre() {
+            defenseur.crediterRessources(Ressource.OR, 500);
+            defenseur.crediterRessources(Ressource.BOIS, 500);
+
+            List<QuantiteRessource> pris = defenseur.subirPillage(100);
+
+            assertAll(
+                () -> assertEquals(100, total(pris)),
+                () -> assertEquals(450, stock(defenseur, Ressource.OR)),
+                () -> assertEquals(450, stock(defenseur, Ressource.BOIS))
+            );
+        }
+
+        @Test
+        @DisplayName("subirPillage redistribue le surplus quand une ressource est épuisée")
+        void testPillageRedistribueLeSurplus() {
+            defenseur.crediterRessources(Ressource.OR, 10);
+            defenseur.crediterRessources(Ressource.BOIS, 500);
+
+            List<QuantiteRessource> pris = defenseur.subirPillage(100);
+
+            assertAll(
+                () -> assertEquals(100, total(pris)),
+                () -> assertEquals(0, stock(defenseur, Ressource.OR)),
+                () -> assertEquals(410, stock(defenseur, Ressource.BOIS))
+            );
+        }
+
     }
 
 
