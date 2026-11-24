@@ -2,7 +2,7 @@ package royaume.dto.response;
 
 import java.time.LocalDateTime;
 
-import royaume.model.QuantiteRessource;
+import royaume.dto.QuantiteRessourceDTO;
 import royaume.model.StatutOffre;
 
 public record OffreMarcheResponse(
@@ -11,6 +11,6 @@ public record OffreMarcheResponse(
     StatutOffre statut,
     Integer vendeurId,
     String vendeurNom,
-    QuantiteRessource propose,
-    QuantiteRessource demande
+    QuantiteRessourceDTO propose,
+    QuantiteRessourceDTO demande
 ) {}

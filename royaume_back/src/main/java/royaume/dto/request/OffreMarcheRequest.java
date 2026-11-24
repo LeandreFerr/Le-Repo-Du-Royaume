@@ -1,9 +1,9 @@
 package royaume.dto.request;
 
-import royaume.model.QuantiteRessource;
+import royaume.dto.QuantiteRessourceDTO;
 
 public record OffreMarcheRequest(
     Integer vendeurId,
-    QuantiteRessource propose,
-    QuantiteRessource demande
+    QuantiteRessourceDTO propose,
+    QuantiteRessourceDTO demande
 ) {}
