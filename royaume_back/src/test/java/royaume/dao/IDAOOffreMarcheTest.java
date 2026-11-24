@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import jakarta.persistence.EntityManager;
 import royaume.model.OffreMarche;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
@@ -22,9 +21,6 @@ public class IDAOOffreMarcheTest {
 	
 	@Autowired
 	private IDAOOffreMarche daoOffreMarche;
-	
-	@Autowired
-	private EntityManager entityManager;
 	
 	private Royaume vendeur;
 	

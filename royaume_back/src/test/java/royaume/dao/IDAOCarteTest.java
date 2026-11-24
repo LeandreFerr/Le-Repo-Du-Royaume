@@ -1,4 +1,4 @@
-package royaume.model.dao;
+package royaume.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import royaume.dao.IDAOCarte;
-import royaume.dao.IDAOEmplacementCarte;
 import royaume.model.Carte;
 import royaume.model.EmplacementCarte;
 
