@@ -16,6 +16,7 @@ public record RoyaumeResponse(
     boolean enRuine,
     double bonusCroissance,
     List<QuantiteRessourceDTO> ressources,
+    List<ContingentTroupeResponse> garnison, // ajout pour militaire
     List<BatimentResponse> batiments,
     Integer x,
     Integer y
