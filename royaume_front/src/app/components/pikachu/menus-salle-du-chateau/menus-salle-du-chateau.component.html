@@ -13,11 +13,13 @@
     (input)="modifierNom($event)"
   >
 
+ 
+
   <button
     id="btnStart"
     type="button"
     [disabled]="!nomGobelin.trim()"
-    (click)="demarrerJeu(themePokemon)"
+    
   >
     Start !
   </button>
@@ -46,28 +48,33 @@
 
     <h2><span class="enluminure">M</span>arché des ressources</h2>
 
-    <form (submit)="posterEchange($event)">
+   <form (submit)="posterEchange(
+  $event,
+  ressourceDemandee.value,
+  quantiteDemandee.value,
+  ressourceProposee.value,
+  quantiteProposee.value
+)">
 
       <label for="ressourceDemandee">Ressource demandée :</label>
-      <select id="ressourceDemandee" required #ressourceDemandee>
-        <option value="">Choisir</option>
-        <option value="or">Or</option>
-        <option value="fer">Fer</option>
-        <option value="sable">Sable</option>
-        <option value="gemme">Gemme</option>
-      </select>
-
+     <select id="ressourceDemandee" required #ressourceDemandee>
+  <option value="">Choisir</option>
+  <option value="OR">Or</option>
+  <option value="PIERRE">Pierre</option>
+  <option value="BOIS">Bois</option>
+  <option value="NOURRITURE">Nourriture</option>
+</select>
       <label for="quantiteDemandee">Quantité demandée :</label>
       <input id="quantiteDemandee" type="number" min="1" required #quantiteDemandee>
 
       <label for="ressourceProposee">Ressource proposée :</label>
       <select id="ressourceProposee" required #ressourceProposee>
-        <option value="">Choisir</option>
-        <option value="or">Or</option>
-        <option value="fer">Fer</option>
-        <option value="sable">Sable</option>
-        <option value="gemme">Gemme</option>
-      </select>
+  <option value="">Choisir</option>
+  <option value="OR">Or</option>
+  <option value="PIERRE">Pierre</option>
+  <option value="BOIS">Bois</option>
+  <option value="NOURRITURE">Nourriture</option>
+</select>
 
       <label for="quantiteProposee">Quantité proposée :</label>
       <input id="quantiteProposee" type="number" min="1" required #quantiteProposee>

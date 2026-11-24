@@ -1,14 +1,32 @@
 
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
+import {
+  MarcheService,
+  OffreMarcheRequest,
+  Ressource
+} from '../../../services/marche/marche-service.service';
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
+  imports: [FormsModule],
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
 export class MenusSalleDuChateauComponent {
 
+  constructor(
+    private marcheService: MarcheService
+  ) {}
+  
+//_______________________________________________________________  🐸
+//_______________________________________________________________  🐸
+  vendeurId = 1;  
+//_______________________________________________________________  🐸
+//_______________________________________________________________  🐸
+
+  
   // État du jeu
   nomGobelin = '';
   demarre = false;
@@ -22,6 +40,13 @@ export class MenusSalleDuChateauComponent {
   messageEchange = '';
   messageAmelioration = '';
   messageAttaque = '';
+
+  typesRessources: string[] = [
+  'PIERRE',
+  'BOIS',
+  'OR',
+  'NOURRITURE'
+];
 
   // Récupération du nom
   modifierNom(event: Event): void {
@@ -70,27 +95,45 @@ export class MenusSalleDuChateauComponent {
 
   // Poster une annonce d'échange
   posterEchange(
-    event: Event,
-    ressourceDemandee: string,
-    quantiteDemandee: string,
-    ressourceProposee: string,
-    quantiteProposee: string
-  ): void {
+  event: Event,
+  ressourceDemandee: string,
+  quantiteDemandee: string,
+  ressourceProposee: string,
+  quantiteProposee: string
+): void {
 
-    event.preventDefault();
+  event.preventDefault();
 
-    const annonce = {
-      ressourceDemandee,
-      quantiteDemandee: Number(quantiteDemandee),
-      ressourceProposee,
-      quantiteProposee: Number(quantiteProposee)
-    };
+  const offre: OffreMarcheRequest = {
+    vendeurId: this.vendeurId,
 
-    console.log('Annonce à envoyer :', annonce);
+    propose: {
+      ressource: ressourceProposee as Ressource,
+      quantite: Number(quantiteProposee)
+    },
 
-    this.messageEchange = 'Annonce préparée avec succès !';
-  }
+    demande: {
+      ressource: ressourceDemandee as Ressource,
+      quantite: Number(quantiteDemandee)
+    }
+  };
 
+  this.marcheService.publierOffre(offre).subscribe({
+
+    next: (response) => {
+      console.log('Offre publiée :', response);
+
+      this.messageEchange = 'Annonce publiée avec succès !';
+    },
+
+    error: (error) => {
+      console.error('Erreur lors de la publication :', error);
+
+      this.messageEchange = 'Erreur lors de la publication de l’annonce.';
+    }
+
+  });
+}
   // Amélioration d'un bâtiment
   ameliorerBatiment(
     event: Event,
