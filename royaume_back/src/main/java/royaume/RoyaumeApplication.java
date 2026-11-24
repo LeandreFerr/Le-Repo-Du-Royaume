@@ -17,8 +17,10 @@ import org.springframework.context.annotation.Bean;
 import royaume.dao.IDAOMarche;
 import royaume.dao.IDAOOffreMarche;
 import royaume.dao.IDAOPopulation;
+import royaume.dao.IDAOPropositionEchange;
 import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
+import royaume.model.PropositionEchange;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
@@ -32,6 +34,7 @@ import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
 import royaume.service.BatimentService;
 import royaume.service.MarcheService;
+import royaume.service.PropositionEchangeService;
 
 @SpringBootApplication
 
@@ -51,8 +54,10 @@ public class RoyaumeApplication {
 		            IDAOOffreMarche offreMarcheDAO,
 		            IDAOUtilisateur utilisateurDAO,
 		            IDAOMarche marcheDAO,
+		            IDAOPropositionEchange propositionEchangeDAO,
 		            MarcheService marcheService,
-		            BatimentService batimentService) {
+		            BatimentService batimentService,
+		            PropositionEchangeService propositionEchangeService) {
 
 		        return args -> {
 
@@ -108,13 +113,16 @@ public class RoyaumeApplication {
 				         ///////////// MARCHE ////////////////////
 				       
 				        
-				         QuantiteRessource orVendeur = new QuantiteRessource(500, Ressource.OR);
+				         QuantiteRessource orVendeur = new QuantiteRessource(4, Ressource.OR);
 				         QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
+				         QuantiteRessource boisExpediteur = new QuantiteRessource(4, Ressource.BOIS);
+				         QuantiteRessource nourritureDestinataire= new QuantiteRessource(5, Ressource.NOURRITURE);
 				         
 				         marcheService.publierOffre(2,orVendeur, pierreVendeur);
 				         
+				         PropositionEchange echange = propositionEchangeService.creerProposition(1, 3, boisExpediteur, nourritureDestinataire);
 				         
-				         
+				         echange = propositionEchangeService.accepterProposition(echange.getId());
 				         
 
 		            	  // Création d'un utilisateur
