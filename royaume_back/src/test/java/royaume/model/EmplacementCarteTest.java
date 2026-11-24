@@ -306,6 +306,21 @@ public class EmplacementCarteTest {
         assertSame(autreEmplacement, autreRoyaume.getEmplacement());
     }
 
+    @Test
+    void assignerRoyaumeDoitSynchroniserLesDeuxCotesDeLaRelation() {
+        emplacement.assignerRoyaume(royaume);
+
+        assertAll(
+                () -> assertTrue(
+                        emplacement.isOccupe()),
+                () -> assertSame(
+                        royaume,
+                        emplacement.getRoyaume()),
+                () -> assertSame(
+                        emplacement,
+                        royaume.getEmplacement()));
+    }
+
     // =====================================================================
     // Libération
     // =====================================================================
@@ -439,6 +454,46 @@ public class EmplacementCarteTest {
         assertSame(autreEmplacement, royaume.getEmplacement());
         assertFalse(emplacement.isOccupe());
         assertNull(emplacement.getRoyaume());
+    }
+
+    @Test
+    void libererDoitSynchroniserLesDeuxCotesDeLaRelation() {
+        emplacement.assignerRoyaume(royaume);
+
+        emplacement.liberer();
+
+        assertAll(
+                () -> assertFalse(
+                        emplacement.isOccupe()),
+                () -> assertNull(
+                        emplacement.getRoyaume()),
+                () -> assertNull(
+                        royaume.getEmplacement()));
+    }
+
+    @Test
+    void libererUnEmplacementSansRoyaumeMaisMarqueOccupeDoitRetablirUnEtatLibre() {
+        EmplacementCarte occupeSansRoyaume = new EmplacementCarte(
+                7,
+                3,
+                30,
+                40,
+                true,
+                carte);
+
+        occupeSansRoyaume.liberer();
+
+        assertAll(
+                () -> assertFalse(
+                        occupeSansRoyaume.isOccupe()),
+                () -> assertNull(
+                        occupeSansRoyaume.getRoyaume()),
+                () -> assertSame(
+                        carte,
+                        occupeSansRoyaume.getCarte()),
+                () -> assertEquals(
+                        7,
+                        occupeSansRoyaume.getId()));
     }
 
     // =====================================================================
