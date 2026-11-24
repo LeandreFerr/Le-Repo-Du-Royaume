@@ -17,9 +17,6 @@ public record LancerAttaqueRequest(
 
     // Correspond à la signature de Royaume.lancerAttaque
     @NotEmpty
-    Map<@NotNull TypeTroupe, @NotNull @Positive Integer> troupes,
-
-    @Positive
-    double distance
+    Map<@NotNull TypeTroupe, @NotNull @Positive Integer> troupes
 
 ) {}

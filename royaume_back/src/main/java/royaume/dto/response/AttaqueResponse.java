@@ -12,7 +12,9 @@ public record AttaqueResponse(
 
     // Relations
     Integer attaquantId,
+    String attaquantNom,
     Integer defenseurId,
+    String defenseurNom,
 
     List<ContingentTroupeResponse> troupesEnvoyees,
     List<QuantiteRessourceDTO> butin,
