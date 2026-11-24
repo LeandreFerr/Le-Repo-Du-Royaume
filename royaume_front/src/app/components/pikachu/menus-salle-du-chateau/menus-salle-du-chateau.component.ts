@@ -55,20 +55,17 @@ export class MenusSalleDuChateauComponent {
   }
 
   // Démarrage du jeu
-  demarrerJeu(audio: HTMLAudioElement): void {
+  // Démarrage du jeu sans audio
+demarrerJeu(): void {
 
-    if (!this.nomGobelin.trim()) {
-      return;
-    }
-
-    this.demarre = true;
-
-    audio.play().catch(error => {
-      console.warn('Lecture audio impossible :', error);
-    });
-
-    console.log('Gobelin démarré :', this.nomGobelin);
+  if (!this.nomGobelin.trim()) {
+    return;
   }
+
+  this.demarre = true;
+
+  console.log('Personnage démarré :', this.nomGobelin);
+}
 
   // Fermeture des fenêtres
   fermerModales(): void {

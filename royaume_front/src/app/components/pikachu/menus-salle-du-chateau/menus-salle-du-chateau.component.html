@@ -1,43 +1,42 @@
 
-
 <!-- Écran de démarrage -->
 <div id="formStart" [hidden]="demarre">
 
   <input
     id="inputName"
     type="text"
-    placeholder="gobelin"
+    placeholder="gobelin ou licorne"
     autocomplete="off"
     maxlength="30"
     [value]="nomGobelin"
     (input)="modifierNom($event)"
   >
 
- 
-
   <button
     id="btnStart"
     type="button"
     [disabled]="!nomGobelin.trim()"
-    
+    (click)="demarrerJeu()"
   >
     Start !
   </button>
 
 </div>
-
 <!-- Terrain de jeu -->
 <div
   id="grass"
   [class.visible]="demarre"
 >
   <div id="personnage">
-    <img
-      id="imgPersonnage"
-      src="assets/pikachu/img/gobelinDown.png"
-      alt="Personnage"
-    >
-  </div>
+  <img
+    id="imgPersonnage"
+    [src]="nomGobelin.toLowerCase().trim() === 'licorne'
+      ? 'assets/pikachu/img/licorneDown.png'
+      : 'assets/pikachu/img/gobelinDown.png'"
+    alt="Personnage"
+  >
+</div>
+  
 </div>
 
 <!-- Modal échange -->
