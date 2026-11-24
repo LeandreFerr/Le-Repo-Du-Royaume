@@ -2,6 +2,6 @@ package royaume.dto.response;
 
 import java.util.List;
 
-import royaume.model.QuantiteRessource;
+import royaume.dto.QuantiteRessourceDTO;
 
-public record PalierNiveauResponse(Integer id, int niveau, int populationRequise, List<QuantiteRessource> prerequis){}
+public record PalierNiveauResponse(Integer id, int niveau, int populationRequise, List<QuantiteRessourceDTO> prerequis){}

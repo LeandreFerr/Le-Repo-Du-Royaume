@@ -1,10 +1,9 @@
 package royaume.dto.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import royaume.model.StatutOffre;
 import royaume.model.QuantiteRessource;
+import royaume.model.StatutOffre;
 
 public record OffreMarcheResponse(
     Integer id,
@@ -12,6 +11,6 @@ public record OffreMarcheResponse(
     StatutOffre statut,
     Integer vendeurId,
     String vendeurNom,
-    List<QuantiteRessource> propose,
-    List<QuantiteRessource> demande
+    QuantiteRessource propose,
+    QuantiteRessource demande
 ) {}
