@@ -16,4 +16,10 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full',
   },
+   {
+    path: 'pikachu/menus-salle-du-chateau',
+    loadComponent: () =>
+      import('./components/pikachu/menus-salle-du-chateau/menus-salle-du-chateau.component')
+        .then(m => m.MenusSalleDuChateauComponent)
+  }
 ];
