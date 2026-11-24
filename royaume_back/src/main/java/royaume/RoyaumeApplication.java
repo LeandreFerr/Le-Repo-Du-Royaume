@@ -17,18 +17,24 @@ import org.springframework.context.annotation.Bean;
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
+import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
+import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.Maison;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Gobelins;
 import royaume.model.peuple.Licornes;
 import royaume.model.peuple.Population;
 import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
+import royaume.service.BatimentService;
 
 @SpringBootApplication
+
 public class RoyaumeApplication {
 
+	
 	public static void main(String[] args) {
 		
 		SpringApplication.run(RoyaumeApplication.class, args);
@@ -38,7 +44,8 @@ public class RoyaumeApplication {
 		    CommandLineRunner testJPA(
 		            IDAOPopulation populationDAO,
 		            IDAORoyaume royaumeDAO,
-		            IDAOUtilisateur utilisateurDAO) {
+		            IDAOUtilisateur utilisateurDAO,
+		            BatimentService batimentService) {
 
 		        return args -> {
 
@@ -67,6 +74,22 @@ public class RoyaumeApplication {
 		            	    System.out.println("Population : " + population);
 		            	    System.out.println("Royaume : " + royaume);
 		            	}
+		            	
+		            	
+		            	 Maison maison = batimentService.creerMaison(
+		            	            5,
+		            	            null,
+		            	            "Maison des licornes",
+		            	            2
+		            	        );
+
+		            	        System.out.println("Maison créée : " + maison.getNom());
+		            	  
+		            	 BatimentProduction mine = batimentService.creerBatimentProduction(2,null, "Mine des teuteus",500,Ressource.OR,1,1);
+				            	 
+				         BatimentProduction taverne = batimentService.creerBatimentProduction(1,null, "Taverne des canards",500,Ressource.NOURRITURE,1,1);
+				            	
+		        
 
 		            	  // Création d'un utilisateur
 		                System.out.println("========== TEST UTILISATEUR ==========");
@@ -86,7 +109,25 @@ public class RoyaumeApplication {
 						}
 		                System.out.println("Utilisateur créé : " + utilisateur);
 
+		                Utilisateur kit = new Utilisateur(
+		                	    null,
+		                	    "Kit",
+		                	    "kit@test.fr",
+		                	    "motdepasse123",
+		                	    false,
+		                	    false,
+		                	    null
+		                	);
+
+		                	if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
+		                	    utilisateurDAO.save(kit);
+		                	    System.out.println("Utilisateur Kit créé !");
+		                	} else {
+		                	    System.out.println("Utilisateur Kit existe déjà.");
+		                	}
+
+		                
 		    
 		};
-}
+		    }
 }

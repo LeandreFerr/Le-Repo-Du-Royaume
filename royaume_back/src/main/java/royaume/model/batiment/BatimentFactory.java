@@ -6,7 +6,9 @@ import royaume.model.Royaume;
 
 public class BatimentFactory {
 
-    private BatimentFactory() {
+    private BatimentFactory()
+    
+    {
     }
 
     public static Chateau creerChateauInitial(Royaume royaume) {
