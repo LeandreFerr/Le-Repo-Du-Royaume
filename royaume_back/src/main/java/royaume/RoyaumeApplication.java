@@ -19,12 +19,10 @@ import royaume.dao.IDAOOffreMarche;
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
-import royaume.model.OffreMarche;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
-import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Maison;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Gobelins;
@@ -102,9 +100,9 @@ public class RoyaumeApplication {
 
 		            	        System.out.println("Maison créée : " + maison.getNom());
 		            	  
-		            	 BatimentProduction mine = batimentService.creerBatimentProduction(2,null, "Mine des teuteus",500,Ressource.OR,1,1);
+		            	  batimentService.creerBatimentProduction(2,null, "Mine des teuteus",500,Ressource.OR,1,1);
 				            	 
-				         BatimentProduction taverne = batimentService.creerBatimentProduction(1,null, "Taverne des canards",500,Ressource.NOURRITURE,1,1);
+				          batimentService.creerBatimentProduction(1,null, "Taverne des canards",500,Ressource.NOURRITURE,1,1);
 				            	
 		        
 				         ///////////// MARCHE ////////////////////
@@ -113,7 +111,7 @@ public class RoyaumeApplication {
 				         QuantiteRessource orVendeur = new QuantiteRessource(500, Ressource.OR);
 				         QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
 				         
-				         OffreMarche offre = marcheService.publierOffre(2,orVendeur, pierreVendeur);
+				          marcheService.publierOffre(2,orVendeur, pierreVendeur);
 				         
 				         
 				         

@@ -584,10 +584,10 @@ public class Royaume {
 
 	private static List<QuantiteRessource> creerRessourcesParDefaut() {
 		return new ArrayList<>(List.of(
-			new QuantiteRessource(0, Ressource.PIERRE),
-			new QuantiteRessource(0, Ressource.BOIS),
-			new QuantiteRessource(0, Ressource.OR),
-			new QuantiteRessource(0, Ressource.NOURRITURE)
+			new QuantiteRessource(200, Ressource.PIERRE),
+			new QuantiteRessource(200, Ressource.BOIS),
+			new QuantiteRessource(500, Ressource.OR),
+			new QuantiteRessource(200, Ressource.NOURRITURE)
 		));
 	}
 

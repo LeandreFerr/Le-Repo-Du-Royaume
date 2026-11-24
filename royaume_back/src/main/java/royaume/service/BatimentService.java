@@ -1,4 +1,128 @@
+
 package royaume.service;
+
+import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
+
+import royaume.dao.IDAOBatiment;
+import royaume.dao.IDAORoyaume;
+import royaume.model.Ressource;
+import royaume.model.Royaume;
+import royaume.model.batiment.BatimentFactory;
+import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.Chateau;
+import royaume.model.batiment.Maison;
+
+@Service
+@Transactional
+public class BatimentService {
+
+    private final IDAORoyaume royaumeDAO;
+    private final IDAOBatiment batimentDAO;
+
+    public BatimentService(
+            IDAORoyaume royaumeDAO,
+            IDAOBatiment batimentDAO) {
+
+        this.royaumeDAO = royaumeDAO;
+        this.batimentDAO = batimentDAO;
+    }
+
+    // =========================================
+    // RECUPERATION DU ROYAUME PAR ID
+    // =========================================
+
+    private Royaume recupererRoyaume(Integer id) {
+        return royaumeDAO.findById(id)
+            .orElseThrow(() -> new RuntimeException(
+                "Royaume introuvable : " + id
+            ));
+    }
+
+    // =========================================
+    // CHATEAU INITIAL
+    // Un seul château par royaume
+    // =========================================
+
+    public Chateau creerChateauInitial(Integer royaumeId) {
+
+        Royaume royaume = recupererRoyaume(royaumeId);
+
+        return batimentDAO.findByRoyaume_Id(royaumeId)
+            .orElseGet(() -> {
+
+                Chateau chateau =
+                    BatimentFactory.creerChateauInitial(royaume);
+
+                return batimentDAO.save(chateau);
+            });
+    }
+
+    // =========================================
+    // MAISON
+    // Même nom + même royaume = pas de doublon
+    // =========================================
+
+    public Maison creerMaison(
+            Integer royaumeId,
+            Integer id,
+            String nom,
+            int ouvriers) {
+
+        Royaume royaume = recupererRoyaume(royaumeId);
+
+        return batimentDAO
+            .findByRoyaume_IdAndNom(royaumeId, nom)
+            .orElseGet(() -> {
+
+                Maison maison = BatimentFactory.creerMaison(
+                    royaume, id, nom, ouvriers
+                );
+
+                return batimentDAO.save(maison);
+            });
+    }
+
+    // =========================================
+    // BATIMENT DE PRODUCTION
+    // Même ressource + même royaume = pas de doublon
+    // =========================================
+
+    public BatimentProduction creerBatimentProduction(
+            Integer royaumeId,
+            Integer id,
+            String nom,
+            int pointsDeVie,
+            Ressource typeRessource,
+            int productionBaseHeure,
+            int ouvriers) {
+
+        Royaume royaume = recupererRoyaume(royaumeId);
+
+        return batimentDAO
+            .findByRoyaume_IdAndTypeRessource(
+                royaumeId, typeRessource
+            )
+            .orElseGet(() -> {
+
+                BatimentProduction batiment =
+                    BatimentFactory.creerBatimentProduction(
+                        royaume,
+                        id,
+                        nom,
+                        pointsDeVie,
+                        typeRessource,
+                        productionBaseHeure,
+                        ouvriers
+                    );
+
+                return batimentDAO.save(batiment);
+            });
+    }
+}
+
+
+/*package royaume.service;
 
 import org.springframework.stereotype.Service;
 
@@ -95,4 +219,4 @@ public class BatimentService {
         
         return batimentDAO.save(batiment);
     }
-}
+}*/
