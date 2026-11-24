@@ -11,6 +11,12 @@ import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 
+
+// c'est un void main, pour pouvoir print dans le terminal, 
+// ce n'est pas des tests 
+// mvn test-compile exec:java -Dexec.mainClass=royaume.model.militaire.SimulationPartie -Dexec.classpathScope=test
+
+
 public class SimulationPartie {
 
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("dd/MM HH:mm");

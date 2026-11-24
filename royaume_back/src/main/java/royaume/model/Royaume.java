@@ -28,6 +28,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.CascadeType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -36,6 +37,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+
 import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
@@ -104,10 +106,13 @@ public class Royaume {
 	@Transient
 	private EmplacementCarte emplacement;
 
-	@Transient
+
+	@NotNull
+	@JdbcTypeCode(SqlTypes.JSON)
+	@Column(name = "garnison", columnDefinition = "json", nullable = false)
 	private Map<TypeTroupe, ContingentTroupe> garnison = new EnumMap<>(TypeTroupe.class);
 
-	@Transient
+	@OneToMany(mappedBy = "royaume", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SessionEntrainement> sessions = new ArrayList<>();
 
 	// =========================================================================
@@ -578,6 +583,9 @@ public class Royaume {
 		return emplacement.getCoordY();
 	}
 
+
+
+
 	// =========================================================================
 	// Méthodes helpers & Validations
 	// =========================================================================
@@ -649,10 +657,11 @@ public class Royaume {
 	// Militaire
 	// =========================================================================
 
+	/*
 	public boolean peutRecruter(TypeTroupe troupe) {
 		return peutEntrainer(troupe, 1);
 	}
-
+	*/
 	public boolean recruterTroupe(TypeTroupe troupe) {
 		return entrainerTroupe(troupe, 1, LocalDateTime.now());
 	}
@@ -663,6 +672,9 @@ public class Royaume {
 		}
 		if (quantite <= 0) {
 			throw new IllegalArgumentException("La quantité doit être strictement positive.");
+		}
+		if (estEnRuine()) {
+			return false;
 		}
 		if (populationDisponible < quantite) {
 			return false;
@@ -675,8 +687,19 @@ public class Royaume {
 		return true;
 	}
 
+
+	public void ajouterSession(SessionEntrainement s) {
+		s.setRoyaume(this);
+		sessions.add(s);
+	}
+
+
+
 	/** Débite le coût, bascule les citoyens en entraînement et crée la session. */
 	public boolean entrainerTroupe(TypeTroupe type, int quantite, LocalDateTime maintenant) {
+		if (maintenant == null) {
+			throw new IllegalArgumentException("La date ne peut pas être null.");
+		}
 		if (!peutEntrainer(type, quantite)) {
 			return false;
 		}
@@ -687,7 +710,7 @@ public class Royaume {
 		populationEnEntrainement += quantite;
 
 		Duration duree = Duration.ofMinutes(5L * quantite);   // à ajuster
-		sessions.add(new SessionEntrainement(type, quantite, maintenant, maintenant.plus(duree)));
+		ajouterSession(new SessionEntrainement(type, quantite, maintenant, maintenant.plus(duree)));		
 		return true;
 	}
 
@@ -725,6 +748,12 @@ public class Royaume {
 	// (contingent fait office de map)   //  c'est bon ?
 	public Attaque lancerAttaque(Royaume cible, Map<TypeTroupe, Integer> troupes,
 								double distance, LocalDateTime maintenant) {
+		// coherence attaque
+		if (cible == null || troupes == null) throw new IllegalArgumentException("Cible et troupes requises");
+		if (cible == this) throw new IllegalArgumentException("Un royaume ne peut pas s'attaquer lui-même");
+		if (estEnRuine()) throw new IllegalStateException("Un royaume en ruine ne peut pas attaquer");
+		if (cible.estEnRuine()) throw new IllegalStateException("Un royaume en ruine ne peut pas se defendre");
+
 		// Vérification avant retrait, pour ne pas vider la garnison à moitié
 		for (var e : troupes.entrySet()) {
 			ContingentTroupe c = garnison.get(e.getKey());
@@ -753,19 +782,40 @@ public class Royaume {
 		populationMilitaire = Math.max(0, populationMilitaire - nombre);
 	}
 
-	/** Prélève des ressources dans la limite de la capacité d'emport et des stocks réels. */
+	/** Prélève des ressources de façon équilibrée, dans la limite de la capacité d'emport et des stocks réels. */
+	// Meme principe qu'avant, mais equilibrage des ressources
 	public List<QuantiteRessource> subirPillage(int capaciteEmportMax) {
-		List<QuantiteRessource> pris = new ArrayList<>();
+		if (capaciteEmportMax < 0) {
+			throw new IllegalArgumentException("La capacité d'emport ne peut pas être négative.");
+		}
+		Map<Ressource, Integer> pris = new EnumMap<>(Ressource.class);
 		int reste = capaciteEmportMax;
-		for (QuantiteRessource qr : ressources) {
-			int prelevement = Math.min(qr.getQuantite(), reste);
-			if (prelevement > 0) {
+
+		while (reste > 0) {
+			List<QuantiteRessource> disponibles = ressources.stream()
+					.filter(qr -> qr.getQuantite() > 0)
+					.toList();
+			if (disponibles.isEmpty()) break;
+
+			int part = Math.max(1, reste / disponibles.size());
+			for (QuantiteRessource qr : disponibles) {
+				if (reste == 0) break;
+				int prelevement = Math.min(Math.min(part, qr.getQuantite()), reste);
 				qr.retirer(prelevement);
-				pris.add(new QuantiteRessource(prelevement, qr.getRessource()));
+				pris.merge(qr.getRessource(), prelevement, Integer::sum);
 				reste -= prelevement;
 			}
 		}
-		return pris;
+
+		// Résultat dans l'ordre des ressources du royaume
+		List<QuantiteRessource> butin = new ArrayList<>();
+		for (QuantiteRessource qr : ressources) {
+			Integer q = pris.get(qr.getRessource());
+			if (q != null) {
+				butin.add(new QuantiteRessource(q, qr.getRessource()));
+			}
+		}
+		return butin;
 	}
 
 

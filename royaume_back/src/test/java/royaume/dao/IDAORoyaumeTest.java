@@ -21,6 +21,8 @@ import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 
+import royaume.model.militaire.TypeTroupe;
+
 @DataJpaTest
 @DisplayName("Tests d'intégration JPA — IDAORoyaume")
 class IDAORoyaumeTest {
@@ -198,4 +200,34 @@ class IDAORoyaumeTest {
                 .mapToInt(QuantiteRessource::getQuantite)
                 .sum();
     }
+
+
+        @Test
+        @DisplayName("Relit la garnison JSON et détecte la mutation d'un contingent")
+        void testGarnisonJsonRelueEtMutationDetectee() {
+        // Given
+        Population peuple = new Canards(null, "Canards", "Archiduc", 0.05);
+        entityManager.persist(peuple);
+        entityManager.flush();
+
+        Royaume royaume = new Royaume(null, "Avalon", peuple);
+        royaume.ajouterTroupes(TypeTroupe.ARCHER, 10);
+        daoRoyaume.saveAndFlush(royaume);
+        entityManager.clear();
+
+        // When : relecture, puis mutation en place d'un contingent existant
+        Royaume relu = daoRoyaume.findById(royaume.getId()).orElseThrow();
+        assertEquals(10, relu.getGarnison().get(0).getQuantite());
+        relu.ajouterTroupes(TypeTroupe.ARCHER, 5);
+        daoRoyaume.flush();
+        entityManager.clear();
+
+        // Then
+        Royaume relu2 = daoRoyaume.findById(royaume.getId()).orElseThrow();
+        assertEquals(1, relu2.getGarnison().size());
+        assertEquals(TypeTroupe.ARCHER, relu2.getGarnison().get(0).getType());
+        assertEquals(15, relu2.getGarnison().get(0).getQuantite());
+        }
+
+
 }

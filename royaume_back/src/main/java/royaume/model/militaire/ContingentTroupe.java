@@ -1,15 +1,26 @@
 package royaume.model.militaire;
 
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+
+//@Embeddable
 public class ContingentTroupe {
-    //ajoute id // voir le bd
-    
-    private final TypeTroupe type;
+
+    @NotNull
+    private TypeTroupe type;
+
+    @Min(0)
     private int quantite;
 
+    /** Requis par JPA et Jackson (désérialisation du JSON). */
+    public ContingentTroupe() {}
+
     public ContingentTroupe(TypeTroupe type, int quantite) {
-        if (quantite < 0) throw new IllegalArgumentException("Quantité négative");
         this.type = type;
-        this.quantite = quantite;
+        this.quantite = quantite;   // la validation (>= 0) est faite par Bean Validation
     }
 
     public void ajouter(int qte) {
