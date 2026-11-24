@@ -1,4 +1,4 @@
-package royaume.model;
+package royaume.model.ticker;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -72,6 +72,9 @@ public class HorlogeJeu {
     }
 
     public void setTempsCourant(LocalDateTime tempsCourant) {
+        if (tempsCourant == null) {
+            throw new IllegalArgumentException("Le temps courant ne peut pas être null.");
+        }
         this.tempsCourant = tempsCourant;
     }
 
@@ -80,6 +83,12 @@ public class HorlogeJeu {
     }
 
     public void setVitesseSimulation(Double vitesseSimulation) {
+        if (vitesseSimulation == null) {
+            throw new IllegalArgumentException("La vitesse de la simulation ne peut pas être null.");
+        }
+        if (vitesseSimulation <= 0) {
+            throw new IllegalArgumentException("La vitesse de la simulation ne peut pas être inférieure ou égale à 0.");
+        }
         this.vitesseSimulation = vitesseSimulation;
     }
 
