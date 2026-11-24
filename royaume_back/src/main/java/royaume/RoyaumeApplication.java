@@ -14,9 +14,13 @@ public class RoyaumeApplication {
 }*/
 import org.springframework.context.annotation.Bean;
 
+import royaume.dao.IDAOMarche;
+import royaume.dao.IDAOOffreMarche;
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
+import royaume.model.OffreMarche;
+import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
@@ -29,6 +33,7 @@ import royaume.model.peuple.Population;
 import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
 import royaume.service.BatimentService;
+import royaume.service.MarcheService;
 
 @SpringBootApplication
 
@@ -40,11 +45,15 @@ public class RoyaumeApplication {
 		SpringApplication.run(RoyaumeApplication.class, args);
 	}
 
+
 		    @Bean
 		    CommandLineRunner testJPA(
 		            IDAOPopulation populationDAO,
 		            IDAORoyaume royaumeDAO,
+		            IDAOOffreMarche offreMarcheDAO,
 		            IDAOUtilisateur utilisateurDAO,
+		            IDAOMarche marcheDAO,
+		            MarcheService marcheService,
 		            BatimentService batimentService) {
 
 		        return args -> {
@@ -62,18 +71,26 @@ public class RoyaumeApplication {
 		            	for (Population population : populations) {
 
 		            	    population = populationDAO.save(population);
+		            	    
+		            	          String nomRoyaume = "Le Royaume des " + population.getNom();
+		            	        Royaume royaume;
 
-		            	    Royaume royaume = new Royaume(
-		            	        null,
-		            	        "Le Royaume des " + population.getNom(),
-		            	        population
-		            	    );
+		            	        if (!royaumeDAO.existsByNom(nomRoyaume)) {
+		            	            royaume = new Royaume(
+		            	                null,
+		            	                nomRoyaume,
+		            	                population
+		            	            );
+		            	            royaume = royaumeDAO.save(royaume);
+		            	            System.out.println("Royaume créé : " + royaume);
+		            	        } else {
+		            	        	royaume = royaumeDAO.findByNom(nomRoyaume).stream().findFirst().orElse(null);
+		            	            System.out.println("Royaume existe déjà : " + nomRoyaume);
+		            	        }
 
-		            	    royaumeDAO.save(royaume);
-
-		            	    System.out.println("Population : " + population);
-		            	    System.out.println("Royaume : " + royaume);
-		            	}
+		            	        System.out.println("Population : " + population);
+		            	        System.out.println("Royaume : " + royaume);
+		            	    }
 		            	
 		            	
 		            	 Maison maison = batimentService.creerMaison(
@@ -90,6 +107,17 @@ public class RoyaumeApplication {
 				         BatimentProduction taverne = batimentService.creerBatimentProduction(1,null, "Taverne des canards",500,Ressource.NOURRITURE,1,1);
 				            	
 		        
+				         ///////////// MARCHE ////////////////////
+				       
+				        
+				         QuantiteRessource orVendeur = new QuantiteRessource(500, Ressource.OR);
+				         QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
+				         
+				         OffreMarche offre = marcheService.publierOffre(2,orVendeur, pierreVendeur);
+				         
+				         
+				         
+				         
 
 		            	  // Création d'un utilisateur
 		                System.out.println("========== TEST UTILISATEUR ==========");
