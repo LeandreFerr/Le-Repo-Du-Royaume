@@ -26,6 +26,7 @@ import royaume.model.StatutPartie;
 import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.ChantierConstruction;
+import royaume.model.batiment.Maison;
 import royaume.model.militaire.Attaque;
 import royaume.model.militaire.ContingentTroupe;
 import royaume.model.militaire.StatutAttaque;
@@ -188,6 +189,80 @@ class MoteurJeuTest {
             moteur.executerTick(Duration.ofSeconds(5));
 
             assertEquals(0, getStock(royaumeA, Ressource.OR));
+        }
+
+        @Test
+        @DisplayName("3600 petits ticks de 1 seconde créditent exactement la production horaire sans perte d'arrondi")
+        void testProductionAccumuleeSurPetitsTicks() {
+            BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 14, "Mine précise", 2500, Ressource.OR, 100, 1
+            );
+            mine.getChantier().finaliser(mine.getChantier().getDateFinPrevue());
+
+            for (int i = 0; i < 3600; i++) {
+                moteur.executerTick(Duration.ofSeconds(1));
+            }
+
+            assertEquals(100, getStock(royaumeA, Ressource.OR));
+        }
+
+        @Test
+        @DisplayName("4 bâtiments de ressources différentes sur un même royaume accumulent indépendamment sans interférence")
+        void testMultiRessourcesAccumuleesIndependamment() {
+            BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 15, "Mine", 2500, Ressource.OR, 100, 1);
+            BatimentProduction scierie = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 16, "Scierie", 2000, Ressource.BOIS, 30, 1);
+            BatimentProduction carriere = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 17, "Carrière", 2000, Ressource.PIERRE, 75, 1);
+            BatimentProduction taverne = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 18, "Taverne", 2000, Ressource.NOURRITURE, 120, 1);
+
+            mine.getChantier().finaliser(mine.getChantier().getDateFinPrevue());
+            scierie.getChantier().finaliser(scierie.getChantier().getDateFinPrevue());
+            carriere.getChantier().finaliser(carriere.getChantier().getDateFinPrevue());
+            taverne.getChantier().finaliser(taverne.getChantier().getDateFinPrevue());
+
+            for (int i = 0; i < 60; i++) {
+                moteur.executerTick(Duration.ofMinutes(1));
+            }
+
+            assertEquals(100, getStock(royaumeA, Ressource.OR));
+            assertEquals(30, getStock(royaumeA, Ressource.BOIS));
+            assertEquals(75, getStock(royaumeA, Ressource.PIERRE));
+            assertEquals(120, getStock(royaumeA, Ressource.NOURRITURE));
+        }
+
+        @Test
+        @DisplayName("Les accumulateurs de deux royaumes différents sont strictement indépendants")
+        void testAccumulateursIndependantsEntreRoyaumes() {
+            BatimentProduction mineA = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 19, "Mine A", 2500, Ressource.OR, 100, 1);
+            BatimentProduction mineB = BatimentFactory.creerBatimentProduction(
+                    royaumeB, 20, "Mine B", 2500, Ressource.OR, 50, 1);
+            mineA.getChantier().finaliser(mineA.getChantier().getDateFinPrevue());
+            mineB.getChantier().finaliser(mineB.getChantier().getDateFinPrevue());
+
+            for (int i = 0; i < 60; i++) {
+                moteur.executerTick(Duration.ofMinutes(1));
+            }
+
+            assertEquals(100, getStock(royaumeA, Ressource.OR));
+            assertEquals(50, getStock(royaumeB, Ressource.OR));
+        }
+
+        @Test
+        @DisplayName("Duration.ZERO ne crédite rien et ne corrompt pas les restes accumulés")
+        void testTickZeroNeModifiePasAccumulateur() {
+            BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 25, "Mine", 2500, Ressource.OR, 100, 1);
+            mine.getChantier().finaliser(mine.getChantier().getDateFinPrevue());
+
+            moteur.executerTick(Duration.ofMinutes(30)); // +50 OR
+            moteur.executerTick(Duration.ZERO);          // +0 OR
+            moteur.executerTick(Duration.ofMinutes(30)); // +50 OR
+
+            assertEquals(100, getStock(royaumeA, Ressource.OR));
         }
     }
 
@@ -411,6 +486,146 @@ class MoteurJeuTest {
             assertEquals(StatutAttaque.TERMINEE, attaque.getStatut());
             assertEquals(orApresRetour, getStock(royaumeA, Ressource.OR));
             assertEquals(cavaliersApresRetour, getEffectifGarnison(royaumeA, TypeTroupe.CAVALIER));
+        }
+    }
+
+    // =========================================================================
+    // 6. Croissance de la population (Maisons) & Royaume en ruine
+    // =========================================================================
+
+    @Nested
+    @DisplayName("Croissance de population (Maisons) et royaume en ruine")
+    class CroissanceEtRuineTests {
+
+        @Test
+        @DisplayName("Une maison opérationnelle (niv 1 = +12%/h) augmente populationDisponible en 1h, rien sans maison")
+        void testCroissancePopulationUneHeureAvecMaison() {
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 30, "Maison 1", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
+            moteur.executerTick(Duration.ofHours(1));
+
+            assertEquals(112, royaumeA.getPopulationDisponible());
+            assertEquals(100, royaumeB.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("Sur 30 minutes, une maison niv 1 (+12%/h) ajoute +6% à populationDisponible")
+        void testCroissancePopulationDemiHeure() {
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 31, "Maison 1", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
+            moteur.executerTick(Duration.ofMinutes(30));
+
+            assertEquals(106, royaumeA.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("Une maison achevée pendant un tick ne fait grandir la population qu'au tick suivant")
+        void testMaisonAcheveePendantTickNeProduitQuAuTickSuivant() {
+            // Maison avec 1 ouvrier : 120s (2 minutes)
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 32, "Maison neuve", 1);
+            horloge.initialiser(maison.getChantier().getDateDebut());
+
+            // Tick 1 (3 min) : achève la construction, libère l'ouvrier (100 pop), pas de croissance rétroactive
+            moteur.executerTick(Duration.ofMinutes(3));
+            assertTrue(maison.estOperationnel());
+            assertEquals(100, royaumeA.getPopulationDisponible());
+
+            // Tick 2 (1h) : la maison opérationnelle génère +12%
+            moteur.executerTick(Duration.ofHours(1));
+            assertEquals(112, royaumeA.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("Un royaume en ruine ne produit plus de ressources ni de population, mais conserve ses stocks")
+        void testRoyaumeEnRuineBloqueProductionEtCroissance() {
+            BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                    royaumeA, 33, "Mine d'or", 2500, Ressource.OR, 100, 1
+            );
+            mine.getChantier().finaliser(mine.getChantier().getDateFinPrevue());
+
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 34, "Maison", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
+            royaumeA.crediterRessources(Ressource.OR, 50);
+            royaumeA.setEnRuine(true);
+
+            moteur.executerTick(Duration.ofHours(1));
+
+            assertEquals(50, getStock(royaumeA, Ressource.OR));
+            assertEquals(100, royaumeA.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("60 petits ticks de 1 minute avec une maison accumulent les fractions et font grandir la population")
+        void testCroissancePopulationAccumuleeSurPetitsTicks() {
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 35, "Maison précise", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
+            for (int i = 0; i < 60; i++) {
+                moteur.executerTick(Duration.ofMinutes(1));
+            }
+
+            assertTrue(royaumeA.getPopulationDisponible() >= 112);
+        }
+
+        @Test
+        @DisplayName("Si une maison est détruite en cours d'accumulation, la population cesse immédiatement de grandir")
+        void testDestructionMaisonStoppeCroissanceMemeAvecReste() {
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 36, "Maison fragile", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+
+            // 2 minutes accumulent 0.4 habitant dans le reste (0 crédité)
+            moteur.executerTick(Duration.ofMinutes(2));
+            assertEquals(100, royaumeA.getPopulationDisponible());
+
+            // Destruction de la maison -> bonusCroissance revient à 0
+            royaumeA.recevoirDegats(maison, 200);
+            assertEquals(0.0, royaumeA.getBonusCroissance(), 1e-9);
+
+            // 2 heures plus tard : aucune croissance ne doit se produire
+            moteur.executerTick(Duration.ofHours(2));
+            assertEquals(100, royaumeA.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("Si populationDisponible vaut 0 malgré une maison opérationnelle, aucune erreur et reste à 0")
+        void testCroissanceAvecPopulationDisponibleZero() {
+            Maison maison = BatimentFactory.creerMaison(royaumeA, 37, "Maison vide", 1);
+            maison.getChantier().finaliser(maison.getChantier().getDateFinPrevue());
+            royaumeA.setPopulationDisponible(0);
+
+            moteur.executerTick(Duration.ofHours(2));
+
+            assertEquals(0, royaumeA.getPopulationDisponible());
+        }
+
+        @Test
+        @DisplayName("Un royaume qui passe en ruine arrête de produire mais ses stocks déjà accumulés restent pillables")
+        void testRoyaumeEnRuineRestePillableParAttaque() {
+            BatimentProduction mine = BatimentFactory.creerBatimentProduction(
+                    royaumeB, 38, "Mine B", 2500, Ressource.OR, 100, 1);
+            mine.getChantier().finaliser(mine.getChantier().getDateFinPrevue());
+
+            // 30 min avant ruine -> royaumeB accumule 50 OR
+            moteur.executerTick(Duration.ofMinutes(30));
+            assertEquals(50, getStock(royaumeB, Ressource.OR));
+
+            // royaumeB passe en ruine, royaumeA l'attaque avec 10 cavaliers (distance 15 = 1h aller, 1h retour)
+            royaumeB.setEnRuine(true);
+            royaumeA.ajouterTroupes(TypeTroupe.CAVALIER, 10);
+            royaumeA.setPopulationMilitaire(10);
+            Attaque pillage = royaumeA.lancerAttaque(
+                    royaumeB, Map.of(TypeTroupe.CAVALIER, 10), 15.0, horloge.getTempsCourant()
+            );
+            moteur.addAttaque(pillage);
+
+            // 2h plus tard : royaumeB n'a rien produit de plus, et royaumeA a pillé exactement les 50 OR
+            moteur.executerTick(Duration.ofHours(2));
+            assertEquals(StatutAttaque.TERMINEE, pillage.getStatut());
+            assertEquals(0, getStock(royaumeB, Ressource.OR));
+            assertEquals(50, getStock(royaumeA, Ressource.OR));
         }
     }
 }
