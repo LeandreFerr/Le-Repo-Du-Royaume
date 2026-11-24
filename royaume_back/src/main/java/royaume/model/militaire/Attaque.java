@@ -1,28 +1,101 @@
 package royaume.model.militaire;
 
-import royaume.model.QuantiteRessource;
-import royaume.model.Royaume;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import royaume.model.QuantiteRessource;
+import royaume.model.Royaume;
+
+@Entity
+@Table(name = "attaque")
 public class Attaque {
-    private final Royaume attaquant;
-    private final Royaume defenseur;
-    private final List<ContingentTroupe> troupesEnvoyees;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "attaquant_id", nullable = false)
+    @NotNull
+    private Royaume attaquant;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "defenseur_id", nullable = false)
+    @NotNull
+    private Royaume defenseur;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "troupes_envoyees", columnDefinition = "json", nullable = false)
+    @NotEmpty
+    private List<@Valid ContingentTroupe> troupesEnvoyees = new ArrayList<>();
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "butin", columnDefinition = "json", nullable = false)
+    @NotNull
     private List<QuantiteRessource> butin = new ArrayList<>();
 
-    private final LocalDateTime dateDepart;
+    @NotNull
+    @Column(name = "date_depart", nullable = false)
+    private LocalDateTime dateDepart;
+
+    @NotNull
+    @Column(name = "date_impact", nullable = false)
     private LocalDateTime dateImpact;
+
+    @Column(name = "date_retour_prevue")   // nullable : seulement en cas de victoire
     private LocalDateTime dateRetourPrevue;
+
+    @NotNull
+    @Column(name = "temps_trajet", nullable = false)
     private Duration tempsTrajet;
+
+    @Column(name = "victoire_attaquant", nullable = false)
     private boolean victoireAttaquant;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @NotNull
     private StatutAttaque statut = StatutAttaque.ALLER;
+
+    /** Requis par JPA. Les invariants sont alors contrôlés par Bean Validation. */
+    public Attaque() {}  
 
     public Attaque(Royaume attaquant, Royaume defenseur,
                    List<ContingentTroupe> troupes, LocalDateTime dateDepart, double distance) {
-        if (troupes.isEmpty()) throw new IllegalArgumentException("Aucune troupe envoyée");
+        if (attaquant == null || defenseur == null) {
+            throw new IllegalArgumentException("Attaquant et défenseur requis");
+        }
+        if (attaquant == defenseur) {
+            throw new IllegalArgumentException("Un royaume ne peut pas s'attaquer lui-même");
+        }
+        if (troupes == null || troupes.isEmpty()) {
+            throw new IllegalArgumentException("Aucune troupe envoyée");
+        }
+        if (dateDepart == null) {
+            throw new IllegalArgumentException("Date de départ requise");
+        }
+        if (!Double.isFinite(distance) || distance <= 0) {
+            throw new IllegalArgumentException("La distance doit être strictement positive");
+        }
         this.attaquant = attaquant;
         this.defenseur = defenseur;
         this.troupesEnvoyees = troupes;
@@ -30,7 +103,6 @@ public class Attaque {
         this.tempsTrajet = calculerTempsAller(distance);
         this.dateImpact = dateDepart.plus(tempsTrajet);
     }
-
 
     /** Durée = distance / vitesse de l'unité la plus lente. */
     public Duration calculerTempsAller(double distance) {
@@ -47,16 +119,9 @@ public class Attaque {
                 .sum();
     }
 
-    /* L'attaque de base
-    private int puissanceAttaque() {
-        return troupesEnvoyees.stream()
-                .mapToInt(c -> c.getQuantite() * c.getType().getAttaque()).sum();
-    }
-    */
-
-    /* L'attaque suivant dominance, on peut revenir a celui d'avant si too much */
+    /** Puissance avec dominance : chaque contingent est pondéré par son multiplicateur moyen contre l'adversaire. */
     private static double puissance(List<ContingentTroupe> troupes,
-                                List<ContingentTroupe> adverses, boolean enAttaque) {
+                                    List<ContingentTroupe> adverses, boolean enAttaque) {
         int effectifAdverse = adverses.stream().mapToInt(ContingentTroupe::getQuantite).sum();
         double total = 0;
         for (ContingentTroupe c : troupes) {
@@ -75,24 +140,16 @@ public class Attaque {
         return total;
     }
 
-
-
     public void resoudreCombat() {
         if (statut != StatutAttaque.ALLER) throw new IllegalStateException("Combat déjà résolu");
 
-    /*  Attaque precedante
-        int pA = puissanceAttaque();
-        int pD = defenseur.getPuissanceDefensive();
-    */
-    /* Attaque suivant dominance */
         double pA = puissance(troupesEnvoyees, defenseur.getGarnison(), true);
         double pD = puissance(defenseur.getGarnison(), troupesEnvoyees, false);
 
-
         victoireAttaquant = pA > pD;   // égalité = victoire du défenseur
 
-        double ratioPerteAttaquant = victoireAttaquant ? (double) pD / pA : 1.0;
-        double ratioPerteDefenseur = victoireAttaquant ? 1.0 : (pD == 0 ? 0.0 : (double) pA / pD);
+        double ratioPerteAttaquant = victoireAttaquant ? pD / pA : 1.0;
+        double ratioPerteDefenseur = victoireAttaquant ? 1.0 : (pD == 0 ? 0.0 : pA / pD);
 
         int pertesAttaquant = 0;
         for (ContingentTroupe c : troupesEnvoyees) {
@@ -118,14 +175,15 @@ public class Attaque {
             attaquant.ajouterTroupes(c.getType(), c.getQuantite());
         }
         for (QuantiteRessource qr : butin) {
-            if (qr.getQuantite() > 0) {                       // crediterRessources refuse 0
+            if (qr.getQuantite() > 0) {   // crediterRessources refuse 0
                 attaquant.crediterRessources(qr.getRessource(), qr.getQuantite());
             }
         }
         statut = StatutAttaque.TERMINEE;
-
     }
 
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     public Royaume getAttaquant() { return attaquant; }
     public Royaume getDefenseur() { return defenseur; }
     public List<ContingentTroupe> getTroupesEnvoyees() { return troupesEnvoyees; }
@@ -133,6 +191,7 @@ public class Attaque {
     public LocalDateTime getDateDepart() { return dateDepart; }
     public LocalDateTime getDateImpact() { return dateImpact; }
     public LocalDateTime getDateRetourPrevue() { return dateRetourPrevue; }
+    public Duration getTempsTrajet() { return tempsTrajet; }
     public boolean isVictoireAttaquant() { return victoireAttaquant; }
     public StatutAttaque getStatut() { return statut; }
 }
