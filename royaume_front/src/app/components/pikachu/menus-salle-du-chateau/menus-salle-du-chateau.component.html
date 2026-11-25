@@ -1,6 +1,68 @@
 
+<!-- Conteneur principal du jeu -->
+<div
+  class="game-container"
+  [class.game-active]="demarre"
+  [style.background-image]="'url(' + fondEau + ')'"
+>
+
+  <!-- Écran de démarrage -->
+  <div id="formStart" [hidden]="demarre">
+
+    <input
+      id="inputName"
+      type="text"
+      placeholder="gobelin ou licorne"
+      autocomplete="off"
+      maxlength="30"
+      [value]="nomGobelin"
+      (input)="modifierNom($event)"
+      (keydown.enter)="demarrerJeu()"
+    >
+
+    <button
+      id="btnStart"
+      type="button"
+      [disabled]="!nomGobelin.trim()"
+      (click)="demarrerJeu()"
+    >
+      Start !
+    </button>
+
+  </div>
+<div
+  class="game-container"
+  [style.background-image]="'url(' + fondEau + ')'"
+>
+
+  <!-- Ton écran de démarrage actuel -->
+  <div id="formStart" [hidden]="demarre">
+
+    <!-- Conserve ici tes inputs et ton bouton -->
+
+  </div>
+
+  <!-- Ton terrain de jeu -->
+  <div id="grass" [class.visible]="demarre">
+
+    <div
+      id="personnage"
+      [style.left.px]="posX"
+      [style.top.px]="posY"
+    >
+      <img
+        id="imgPersonnage"
+        [src]="spriteActuel"
+        [alt]="nomPersonnage"
+        draggable="false"
+      >
+    </div>
+
+  </div>
+
+</div>
 <!-- Écran de démarrage -->
-<div id="formStart" [hidden]="demarre">
+<!--<div id="formStart" [hidden]="demarre">
 
   <input
     id="inputName"
@@ -21,9 +83,9 @@
     Start !
   </button>
 
-</div>
+</div>-->
 <!-- Terrain de jeu -->
-<div
+<!--<div
   id="grass"
   [class.visible]="demarre"
 >
@@ -37,8 +99,7 @@
   >
 </div>
   
-</div>
-
+</div> -->
 <!-- Modal échange -->
 <div id="modalEchange" class="modal" [class.ouverte]="modalEchange">
 
