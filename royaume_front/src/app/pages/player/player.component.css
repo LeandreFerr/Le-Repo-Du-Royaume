@@ -40,6 +40,12 @@ app-carte-royaume {
   min-height: 0;
 }
 
+:host ::ng-deep .player-world-map .carte-hud-toolbar {
+  top: 14px;
+  right: 14px;
+  left: auto;
+}
+
 /* Sidebar */
 
 .sidebar {

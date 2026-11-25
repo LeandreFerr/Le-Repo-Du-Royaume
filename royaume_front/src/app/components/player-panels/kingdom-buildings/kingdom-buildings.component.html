@@ -1,0 +1,331 @@
+<section class="buildings-panel">
+
+  <!-- En-tête -->
+
+  <header class="panel-header">
+
+    <div class="panel-heading">
+
+      <span class="section-label">
+        Aménagement du domaine
+      </span>
+
+      <h1>Bâtiments</h1>
+
+      <p>
+        Construisez, améliorez et entretenez
+        les infrastructures de votre royaume.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- Contenu -->
+
+  <div class="panel-content">
+
+
+    <!-- Statistiques du domaine -->
+
+    <section class="buildings-banner">
+
+      <div class="banner-stat">
+
+        <span class="stat-label">
+          Bâtiments
+        </span>
+
+        <strong class="stat-value">
+          {{ nombreBatiments | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+
+      <div class="banner-stat">
+
+        <span class="stat-label">
+          Ouvriers affectés
+        </span>
+
+        <strong class="stat-value">
+          {{ royaume.populationOuvriere | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+
+      <div class="banner-stat">
+
+        <span class="stat-label">
+          Chantiers actifs
+        </span>
+
+        <strong class="stat-value">
+          {{ nombreChantiers | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+    </section>
+
+    <!-- Gestion des bâtiments -->
+
+    <div class="buildings-grid">
+
+      <section class="buildings-card">
+
+        <span class="section-label">
+          Infrastructures du domaine
+        </span>
+
+        <div class="card-heading">
+
+          <h2>Vos bâtiments</h2>
+
+          <span>
+            {{ batimentsFiltres.length }} bâtiment(s)
+          </span>
+
+        </div>
+
+
+        <!-- Filtres -->
+
+        <div class="building-filters">
+
+          @for (filtre of filtres; track filtre.valeur) {
+
+          <button type="button" class="filter-button" [class.active]="filtreActif === filtre.valeur"
+            (click)="changerFiltre(filtre.valeur)">
+
+            {{ filtre.nom }}
+
+          </button>
+
+          }
+
+        </div>
+
+
+        <!-- Liste des bâtiments -->
+
+        <div class="buildings-list">
+
+          @for (batiment of batimentsFiltres; track batiment.id) {
+
+          <article class="building-card">
+
+            <div class="building-heading">
+
+              <div class="building-icon">
+
+                <img [src]="getIconeBatiment(batiment)" [alt]="batiment.nom">
+
+              </div>
+
+
+              <div class="building-identity">
+
+                <h3>{{ batiment.nom }}</h3>
+
+                <p>
+                  {{ getDescriptionBatiment(batiment) }}
+                </p>
+
+              </div>
+
+
+              <div class="building-meta">
+
+                <span class="building-level">
+                  Niveau {{ batiment.niveau }}
+                </span>
+
+                <span class="building-status" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                  [class.in-progress]="batiment.enConstruction">
+
+                  {{ getEtatBatiment(batiment) }}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            @if (!batiment.enConstruction) {
+
+            <!-- Production -->
+
+            @if (batiment.productionBaseHeure !== undefined) {
+
+            <div class="building-production">
+
+              <span>Production horaire de base</span>
+
+              <strong>
+                {{ batiment.productionBaseHeure | number:'1.0-0' }}
+                / h
+              </strong>
+
+            </div>
+
+            }
+
+
+            <!-- Points de vie -->
+
+            <div class="building-health">
+
+              <div class="health-heading">
+
+                <span>Points de vie</span>
+
+                <strong>
+                  {{ batiment.pointsDeVie | number:'1.0-0' }}
+                  /
+                  {{ batiment.pointsDeVieMax | number:'1.0-0' }}
+                </strong>
+
+              </div>
+
+              <div class="health-bar">
+
+                <div class="health-fill" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                  [style.width.%]="getPourcentageVie(batiment)">
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Actions -->
+
+            <div class="building-actions">
+
+              <button type="button" class="building-action" disabled>
+
+                Améliorer
+
+              </button>
+
+              <button type="button" class="building-action" disabled>
+
+                Réparer
+
+              </button>
+
+            </div>
+
+            } @else {
+
+            <div class="building-notice">
+
+              Travaux en cours — voir les chantiers.
+
+            </div>
+
+            }
+
+          </article>
+
+          } @empty {
+
+          <p class="empty-message">
+            Aucun bâtiment dans cette catégorie.
+          </p>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- Chantiers -->
+
+      <aside class="construction-card">
+
+        <span class="section-label">
+          Travaux du domaine
+        </span>
+
+        <h2>Chantiers en cours</h2>
+
+        <div class="construction-list">
+
+          @for (batiment of chantiersActifs; track batiment.id) {
+
+          @if (batiment.chantier; as chantier) {
+
+          <article class="construction-item">
+
+            <span class="section-label">
+
+              {{ chantier.amelioration
+              ? 'Amélioration'
+              : 'Construction' }}
+
+            </span>
+
+            <h3>{{ batiment.nom }}</h3>
+
+            <div class="construction-progress">
+
+              <span>Avancement estimé</span>
+
+              <strong>
+                {{ getProgressionChantier(chantier)
+                | number:'1.0-0' }} %
+              </strong>
+
+            </div>
+
+            <div class="construction-bar">
+
+              <div class="construction-fill" [style.width.%]="getProgressionChantier(chantier)">
+              </div>
+
+            </div>
+
+            <div class="construction-workers">
+
+              <img src="/img/population.svg" alt="">
+
+              <div>
+
+                <span>Ouvriers assignés</span>
+
+                <strong>
+                  {{ chantier.ouvriersAssignes }}
+                </strong>
+
+              </div>
+
+            </div>
+
+          </article>
+
+          }
+
+          } @empty {
+
+          <p class="empty-message">
+            Aucun chantier en cours.
+          </p>
+
+          }
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+</section>

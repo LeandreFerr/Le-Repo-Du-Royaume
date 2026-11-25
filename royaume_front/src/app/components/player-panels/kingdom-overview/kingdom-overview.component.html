@@ -1,0 +1,196 @@
+<section class="kingdom-panel">
+
+  <!-- En-tête -->
+
+  <header class="panel-header">
+
+    <div class="panel-heading">
+
+      <span class="section-label">
+        Tableau de bord
+      </span>
+
+      <h1>Vue du royaume</h1>
+
+      <p>
+        Bienvenue, Votre Majesté.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <!-- Contenu -->
+
+  <div class="panel-content">
+
+
+    <!-- Identité du royaume -->
+
+    <section class="kingdom-banner">
+
+      <div class="kingdom-banner-content">
+
+        <div class="kingdom-identity">
+
+          <span class="section-label">
+            Domaine de la couronne
+          </span>
+
+          <h2>{{ royaume.nom }}</h2>
+
+          <p>
+            Peuple : {{ royaume.peuple.nom }}
+          </p>
+
+          <div class="kingdom-tags">
+
+            <span>
+              {{ royaume.peuple.titreSouverain }}
+            </span>
+
+            <span>
+              Niveau {{ royaume.niveau }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- Population du royaume -->
+
+    <section class="population-card">
+
+      <span class="section-label">
+        Votre peuple
+      </span>
+
+      <div class="population-info">
+
+        <span class="population-value">
+          {{ populationTotale | number:'1.0-0' }}
+        </span>
+
+        <span class="population-label">
+          Habitants
+        </span>
+
+      </div>
+
+
+      <!-- Barre de répartition -->
+
+      <div class="population-bar">
+
+        @for (categorie of repartitionPopulation; track categorie.nom) {
+
+        <div class="population-segment" [style.background-color]="categorie.couleur"
+          [style.width.%]="getPourcentagePopulation(categorie.quantite)"
+          [title]="categorie.nom + ' : ' + categorie.quantite">
+        </div>
+
+        }
+
+      </div>
+
+
+      <!-- Légende de la population -->
+
+      <div class="population-legend">
+
+        @for (categorie of repartitionPopulation; track categorie.nom) {
+
+        <div class="population-category">
+
+          <span class="category-color" [style.background-color]="categorie.couleur">
+          </span>
+
+          <span class="category-name">
+            {{ categorie.nom }}
+          </span>
+
+          <strong class="category-value">
+            {{ categorie.quantite | number:'1.0-0' }}
+          </strong>
+
+        </div>
+
+        }
+
+      </div>
+
+      <!-- Population disponible -->
+
+      <div class="population-footer">
+
+        <span>Population disponible</span>
+
+        <strong>
+          {{ getPourcentagePopulation(royaume.populationDisponible)
+          | number:'1.0-1' }} %
+        </strong>
+
+      </div>
+
+    </section>
+
+    <!-- Ressources du royaume -->
+
+    <section class="resources-section">
+
+      <div class="resources-header">
+
+        <span class="section-label">
+          Ressources
+        </span>
+
+        <span class="resources-subtitle">
+          Stocks du royaume
+        </span>
+
+      </div>
+
+
+      <div class="resources-grid">
+
+        @for (stock of royaume.ressources; track stock.ressource) {
+
+        <div class="resource-card">
+
+          <div class="resource-icon">
+
+            <img [src]="iconesRessources[stock.ressource]" [alt]="nomsRessources[stock.ressource]">
+
+          </div>
+
+          <div class="resource-info">
+
+            <span class="resource-name">
+              {{ nomsRessources[stock.ressource] }}
+            </span>
+
+            <strong class="resource-value">
+              {{ stock.quantite | number:'1.0-0' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+        } @empty {
+
+        <p>Aucune ressource disponible.</p>
+
+        }
+
+      </div>
+
+    </section>
+  </div>
+
+</section>

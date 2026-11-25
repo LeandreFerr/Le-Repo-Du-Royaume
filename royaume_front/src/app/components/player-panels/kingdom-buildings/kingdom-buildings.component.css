@@ -1,0 +1,614 @@
+/* ========================================
+   CONTENEUR PRINCIPAL
+   ======================================== */
+
+:host {
+    --parchment: #ece5d4;
+    --surface: #f8f5ec;
+    --forest: #193b30;
+    --gold: #a77b31;
+    --text-muted: #837d6d;
+    --border: #d8cdb5;
+
+    position: absolute;
+
+    top: 14px;
+    bottom: 14px;
+    left: calc(var(--sidebar-width, 74px) + 14px);
+
+    width: 1000px;
+    max-width: calc(100% - var(--sidebar-width, 74px) - 28px);
+
+    z-index: 20;
+}
+
+.buildings-panel {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    background: var(--parchment);
+    border: 1px solid var(--border);
+
+    box-shadow: 0 8px 30px #00000020;
+
+    overflow: hidden;
+}
+
+
+/* ========================================
+   EN-TÊTE
+   ======================================== */
+
+.panel-header {
+    padding: 24px;
+
+    border-bottom: 1px solid var(--border);
+
+    flex-shrink: 0;
+}
+
+.section-label {
+    color: var(--gold);
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.panel-heading h1 {
+    margin: 8px 0;
+
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.panel-heading p {
+    margin: 0;
+
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+
+/* ========================================
+   CONTENU
+   ======================================== */
+
+.panel-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+    padding: 24px;
+
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+}
+
+
+/* ========================================
+   BANDEAU STATISTIQUES
+   ======================================== */
+
+.buildings-banner {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    align-items: center;
+
+    min-height: 150px;
+    padding: 24px;
+
+    background: linear-gradient(110deg,
+            #102e25,
+            #24483a);
+
+    border: 3px double #647b66;
+
+    flex-shrink: 0;
+}
+
+.banner-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 12px;
+    padding: 12px;
+
+    text-align: center;
+}
+
+.banner-stat:not(:last-child) {
+    border-right: 1px solid #ffffff15;
+}
+
+.stat-label {
+    color: #b3c3b4;
+
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    color: #d7bb7b;
+
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 650px) {
+
+    .buildings-banner {
+        grid-template-columns: 1fr;
+    }
+
+    .banner-stat:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid #ffffff15;
+    }
+
+}
+
+/* ========================================
+   GRILLE PRINCIPALE
+   ======================================== */
+
+.buildings-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+
+    gap: 16px;
+    align-items: start;
+}
+
+.buildings-card,
+.construction-card {
+    min-width: 0;
+    padding: 20px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+}
+
+.buildings-card h2,
+.construction-card h2 {
+    margin: 8px 0;
+
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 23px;
+    font-weight: 400;
+}
+
+.card-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.card-heading>span {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+
+/* ========================================
+   FILTRES
+   ======================================== */
+
+.building-filters {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 6px;
+    margin: 16px 0;
+}
+
+.filter-button {
+    padding: 8px 12px;
+
+    background: var(--parchment);
+    border: 1px solid var(--border);
+
+    color: var(--text-muted);
+
+    font-size: 11px;
+    cursor: pointer;
+
+    transition: background .2s, color .2s;
+}
+
+.filter-button:hover {
+    border-color: var(--gold);
+}
+
+.filter-button.active {
+    background: var(--forest);
+    border-color: var(--forest);
+
+    color: var(--surface);
+}
+
+
+/* ========================================
+   LISTE DES BÂTIMENTS
+   ======================================== */
+
+.buildings-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+.building-card {
+    padding: 16px;
+
+    background: #f4efe3;
+    border: 1px solid var(--border);
+
+    transition: border-color .2s;
+}
+
+.building-card:hover {
+    border-color: var(--gold);
+}
+
+.building-heading {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* Icône */
+
+.building-icon {
+    display: grid;
+    place-items: center;
+
+    width: 46px;
+    height: 46px;
+
+    background: #eae0c5;
+
+    color: var(--gold);
+
+    flex-shrink: 0;
+}
+
+.building-icon img,
+.building-icon svg {
+    width: 28px;
+    height: 28px;
+
+    object-fit: contain;
+}
+
+
+/* Identité */
+
+.building-identity {
+    flex: 1;
+    min-width: 0;
+}
+
+.building-identity h3 {
+    margin: 0 0 5px;
+
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.building-identity p {
+    margin: 0;
+
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+
+/* Niveau et état */
+
+.building-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.building-level {
+    color: var(--gold);
+
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.building-status {
+    color: #53785c;
+    font-size: 10px;
+}
+
+.building-status.damaged {
+    color: #a25343;
+}
+
+.building-status.in-progress {
+    color: var(--gold);
+}
+
+
+/* ========================================
+   PRODUCTION
+   ======================================== */
+
+.building-production {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 8px;
+    margin-top: 16px;
+    padding: 10px;
+
+    background: #e9eee2;
+
+    color: #53785c;
+    font-size: 10px;
+}
+
+
+/* ========================================
+   POINTS DE VIE
+   ======================================== */
+
+.building-health {
+    margin-top: 16px;
+}
+
+.health-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+    margin-bottom: 8px;
+
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.health-heading strong {
+    color: var(--forest);
+}
+
+.health-bar {
+    height: 5px;
+
+    background: #ded7c7;
+
+    overflow: hidden;
+}
+
+.health-fill {
+    height: 100%;
+
+    background: #53785c;
+
+    transition: width .3s ease;
+}
+
+.health-fill.damaged {
+    background: #b39553;
+}
+
+
+/* ========================================
+   ACTIONS
+   ======================================== */
+
+.building-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.building-action {
+    padding: 9px;
+
+    background: transparent;
+    border: 1px solid var(--gold);
+
+    color: var(--gold);
+
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.building-action:hover:not(:disabled) {
+    background: #eae0c5;
+}
+
+.building-action:disabled {
+    border-color: var(--border);
+
+    color: var(--text-muted);
+
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+.building-notice {
+    margin-top: 16px;
+    padding: 10px;
+
+    background: #eae0c5;
+
+    color: var(--gold);
+    font-size: 11px;
+}
+
+
+/* ========================================
+   CHANTIERS
+   ======================================== */
+
+.construction-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.construction-item {
+    padding: 16px;
+
+    background: var(--parchment);
+    border: 1px solid var(--border);
+}
+
+.construction-item h3 {
+    margin: 10px 0 20px;
+
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.construction-progress {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 8px;
+    margin-bottom: 8px;
+
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.construction-progress strong {
+    color: var(--gold);
+}
+
+.construction-bar {
+    height: 6px;
+
+    background: var(--border);
+
+    overflow: hidden;
+}
+
+.construction-fill {
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            #a77b31,
+            #d7bb7b);
+}
+
+.construction-workers {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 16px;
+
+    border-top: 1px solid var(--border);
+}
+
+.construction-workers img {
+    width: 26px;
+    height: 26px;
+
+    object-fit: contain;
+}
+
+.construction-workers>div {
+    display: flex;
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+.construction-workers span {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.construction-workers strong {
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 20px;
+    font-weight: 400;
+}
+
+.empty-message {
+    color: var(--text-muted);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.construction-card {
+    position: sticky;
+    top: 0;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1050px) {
+
+    .buildings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .construction-card {
+        position: static;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .building-heading {
+        flex-wrap: wrap;
+    }
+
+    .building-meta {
+        align-items: flex-start;
+    }
+
+}

@@ -1,0 +1,291 @@
+<section class="development-panel">
+
+    <!-- En-tête -->
+
+    <header class="panel-header">
+
+        <div class="panel-heading">
+
+            <span class="section-label">
+                Progression du domaine
+            </span>
+
+            <h1>Développement</h1>
+
+            <p>
+                Préparez votre royaume à franchir
+                la prochaine étape de son histoire.
+            </p>
+
+        </div>
+
+    </header>
+
+
+    <!-- Contenu -->
+
+    <div class="panel-content">
+
+
+        <!-- Bandeau du royaume -->
+
+        <section class="development-banner">
+
+            <div class="kingdom-identity">
+
+                <span class="section-label">
+                    Domaine de la couronne
+                </span>
+
+                <h2>{{ royaume.nom }}</h2>
+
+                <p>
+                    Population :
+                    {{ populationTotale | number:'1.0-0' }}
+                    habitants
+                </p>
+
+            </div>
+
+
+            <div class="kingdom-level">
+
+                <span class="level-label">
+                    Niveau du royaume
+                </span>
+
+                <strong class="level-value">
+                    {{ royaume.niveau }}
+                </strong>
+
+            </div>
+
+
+            <div class="kingdom-progression">
+
+                @if (prochainPalier; as palier) {
+
+                <div class="progression-heading">
+
+                    <span class="level-label">
+                        Progression vers le niveau {{ palier.niveau }}
+                    </span>
+
+                    <strong class="progression-value">
+                        {{ progressionGlobale | number:'1.0-0' }}%
+                    </strong>
+
+                </div>
+
+                <div class="global-progress-bar">
+
+                    <div class="global-progress-fill" [style.width.%]="progressionGlobale">
+                    </div>
+
+                </div>
+
+                <p class="progression-description">
+
+                    @if (conditionsRestantes === 0) {
+
+                    Toutes les conditions sont remplies.
+
+                    } @else {
+
+                    {{ conditionsRestantes }} condition(s) sur
+                    {{ conditionsProgression.length }}
+                    demandent encore votre attention.
+
+                    }
+
+                </p>
+
+                } @else if (royaume.niveau === 10) {
+
+                <span class="level-label">
+                    Niveau maximal atteint
+                </span>
+
+                } @else {
+
+                <span class="level-label">
+                    Palier indisponible
+                </span>
+
+                }
+
+            </div>
+
+        </section>
+        <!-- Contenu du développement -->
+
+        <div class="development-grid">
+
+
+            <!-- Conditions de progression -->
+
+            <section class="progression-card">
+
+                <span class="section-label">
+                    Conditions de progression
+                </span>
+
+                @if (prochainPalier; as palier) {
+
+                <div class="card-heading">
+
+                    <div>
+
+                        <h2>Préparer le niveau {{ palier.niveau }}</h2>
+
+                        <p>
+                            Chaque exigence doit être satisfaite
+                            avant de promulguer le décret.
+                        </p>
+
+                    </div>
+
+                    <div class="level-transition">
+
+                        <span>{{ royaume.niveau }}</span>
+
+                        <span class="transition-arrow">→</span>
+
+                        <span>{{ palier.niveau }}</span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Liste des conditions -->
+
+                <div class="conditions-list">
+
+                    @for (condition of conditionsProgression;
+                    track condition.nom) {
+
+                    <div class="condition-card" [class.completed]="condition.actuelle >= condition.requise">
+
+                        <div class="condition-icon">
+
+                            <img [src]="condition.icone" [alt]="condition.nom">
+
+                        </div>
+
+
+                        <div class="condition-content">
+
+                            <div class="condition-heading">
+
+                                <span class="condition-name">
+                                    {{ condition.nom }}
+                                </span>
+
+                                <span class="condition-quantity">
+
+                                    <strong>
+                                        {{ condition.actuelle | number:'1.0-0' }}
+                                    </strong>
+
+                                    / {{ condition.requise | number:'1.0-0' }}
+
+                                </span>
+
+                            </div>
+
+                            <div class="condition-progress-bar">
+
+                                <div class="condition-progress-fill" [style.width.%]="getPourcentage(
+                    condition.actuelle,
+                    condition.requise
+                  )">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="condition-status">
+
+                            @if (condition.actuelle >= condition.requise) {
+                            ✓ Accompli
+                            } @else {
+                            → Incomplet
+                            }
+
+                        </span>
+
+                    </div>
+
+                    }
+
+                </div>
+
+
+                <!-- Amélioration du royaume -->
+
+                <button class="upgrade-button" type="button" [disabled]="!peutAmeliorer">
+
+                    Améliorer mon royaume
+
+                </button>
+
+                <p class="upgrade-description">
+
+                    @if (royaume.enRuine) {
+
+                    Votre royaume est en ruine.
+
+                    } @else if (peutAmeliorer) {
+
+                    Votre royaume remplit toutes les conditions.
+
+                    } @else {
+
+                    L'amélioration sera disponible lorsque
+                    toutes les conditions seront remplies.
+
+                    }
+
+                </p>
+
+                } @else if (royaume.niveau === 10) {
+
+                <h2>Niveau maximal atteint</h2>
+
+                } @else {
+
+                <p>Les conditions du prochain niveau sont indisponibles.</p>
+
+                }
+
+            </section>
+
+
+            <!-- Chronique du règne -->
+
+            <aside class="history-card">
+
+                <span class="section-label">
+                    Chronique du règne
+                </span>
+
+                <h2>Histoire de progression</h2>
+
+                <div class="history-placeholder">
+
+                    <p>
+                        L'historique de votre royaume sera
+                        disponible prochainement.
+                    </p>
+
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+</section>
