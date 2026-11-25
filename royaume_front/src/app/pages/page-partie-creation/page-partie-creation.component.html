@@ -1,0 +1,14 @@
+<section class="page-partie-creation">
+  <h1>Créer une partie</h1>
+
+  <button type="button" (click)="ouvrirCreation()">
+    Créer une partie
+  </button>
+
+  @if (creationOuverte) {
+    <app-creation-partie-dialog
+      (fermer)="fermerCreation()"
+      (partieCreee)="gererPartieCreee($event)"
+    />
+  }
+</section>
