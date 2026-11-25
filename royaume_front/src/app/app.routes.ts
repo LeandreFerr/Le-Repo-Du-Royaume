@@ -1,10 +1,8 @@
 import { Routes } from '@angular/router';
 import { CarteRoyaumeSandboxComponent } from './components/carte-royaume/carte-royaume-sandbox.component';
 import { PageLogin} from './pages/page-login/page-login.component';
-<<<<<<< HEAD
-=======
+
 import {PlaceDuMarcheComponent} from './components/place-du-marche/place-du-marche.component';
->>>>>>> Modul_6_pikachu
 
 export const routes: Routes = [
   {
@@ -20,9 +18,7 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full',
   },
-<<<<<<< HEAD
-];
-=======
+
    {
     path: 'pikachu/menus-salle-du-chateau',
     loadComponent: () =>
@@ -34,4 +30,3 @@ export const routes: Routes = [
     component: PlaceDuMarcheComponent
   }
 ];
->>>>>>> Modul_6_pikachu

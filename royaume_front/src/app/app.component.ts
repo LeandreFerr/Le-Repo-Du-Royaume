@@ -1,10 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
+import { ReglesDuJeuManuscriptComponent } from './components/regles-du-jeu-manuscript/regles-du-jeu-manuscript.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet,  ReglesDuJeuManuscriptComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -16,5 +18,3 @@ export class App {
     return this.router.url.startsWith('/carte-sandbox');
   }
 }
-
-export { App as AppComponent };

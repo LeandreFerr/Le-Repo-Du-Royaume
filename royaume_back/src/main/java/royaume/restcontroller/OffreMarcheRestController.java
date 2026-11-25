@@ -97,7 +97,7 @@ public ResponseEntity<Void> accepterOffre(
         @PathVariable Integer id,
         @RequestParam Integer acheteurId) {
 
-    marcheService.accepterOffre(id); //acheteurId);
+    marcheService.accepterOffre(id, acheteurId);
 
     return ResponseEntity.ok().build();
 }

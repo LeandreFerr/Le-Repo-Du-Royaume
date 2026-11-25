@@ -1,31 +1,20 @@
 import { Component } from '@angular/core';
-<<<<<<< HEAD
-import { Router } from '@angular/router';
-=======
->>>>>>> Modul_6_pikachu
+
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-<<<<<<< HEAD
 
-import { UtilisateurService, UtilisateurResponse }
-  from '../../services/utilisateur/utilisateur.service';
-=======
+
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UtilisateurResponse, UtilisateurService } from '../../services/utilisateur/utilisateur.service';
->>>>>>> Modul_6_pikachu
 
 @Component({
   selector: 'app-page-login',
   standalone: true,
-<<<<<<< HEAD
-  imports: [ReactiveFormsModule],
-=======
   imports: [ReactiveFormsModule,   CommonModule],
->>>>>>> Modul_6_pikachu
   templateUrl: './page-login.component.html',
   styleUrl: './page-login.component.css'
 })

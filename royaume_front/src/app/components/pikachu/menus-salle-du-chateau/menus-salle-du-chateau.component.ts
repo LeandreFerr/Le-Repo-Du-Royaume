@@ -1,338 +1,9 @@
-/*
-import { Component, HostListener, OnDestroy } from '@angular/core';
-
-@Component({
-  selector: 'app-mini-jeu',
-  templateUrl: './mini-jeu.component.html',
-  styleUrls: ['./mini-jeu.component.css']
-})
-export class MiniJeuComponent implements OnDestroy {
-
-  // ETAT DU JEU
-  demarre = false;
-
-  nomGobelin = '';
-  nomPersonnage = 'gobelin';
-
-  personnagesDisponibles = ['gobelin', 'licorne'];
-
-  posX = 0;
-  posY = 0;
-
-  mouvement = 30;
-
-  direction = 'Down';
-
-  positionMaxX = 610;
-  positionMaxY = 610;
-
-  // FOND ET SPRITES
-
-  get fondEau(): string {
-    return `assets/pikachu/img/water-${this.nomPersonnage}.png`;
-  }
-
-  get spriteActuel(): string {
-    return `assets/pikachu/img/${this.nomPersonnage}${this.direction}.png`;
-  }
-
-  // MODALES
-  modalEchange = false;
-  modalAmelioration = false;
-  modalAttaque = false;
-
-  messageEchange = '';
-  messageAmelioration = '';
-  messageAttaque = '';
-
-  constructor() {}
-
-  ngOnDestroy(): void {
-    // Rien à nettoyer : les événements clavier
-    // sont gérés par HostListener.
-  }
-
-  // MODIFICATION DU NOM
-  modifierNom(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.nomGobelin = input.value;
-  }
-
-  // DEMARRAGE DU JEU
-  demarrerJeu(): void {
-
-    const nom = this.nomGobelin.trim().toLowerCase();
-
-    if (!nom) {
-      return;
-    }
-
-    if (!this.personnagesDisponibles.includes(nom)) {
-      alert(`Le personnage '${nom}' n'existe pas.`);
-      return;
-    }
-
-    this.nomPersonnage = nom;
-
-    this.posX = 0;
-    this.posY = 0;
-    this.direction = 'Down';
-
-    this.demarre = true;
-  }
-
-  // GESTION DU CLAVIER
-  @HostListener('document:keydown', ['$event'])
-  gererClavier(event: KeyboardEvent): void {
-
-    if (!this.demarre) {
-      return;
-    }
-
-    // Ne pas déplacer le personnage lorsqu'une modale est ouverte
-    if (
-      this.modalEchange ||
-      this.modalAmelioration ||
-      this.modalAttaque
-    ) {
-
-      if (event.key === 'Escape') {
-        this.fermerModales();
-      }
-
-      return;
-    }
-
-    // ESPACE : INTERACTION
-    if (event.code === 'Space') {
-      event.preventDefault();
-      this.interaction();
-      return;
-    }
-
-    const touche = event.key.toLowerCase();
-
-    // RETOUR AU MENU
-    if (
-      this.posX === 0 &&
-      this.posY === 0 &&
-      (event.key === 'ArrowUp' || touche === 'z')
-    ) {
-      event.preventDefault();
-      this.retourMenu();
-      return;
-    }
-
-    let nouvellePosX = this.posX;
-    let nouvellePosY = this.posY;
-
-    // DEPLACEMENTS
-
-    if (event.key === 'ArrowDown' || touche === 's') {
-      this.direction = 'Down';
-      nouvellePosY += this.mouvement;
-    }
-
-    else if (event.key === 'ArrowRight' || touche === 'd') {
-      this.direction = 'Right';
-      nouvellePosX += this.mouvement;
-    }
-
-    else if (event.key === 'ArrowLeft' || touche === 'q') {
-      this.direction = 'Left';
-      nouvellePosX -= this.mouvement;
-    }
-
-    else if (event.key === 'ArrowUp' || touche === 'z') {
-      this.direction = 'Up';
-      nouvellePosY -= this.mouvement;
-    }
-
-    else {
-      return;
-    }
-
-    event.preventDefault();
-
-    const dansLaMap =
-      nouvellePosX >= 0 &&
-      nouvellePosX <= this.positionMaxX &&
-      nouvellePosY >= 0 &&
-      nouvellePosY <= this.positionMaxY;
-
-    if (
-      dansLaMap &&
-      !this.estSurLaTable(nouvellePosX, nouvellePosY) &&
-      !this.estSurLaTapisserie(nouvellePosX, nouvellePosY)
-    ) {
-      this.posX = nouvellePosX;
-      this.posY = nouvellePosY;
-    }
-  }
-
-  // COLLISION AVEC LA TABLE
-  estSurLaTable(x: number, y: number): boolean {
-
-    const caseX = x / this.mouvement;
-    const ligneY = y / this.mouvement;
-
-    if (ligneY === 0 && caseX >= 7 && caseX <= 14) {
-      return true;
-    }
-
-    if (ligneY === 5 && caseX >= 17 && caseX <= 20) {
-      return true;
-    }
-
-    if (
-      ligneY >= 6 &&
-      ligneY <= 9 &&
-      (
-        (caseX >= 0 && caseX <= 2) ||
-        (caseX >= 17 && caseX <= 20)
-      )
-    ) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // COLLISION AVEC LA TAPISSERIE
-  estSurLaTapisserie(x: number, y: number): boolean {
-
-    const caseX = x / this.mouvement;
-    const ligneY = y / this.mouvement;
-
-    if (ligneY === 0 && caseX === 1) {
-      return true;
-    }
-
-    if (
-      ligneY >= 1 &&
-      ligneY <= 4 &&
-      (
-        (caseX >= 1 && caseX <= 7) ||
-        caseX === 13
-      )
-    ) {
-      return true;
-    }
-
-    if (
-      (ligneY === 5 || ligneY === 6) &&
-      caseX === 13
-    ) {
-      return true;
-    }
-
-    if (
-      ligneY >= 7 &&
-      ligneY <= 9 &&
-      (
-        (caseX >= 3 && caseX <= 7) ||
-        (caseX >= 13 && caseX <= 17)
-      )
-    ) {
-      return true;
-    }
-
-    if (ligneY >= 14) {
-      return true;
-    }
-
-    return false;
-  }
-
-  // VERIFICATION DE PROXIMITE
-  estAdjacentAZone(
-    casePersonnage: number,
-    lignePersonnage: number,
-    caseDebut: number,
-    caseFin: number,
-    ligneDebut: number,
-    ligneFin: number
-  ): boolean {
-
-    for (let ligne = ligneDebut; ligne <= ligneFin; ligne++) {
-
-      for (let cellule = caseDebut; cellule <= caseFin; cellule++) {
-
-        const distance =
-          Math.abs(casePersonnage - cellule) +
-          Math.abs(lignePersonnage - ligne);
-
-        if (distance === 1) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  // INTERACTIONS AVEC LES ZONES
-  interaction(): void {
-
-    const casePersonnage = this.posX / this.mouvement;
-    const lignePersonnage = this.posY / this.mouvement;
-
-    const presDeLaTable = this.estAdjacentAZone(
-      casePersonnage,
-      lignePersonnage,
-      7, 14, 0, 0
-    );
-
-    const presDeLaCarte = this.estAdjacentAZone(
-      casePersonnage,
-      lignePersonnage,
-      0, 3, 6, 9
-    );
-
-    const presDesArmes = this.estAdjacentAZone(
-      casePersonnage,
-      lignePersonnage,
-      17, 20, 5, 9
-    );
-
-    if (presDeLaTable) {
-      this.modalEchange = true;
-    }
-
-    else if (presDeLaCarte) {
-      this.modalAmelioration = true;
-    }
-
-    else if (presDesArmes) {
-      this.modalAttaque = true;
-    }
-  }
-
-  // FERMETURE DES MODALES
-  fermerModales(): void {
-    this.modalEchange = false;
-    this.modalAmelioration = false;
-    this.modalAttaque = false;
-  }
-
-  // RETOUR AU MENU
-  retourMenu(): void {
-
-    this.demarre = false;
-
-    this.nomGobelin = '';
-
-    this.posX = 0;
-    this.posY = 0;
-
-    this.direction = 'Down';
-
-    this.fermerModales();
-  }
-
-}
-*/ 
-import { Component, HostListener } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  ChangeDetectorRef,
+  NgZone
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 import {
@@ -350,9 +21,15 @@ import {
 export class MenusSalleDuChateauComponent {
 
   constructor(
-    private marcheService: MarcheService
-  ) {}
-  
+  private marcheService: MarcheService,
+  private cdr: ChangeDetectorRef,
+  private zone: NgZone
+) {}
+  // Mémorisation des annonces déjà publiées
+private offresPubliees = new Set<string>();
+
+// Publications actuellement en cours
+private publicationsEnCours = new Map<string, number>();
 //_______________________________________________________________  🐸
 //_______________________________________________________________  🐸
   vendeurId = 1;  
@@ -701,7 +378,8 @@ retourMenu(): void {
 }
 //_______________________________________________________________  🐸
   // Poster une annonce d'échange
-  posterEchange(
+  
+posterEchange(
   event: Event,
   ressourceDemandee: string,
   quantiteDemandee: string,
@@ -725,22 +403,89 @@ retourMenu(): void {
     }
   };
 
+  // IDENTIFICATION DE L'ANNONCE
+  const signature = JSON.stringify(offre);
+
+  // Vérification d'une éventuelle republication
+  const estRepublication =
+    this.offresPubliees.has(signature) ||
+    (this.publicationsEnCours.get(signature) ?? 0) > 0;
+
+  // Comptabilisation des requêtes en cours
+  const nombreEnCours =
+    this.publicationsEnCours.get(signature) ?? 0;
+
+  this.publicationsEnCours.set(
+    signature,
+    nombreEnCours + 1
+  );
+
+  // PUBLICATION
   this.marcheService.publierOffre(offre).subscribe({
 
     next: (response) => {
+
       console.log('Offre publiée :', response);
 
-      this.messageEchange = 'Annonce publiée avec succès !';
+      this.zone.run(() => {
+
+        // Mémorisation de la publication réussie
+        this.offresPubliees.add(signature);
+
+        // Mise à jour des requêtes en cours
+        this.terminerPublication(signature);
+
+        // MESSAGE
+        this.messageEchange = estRepublication
+          ? 'Offre republiée ! Attention, vous avez publié une annonce identique.'
+          : 'Annonce publiée avec succès !';
+
+        // Actualisation immédiate de l'affichage
+        this.cdr.detectChanges();
+
+      });
+
     },
 
     error: (error) => {
+
       console.error('Erreur lors de la publication :', error);
 
-      this.messageEchange = 'Erreur lors de la publication de l’annonce.';
+      this.zone.run(() => {
+
+        this.terminerPublication(signature);
+
+        this.messageEchange =
+          'Erreur lors de la publication de l’annonce.';
+
+        this.cdr.detectChanges();
+
+      });
+
     }
 
   });
+
 }
+
+// Décompte des publications en cours
+private terminerPublication(signature: string): void {
+
+  const nombreEnCours =
+    this.publicationsEnCours.get(signature) ?? 0;
+
+  if (nombreEnCours <= 1) {
+    this.publicationsEnCours.delete(signature);
+  } else {
+    this.publicationsEnCours.set(
+      signature,
+      nombreEnCours - 1
+    );
+  }
+
+}
+
+
   // Amélioration d'un bâtiment
   ameliorerBatiment(
     event: Event,
