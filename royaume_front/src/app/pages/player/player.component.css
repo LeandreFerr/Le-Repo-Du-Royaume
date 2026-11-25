@@ -134,6 +134,37 @@ app-carte-royaume {
   box-shadow: inset 3px 0 var(--gold);
 }
 
+.nav-link-out {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 43px;
+  padding: 0;
+
+  color: #c1ccc352;
+  font-size: 0;
+  text-decoration: none;
+
+  border-radius: 5px;
+  cursor: pointer;
+
+  transition: background .2s, color .2s;
+}
+
+.nav-link-out:hover {
+  color: #fff2d4;
+  background: rgba(255, 255, 255, .07);
+}
+
+.nav-link-out.is-active {
+  color: #f0d08a;
+  background: #214b3e;
+  box-shadow: inset 3px 0 var(--gold);
+}
+
 /* SVG Illustrator */
 
 .nav-icon {

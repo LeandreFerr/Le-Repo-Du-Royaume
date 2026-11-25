@@ -1,10 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
 import { Royaume } from '../../../models/royaume.model';
 import { Batiment, TypeBatiment } from '../../../models/batiment.model';
 import { Ressource } from '../../../models/ressource.model';
 import { Chantier } from '../../../models/chantier.model';
+import { RoyaumeService } from '../../../services/royaume.service';
+import { ModeleBatiment } from '../../../models/modele-batiment.model';
 
 @Component({
   selector: 'app-kingdom-buildings',
@@ -17,6 +19,70 @@ export class KingdomBuildingsComponent {
 
   @Input({ required: true }) royaume!: Royaume;
 
+  // Service
+
+  private readonly royaumeService = inject(RoyaumeService);
+
+
+  // Catalogue de construction
+
+  catalogueOuvert: boolean = false;
+
+  catalogueBatiments: ModeleBatiment[] = [];
+
+  batimentSelectionne: ModeleBatiment | null = null;
+
+
+  // Ouverture du catalogue
+
+  ouvrirCatalogue(): void {
+
+    this.catalogueOuvert = true;
+
+    this.royaumeService.getCatalogueBatiments().subscribe({
+
+      next: catalogue => {
+        this.catalogueBatiments = catalogue;
+      },
+
+      error: erreur => {
+        console.error(
+          'Erreur lors du chargement du catalogue',
+          erreur
+        );
+      }
+
+    });
+
+  }
+
+
+  // Fermeture du catalogue
+
+  fermerCatalogue(): void {
+
+    this.catalogueOuvert = false;
+
+    this.batimentSelectionne = null;
+
+  }
+
+
+  // Sélection d'un bâtiment
+
+  selectionnerBatiment(batiment: ModeleBatiment): void {
+
+    if (this.batimentSelectionne?.id === batiment.id) {
+
+      this.batimentSelectionne = null;
+
+    } else {
+
+      this.batimentSelectionne = batiment;
+
+    }
+
+  }
 
   // Filtres
 

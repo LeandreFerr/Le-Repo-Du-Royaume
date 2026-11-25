@@ -1,6 +1,8 @@
 <section class="buildings-panel">
 
-  <!-- En-tête -->
+  <!-- ========================================
+       EN-TÊTE
+       ======================================== -->
 
   <header class="panel-header">
 
@@ -22,7 +24,9 @@
   </header>
 
 
-  <!-- Contenu -->
+  <!-- ========================================
+       CONTENU
+       ======================================== -->
 
   <div class="panel-content">
 
@@ -71,182 +75,354 @@
 
     </section>
 
-    <!-- Gestion des bâtiments -->
+
+    <!-- ========================================
+         GESTION DES BÂTIMENTS
+         ======================================== -->
 
     <div class="buildings-grid">
 
       <section class="buildings-card">
 
-        <span class="section-label">
-          Infrastructures du domaine
-        </span>
 
-        <div class="card-heading">
+        @if (catalogueOuvert) {
 
-          <h2>Vos bâtiments</h2>
 
-          <span>
-            {{ batimentsFiltres.length }} bâtiment(s)
+          <!-- ========================================
+               CATALOGUE DE CONSTRUCTION
+               ======================================== -->
+
+          <span class="section-label">
+            Extension du domaine
           </span>
 
-        </div>
+          <div class="card-heading">
 
+            <div class="card-title">
 
-        <!-- Filtres -->
+              <h2>Catalogue de construction</h2>
 
-        <div class="building-filters">
-
-          @for (filtre of filtres; track filtre.valeur) {
-
-          <button type="button" class="filter-button" [class.active]="filtreActif === filtre.valeur"
-            (click)="changerFiltre(filtre.valeur)">
-
-            {{ filtre.nom }}
-
-          </button>
-
-          }
-
-        </div>
-
-
-        <!-- Liste des bâtiments -->
-
-        <div class="buildings-list">
-
-          @for (batiment of batimentsFiltres; track batiment.id) {
-
-          <article class="building-card">
-
-            <div class="building-heading">
-
-              <div class="building-icon">
-
-                <img [src]="getIconeBatiment(batiment)" [alt]="batiment.nom">
-
-              </div>
-
-
-              <div class="building-identity">
-
-                <h3>{{ batiment.nom }}</h3>
-
-                <p>
-                  {{ getDescriptionBatiment(batiment) }}
-                </p>
-
-              </div>
-
-
-              <div class="building-meta">
-
-                <span class="building-level">
-                  Niveau {{ batiment.niveau }}
-                </span>
-
-                <span class="building-status" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
-                  [class.in-progress]="batiment.enConstruction">
-
-                  {{ getEtatBatiment(batiment) }}
-
-                </span>
-
-              </div>
+              <span>
+                Sélectionnez un bâtiment à construire.
+              </span>
 
             </div>
 
+            <button
+              type="button"
+              class="construct-button"
+              (click)="fermerCatalogue()">
 
-            @if (!batiment.enConstruction) {
+              Retour
 
-            <!-- Production -->
+            </button>
 
-            @if (batiment.productionBaseHeure !== undefined) {
+          </div>
 
-            <div class="building-production">
 
-              <span>Production horaire de base</span>
+          <!-- Liste des bâtiments constructibles -->
 
-              <strong>
-                {{ batiment.productionBaseHeure | number:'1.0-0' }}
-                / h
-              </strong>
+          <div class="catalogue-list">
 
-            </div>
+            @for (modele of catalogueBatiments; track modele.id) {
+
+              <article
+                class="catalogue-item"
+                [class.selected]="batimentSelectionne?.id === modele.id">
+
+                <button
+                  type="button"
+                  class="catalogue-heading"
+                  [attr.aria-expanded]="batimentSelectionne?.id === modele.id"
+                  (click)="selectionnerBatiment(modele)">
+
+                  <div class="building-icon">
+
+                    <img
+                      [src]="modele.icone"
+                      [alt]="modele.nom">
+
+                  </div>
+
+
+                  <div class="building-identity">
+
+                    <h3>{{ modele.nom }}</h3>
+
+                    <p>{{ modele.description }}</p>
+
+                  </div>
+
+
+                  <span class="catalogue-arrow">
+
+                    {{ batimentSelectionne?.id === modele.id
+                      ? '−'
+                      : '+' }}
+
+                  </span>
+
+                </button>
+
+
+                <!-- Détails du bâtiment sélectionné -->
+
+                @if (batimentSelectionne?.id === modele.id) {
+
+                  <div class="catalogue-details">
+
+                    <span class="section-label">
+                      Conditions de construction
+                    </span>
+
+                    <p>
+                      Les conditions de construction
+                      seront disponibles prochainement.
+                    </p>
+
+                    <button
+                      type="button"
+                      class="building-action"
+                      disabled>
+
+                      Lancer la construction
+
+                    </button>
+
+                  </div>
+
+                }
+
+              </article>
+
+            } @empty {
+
+              <p class="empty-message">
+                Aucun bâtiment disponible.
+              </p>
 
             }
 
+          </div>
 
-            <!-- Points de vie -->
 
-            <div class="building-health">
+        } @else {
 
-              <div class="health-heading">
 
-                <span>Points de vie</span>
+          <!-- ========================================
+               BÂTIMENTS DU ROYAUME
+               ======================================== -->
 
-                <strong>
-                  {{ batiment.pointsDeVie | number:'1.0-0' }}
-                  /
-                  {{ batiment.pointsDeVieMax | number:'1.0-0' }}
-                </strong>
+          <span class="section-label">
+            Infrastructures du domaine
+          </span>
 
-              </div>
+          <div class="card-heading">
 
-              <div class="health-bar">
+            <div class="card-title">
 
-                <div class="health-fill" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
-                  [style.width.%]="getPourcentageVie(batiment)">
+              <h2>Vos bâtiments</h2>
+
+              <span>
+                {{ batimentsFiltres.length }} bâtiment(s)
+              </span>
+
+            </div>
+
+            <button
+              type="button"
+              class="construct-button"
+              (click)="ouvrirCatalogue()">
+
+              <span>+</span>
+              Construire
+
+            </button>
+
+          </div>
+
+
+          <!-- Filtres -->
+
+          <div class="building-filters">
+
+            @for (filtre of filtres; track filtre.valeur) {
+
+              <button
+                type="button"
+                class="filter-button"
+                [class.active]="filtreActif === filtre.valeur"
+                (click)="changerFiltre(filtre.valeur)">
+
+                {{ filtre.nom }}
+
+              </button>
+
+            }
+
+          </div>
+
+
+          <!-- Liste des bâtiments -->
+
+          <div class="buildings-list">
+
+            @for (batiment of batimentsFiltres; track batiment.id) {
+
+              <article class="building-card">
+
+
+                <!-- Identité du bâtiment -->
+
+                <div class="building-heading">
+
+                  <div class="building-icon">
+
+                    <img
+                      [src]="getIconeBatiment(batiment)"
+                      [alt]="batiment.nom">
+
+                  </div>
+
+
+                  <div class="building-identity">
+
+                    <h3>{{ batiment.nom }}</h3>
+
+                    <p>
+                      {{ getDescriptionBatiment(batiment) }}
+                    </p>
+
+                  </div>
+
+
+                  <div class="building-meta">
+
+                    <span class="building-level">
+                      Niveau {{ batiment.niveau }}
+                    </span>
+
+                    <span
+                      class="building-status"
+                      [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                      [class.in-progress]="batiment.enConstruction">
+
+                      {{ getEtatBatiment(batiment) }}
+
+                    </span>
+
+                  </div>
+
                 </div>
 
-              </div>
 
-            </div>
+                @if (!batiment.enConstruction) {
 
 
-            <!-- Actions -->
+                  <!-- Production -->
 
-            <div class="building-actions">
+                  @if (batiment.productionBaseHeure !== undefined) {
 
-              <button type="button" class="building-action" disabled>
+                    <div class="building-production">
 
-                Améliorer
+                      <span>
+                        Production horaire de base
+                      </span>
 
-              </button>
+                      <strong>
+                        {{ batiment.productionBaseHeure | number:'1.0-0' }}
+                        / h
+                      </strong>
 
-              <button type="button" class="building-action" disabled>
+                    </div>
 
-                Réparer
+                  }
 
-              </button>
 
-            </div>
+                  <!-- Points de vie -->
 
-            } @else {
+                  <div class="building-health">
 
-            <div class="building-notice">
+                    <div class="health-heading">
 
-              Travaux en cours — voir les chantiers.
+                      <span>Points de vie</span>
 
-            </div>
+                      <strong>
+                        {{ batiment.pointsDeVie | number:'1.0-0' }}
+                        /
+                        {{ batiment.pointsDeVieMax | number:'1.0-0' }}
+                      </strong>
+
+                    </div>
+
+                    <div class="health-bar">
+
+                      <div
+                        class="health-fill"
+                        [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                        [style.width.%]="getPourcentageVie(batiment)">
+                      </div>
+
+                    </div>
+
+                  </div>
+
+
+                  <!-- Actions -->
+
+                  <div class="building-actions">
+
+                    <button
+                      type="button"
+                      class="building-action"
+                      disabled>
+
+                      Améliorer
+
+                    </button>
+
+                    <button
+                      type="button"
+                      class="building-action"
+                      disabled>
+
+                      Réparer
+
+                    </button>
+
+                  </div>
+
+
+                } @else {
+
+                  <div class="building-notice">
+
+                    Travaux en cours — voir les chantiers.
+
+                  </div>
+
+                }
+
+              </article>
+
+            } @empty {
+
+              <p class="empty-message">
+                Aucun bâtiment dans cette catégorie.
+              </p>
 
             }
 
-          </article>
+          </div>
 
-          } @empty {
-
-          <p class="empty-message">
-            Aucun bâtiment dans cette catégorie.
-          </p>
-
-          }
-
-        </div>
+        }
 
       </section>
 
 
-      <!-- Chantiers -->
+      <!-- ========================================
+           CHANTIERS EN COURS
+           ======================================== -->
 
       <aside class="construction-card">
 
@@ -256,67 +432,80 @@
 
         <h2>Chantiers en cours</h2>
 
+
         <div class="construction-list">
 
           @for (batiment of chantiersActifs; track batiment.id) {
 
-          @if (batiment.chantier; as chantier) {
+            @if (batiment.chantier; as chantier) {
 
-          <article class="construction-item">
+              <article class="construction-item">
 
-            <span class="section-label">
 
-              {{ chantier.amelioration
-              ? 'Amélioration'
-              : 'Construction' }}
+                <!-- Type de chantier -->
 
-            </span>
+                <span class="section-label">
 
-            <h3>{{ batiment.nom }}</h3>
+                  {{ chantier.amelioration
+                    ? 'Amélioration'
+                    : 'Construction' }}
 
-            <div class="construction-progress">
+                </span>
 
-              <span>Avancement estimé</span>
+                <h3>{{ batiment.nom }}</h3>
 
-              <strong>
-                {{ getProgressionChantier(chantier)
-                | number:'1.0-0' }} %
-              </strong>
 
-            </div>
+                <!-- Progression du chantier -->
 
-            <div class="construction-bar">
+                <div class="construction-progress">
 
-              <div class="construction-fill" [style.width.%]="getProgressionChantier(chantier)">
-              </div>
+                  <span>Avancement estimé</span>
 
-            </div>
+                  <strong>
+                    {{ getProgressionChantier(chantier) | number:'1.0-0' }} %
+                  </strong>
 
-            <div class="construction-workers">
+                </div>
 
-              <img src="/img/population.svg" alt="">
+                <div class="construction-bar">
 
-              <div>
+                  <div
+                    class="construction-fill"
+                    [style.width.%]="getProgressionChantier(chantier)">
+                  </div>
 
-                <span>Ouvriers assignés</span>
+                </div>
 
-                <strong>
-                  {{ chantier.ouvriersAssignes }}
-                </strong>
 
-              </div>
+                <!-- Ouvriers assignés -->
 
-            </div>
+                <div class="construction-workers">
 
-          </article>
+                  <img
+                    src="/img/population.svg"
+                    alt="">
 
-          }
+                  <div>
+
+                    <span>Ouvriers assignés</span>
+
+                    <strong>
+                      {{ chantier.ouvriersAssignes }}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            }
 
           } @empty {
 
-          <p class="empty-message">
-            Aucun chantier en cours.
-          </p>
+            <p class="empty-message">
+              Aucun chantier en cours.
+            </p>
 
           }
 

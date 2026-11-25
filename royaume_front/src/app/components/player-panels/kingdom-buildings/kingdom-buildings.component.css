@@ -612,3 +612,120 @@
     }
 
 }
+
+/* ========================================
+   BOUTON CONSTRUCTION
+   ======================================== */
+
+.card-title>span {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.construct-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+    padding: 10px 16px;
+
+    background: var(--forest);
+    border: 3px double #647b66;
+
+    color: var(--surface);
+
+    font-size: 11px;
+    cursor: pointer;
+
+    transition: background .2s ease;
+}
+
+.construct-button span {
+    color: #d7bb7b;
+    font-size: 18px;
+}
+
+.construct-button:hover {
+    background: #2b5142;
+}
+
+/* ========================================
+   CATALOGUE DE CONSTRUCTION
+   ======================================== */
+
+.catalogue-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.catalogue-item {
+  background: #f4efe3;
+  border: 1px solid var(--border);
+
+  transition: border-color .2s ease;
+}
+
+.catalogue-item:hover {
+  border-color: var(--gold);
+}
+
+.catalogue-item.selected {
+  border-color: #53785c;
+}
+
+
+/* En-tête du bâtiment */
+
+.catalogue-heading {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+  padding: 16px;
+
+  width: 100%;
+
+  background: transparent;
+  border: none;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.catalogue-arrow {
+  color: var(--gold);
+
+  font-size: 20px;
+  font-weight: 400;
+}
+
+
+/* Détails de construction */
+
+.catalogue-details {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+  padding: 16px;
+
+  background: #e9eee2;
+  border-top: 1px solid var(--border);
+}
+
+.catalogue-details p {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.catalogue-details .building-action {
+  width: 100%;
+}
