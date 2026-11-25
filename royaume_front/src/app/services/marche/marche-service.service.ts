@@ -108,6 +108,7 @@ export class MarcheService {
       `${this.apiUrl}/offres/${id}`
     );
   }
+  
 
   // =========================================
   // 6. ACCEPTER UNE OFFRE

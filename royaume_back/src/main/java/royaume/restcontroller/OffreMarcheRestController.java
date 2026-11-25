@@ -1,4 +1,7 @@
+
 package royaume.restcontroller;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,42 +22,78 @@ public class OffreMarcheRestController {
     public OffreMarcheRestController(MarcheService marcheService) {
         this.marcheService = marcheService;
     }
-/* 
+
+    // =========================================
+    // 1. PUBLIER UNE OFFRE
+    // =========================================
+
     @PostMapping("/offres")
-    public ResponseEntity<Void> publierOffre(
+    public ResponseEntity<OffreMarcheResponse> publierOffre(
             @RequestBody OffreMarcheRequest request) {
 
-        marcheService.publierOffre(
+        OffreMarche offre = marcheService.publierOffre(
             request.vendeurId(),
             request.propose(),
             request.demande()
         );
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(convertirEnResponse(offre));
     }
-*/
 
-@PostMapping("/offres")
-public ResponseEntity<OffreMarcheResponse> publierOffre(
-        @RequestBody OffreMarcheRequest request) {
+    // =========================================
+    // 2. RECUPERER TOUTES LES OFFRES
+    // =========================================
 
-    OffreMarche offre = marcheService.publierOffre(
-        request.vendeurId(),
-        request.propose(),
-        request.demande()
-    );
+    @GetMapping("/offres")
+    public ResponseEntity<List<OffreMarcheResponse>> recupererOffres() {
 
-    OffreMarcheResponse response = new OffreMarcheResponse(
-        offre.getId(),
-        offre.getDatePublication(),
-        offre.getStatut(),
-        offre.getVendeur().getId(),
-        offre.getVendeur().getNom(),
-        offre.getPropose(),
-        offre.getDemande()
-    );
+        List<OffreMarcheResponse> offres =
+            marcheService.recupererOffresResponse();
+               
 
-    return ResponseEntity.status(HttpStatus.CREATED).body(response);
-}
+        return ResponseEntity.ok(offres);
+    }
 
+    // =========================================
+    // 3. RECUPERER UNE OFFRE
+    // =========================================
+
+    @GetMapping("/offres/{id}")
+    public ResponseEntity<OffreMarcheResponse> recupererOffre(
+            @PathVariable Integer id) {
+
+        OffreMarche offre = marcheService.recupererOffre(id);
+
+        return ResponseEntity.ok(convertirEnResponse(offre));
+    }
+
+    // =========================================
+    // 4.bis SUPPRIMER UNE OFFRE
+    // =========================================
+    @DeleteMapping("/offres/{id}")
+    public ResponseEntity<Void> annulerOffre(
+            @PathVariable Integer id) {
+
+        marcheService.annulerOffre(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    // =========================================
+    // 4. CONVERSION ENTITE -> DTO
+    // =========================================
+
+    private OffreMarcheResponse convertirEnResponse(OffreMarche offre) {
+
+        return new OffreMarcheResponse(
+            offre.getId(),
+            offre.getDatePublication(),
+            offre.getStatut(),
+            offre.getVendeur().getId(),
+            offre.getVendeur().getNom(),
+            offre.getPropose(),
+            offre.getDemande()
+        );
+    }
 }

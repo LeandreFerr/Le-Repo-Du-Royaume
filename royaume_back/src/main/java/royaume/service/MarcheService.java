@@ -1,15 +1,19 @@
 package royaume.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import royaume.dao.IDAOMarche;
 import royaume.dao.IDAOOffreMarche;
 import royaume.dao.IDAORoyaume;
+import royaume.dto.response.OffreMarcheResponse;
 import royaume.model.Marche;
 import royaume.model.OffreMarche;
 import royaume.model.QuantiteRessource;
 import royaume.model.Royaume;
+import royaume.model.StatutOffre;
 
 @Service
 @Transactional
@@ -55,5 +59,42 @@ public class MarcheService {
         
         return offreMarcheDAO.save(offre);
     }
-  
+
+
+    @Transactional(readOnly = true)
+public List<OffreMarcheResponse> recupererOffresResponse() {
+
+    return offreMarcheDAO.findAll()
+        .stream()
+        .map(offre -> new OffreMarcheResponse(
+            offre.getId(),
+            offre.getDatePublication(),
+            offre.getStatut(),
+            offre.getVendeur().getId(),
+            offre.getVendeur().getNom(),
+            offre.getPropose(),
+            offre.getDemande()
+        ))
+        .toList();
+}
+
+  public OffreMarche recupererOffre(Integer id) {
+    return offreMarcheDAO.findById(id)
+        .orElseThrow(() ->
+            new RuntimeException("Offre introuvable : " + id)
+        );
+}
+
+    @Transactional
+    public void annulerOffre(Integer id) {
+
+        OffreMarche offre = offreMarcheDAO.findById(id)
+            .orElseThrow(() ->
+                new RuntimeException("Offre introuvable : " + id)
+            );
+
+        offre.setStatut(StatutOffre.ANNULEE);
+
+        offreMarcheDAO.save(offre);
+    }
 }
