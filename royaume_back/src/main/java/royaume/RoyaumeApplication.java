@@ -40,7 +40,9 @@ import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
 import royaume.model.batiment.Maison;
+import royaume.model.militaire.Attaque;
 import royaume.model.militaire.SessionEntrainement;
+import royaume.model.militaire.StatutAttaque;
 import royaume.model.militaire.TypeTroupe;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Gobelins;
@@ -153,77 +155,50 @@ public class RoyaumeApplication {
 				         
 				         ////////////////// CARTE & EMPLACEMENTS (RAPIDE POUR BAGARRE) ////////////////////
 				         
-				         Partie partie = new Partie();
-				         partie.setNom("Partie test");
-				         partie.setDateCreation(LocalDateTime.now());
-				         partie = partieDAO.save(partie);
+				         List<Royaume> tousRoyaumes = royaumeDAO.findAll();
+				         boolean auMoinsUnRoyaumePlace = tousRoyaumes.stream()
+				                 .anyMatch(r -> emplacementCarteDAO.findByRoyaumeId(r.getId()).isPresent());
 
-				         Carte carte = new Carte();
-				         carte.setPartie(partie);
-				         carte.genererEmplacements(10);
-				         carte = carteDAO.saveAndFlush(carte);
+				         if (!auMoinsUnRoyaumePlace) {
+				             Partie partie = new Partie();
+				             partie.setNom("Partie test");
+				             partie.setDateCreation(LocalDateTime.now());
+				             partie = partieDAO.save(partie);
 
-				         // Récupération des emplacements et royaumes
-				         List<EmplacementCarte> emplacements =
-				                 emplacementCarteDAO.findByCarteId(carte.getId());
+				             Carte carte = new Carte();
+				             carte.setPartie(partie);
+				             carte.genererEmplacements(10);
+				             carte = carteDAO.saveAndFlush(carte);
 
-				         List<Royaume> royaumes = royaumeDAO.findAll();
+				             List<EmplacementCarte> emplacements =
+				                     emplacementCarteDAO.findByCarteIdAndOccupeFalse(carte.getId());
 
-				         if (royaumes.size() < 2 || emplacements.size() < 2) {
-				             throw new RuntimeException("Pas assez de royaumes ou d'emplacements !");
+				             int indexLibre = 0;
+				             for (Royaume r : tousRoyaumes) {
+				                 if (indexLibre < emplacements.size()) {
+				                     EmplacementCarte emp = emplacements.get(indexLibre++);
+				                     emp.assignerRoyaume(r);
+				                     emplacementCarteDAO.saveAndFlush(emp);
+				                 }
+				             }
 				         }
 
-				         // Placement de deux royaumes
-				         Royaume attaquant = royaumeDAO.findById(1).orElseThrow();
-				         Royaume defenseur = royaumeDAO.findById(3).orElseThrow();
-
-				         emplacements.get(0).assignerRoyaume(attaquant);
-				         emplacementCarteDAO.saveAndFlush(emplacements.get(0));
-
-				         emplacements.get(1).assignerRoyaume(defenseur);
-				         emplacementCarteDAO.saveAndFlush(emplacements.get(1));
-
-				         // Vérification
-				         System.out.println("Attaquant : " + attaquant.getId());
-				         System.out.println("Défenseur : " + defenseur.getId());
-				         
-				         ////////////////// BAGARRE ////////////////////
-				         
-				         /*Royaume attaquant = royaumeDAO.findById(1).orElseThrow();
-				         Royaume defenseur = royaumeDAO.findById(3).orElseThrow();
-				         Royaume attaquantbis = royaumeDAO.findById(4).orElseThrow();
-				         Royaume defenseurbis = royaumeDAO.findById(2).orElseThrow();
-				         
-				         List<ContingentTroupe> troupesEnvoyees = List.of(new ContingentTroupe(TypeTroupe.CAVALIER,10)
-				        );
-				         List<ContingentTroupe> troupesEnvoyeesbis = List.of(new ContingentTroupe(TypeTroupe.LANCIER,30)
-						);
-				         
-				         Attaque attaque = new Attaque(attaquant,defenseur,troupesEnvoyees, LocalDateTime.now(),1);
-				         Attaque attaquebis = new Attaque(attaquantbis,defenseurbis,troupesEnvoyeesbis, LocalDateTime.now(),0.08);
-				         Attaque attaqueter = new Attaque(attaquant,defenseurbis,troupesEnvoyeesbis, LocalDateTime.now(),1);
-				         
-				         attaque = attaqueDAO.save(attaque);
-				         attaquebis = attaqueDAO.save(attaquebis);
-				         attaqueter = attaqueDAO.save(attaqueter);*/
-				         
-				         Map<TypeTroupe, Integer> troupesCavaliers = Map.of(TypeTroupe.CAVALIER, 10);
-				         Map<TypeTroupe, Integer> troupesLanciers = Map.of(TypeTroupe.LANCIER, 30);
-
-				         AttaqueResponse attaque1 = attaqueService.lancer(new LancerAttaqueRequest(1, 3, troupesCavaliers));
-				         AttaqueResponse attaque2 = attaqueService.lancer(new LancerAttaqueRequest(4, 2, troupesLanciers));
-				         AttaqueResponse attaque3 = attaqueService.lancer(new LancerAttaqueRequest(1, 2, troupesLanciers));
-				         
 				         ////////////////// ENTRAINEMENT ////////////////////
-				         
+
 				         EntrainerTroupeRequest premierGroupe = new EntrainerTroupeRequest(1, TypeTroupe.ARCHER,4);
 				         EntrainerTroupeRequest secondGroupe = new EntrainerTroupeRequest(2, TypeTroupe.CAVALIER,3);
-				         
+				         EntrainerTroupeRequest troisiemeGroupe = new EntrainerTroupeRequest(1, TypeTroupe.CAVALIER,2);
+				         EntrainerTroupeRequest quatriemeGroupe = new EntrainerTroupeRequest(1, TypeTroupe.LANCIER,4);
+				         EntrainerTroupeRequest cinquiemeGroupe = new EntrainerTroupeRequest(4, TypeTroupe.LANCIER,3);
+
 				         SessionEntrainementResponse session = sessionEntrainementService.entrainer(premierGroupe);
 				         SessionEntrainementResponse sessionbis = sessionEntrainementService.entrainer(secondGroupe);
-				         
+				         SessionEntrainementResponse sessionter = sessionEntrainementService.entrainer(troisiemeGroupe);
+				         SessionEntrainementResponse sessionquatre = sessionEntrainementService.entrainer(quatriemeGroupe);
+				         SessionEntrainementResponse sessioncinq = sessionEntrainementService.entrainer(cinquiemeGroupe);
+
 				         // FINALISER ENTRAINEMENT 
-				         
+
 				         SessionEntrainement sessionEntity = sessionEntrainementDAO.findById(session.id()).orElseThrow();
 				         Royaume royaumeEntrainement = royaumeDAO.findById(session.royaumeId()).orElseThrow();
 
@@ -231,10 +206,64 @@ public class RoyaumeApplication {
 				         royaumeDAO.saveAndFlush(royaumeEntrainement);
 				         sessionEntrainementDAO.save(sessionEntity);
 				         
-				         
-		    
+				         SessionEntrainement sessionEntityTer = sessionEntrainementDAO.findById(sessionter.id()).orElseThrow();
+				         Royaume royaumeEntrainementTer = royaumeDAO.findById(sessionter.royaumeId()).orElseThrow();
+				         sessionEntityTer.finaliserFormation(royaumeEntrainementTer);
+				         royaumeDAO.saveAndFlush(royaumeEntrainementTer);
+				         sessionEntrainementDAO.save(sessionEntityTer);
 
+				         SessionEntrainement sessionEntityQuatre = sessionEntrainementDAO.findById(sessionquatre.id()).orElseThrow();
+				         Royaume royaumeEntrainementQuatre = royaumeDAO.findById(sessionquatre.royaumeId()).orElseThrow();
+				         sessionEntityQuatre.finaliserFormation(royaumeEntrainementQuatre);
+				         royaumeDAO.saveAndFlush(royaumeEntrainementQuatre);
+				         sessionEntrainementDAO.save(sessionEntityQuatre);
+
+				         SessionEntrainement sessionEntityCinq = sessionEntrainementDAO.findById(sessioncinq.id()).orElseThrow();
+				         Royaume royaumeEntrainementCinq = royaumeDAO.findById(sessioncinq.royaumeId()).orElseThrow();
+				         sessionEntityCinq.finaliserFormation(royaumeEntrainementCinq);
+				         royaumeDAO.saveAndFlush(royaumeEntrainementCinq);
+				         sessionEntrainementDAO.save(sessionEntityCinq);
+
+
+				         ////////////////// BAGARRE  ALLER ////////////////////
+
+
+				         Map<TypeTroupe, Integer> troupesCavaliers = Map.of(TypeTroupe.CAVALIER, 2);
+				         Map<TypeTroupe, Integer> troupesLanciers = Map.of(TypeTroupe.LANCIER, 3);
+
+				         emplacementCarteDAO.findByRoyaumeId(1).ifPresent(emp ->
+				         System.out.println("Royaume 1 -> emplacement id=" + emp.getId()
+				                 + ", numero=" + emp.getNumero()
+				                 + ", occupe=" + emp.isOccupe()));
+
+				         emplacementCarteDAO.findByRoyaumeId(3).ifPresent(emp ->
+				         System.out.println("Royaume 3 -> emplacement id=" + emp.getId()
+				                 + ", numero=" + emp.getNumero()
+				                 + ", occupe=" + emp.isOccupe()));
 				         
+				         List<Royaume> tous = royaumeDAO.findAll();
+				         System.out.println("IDs royaumes en base : " + tous.stream().map(Royaume::getId).toList());
+				         System.out.println("Emp trouvé pour royaume 1 ? " + emplacementCarteDAO.findByRoyaumeId(1).isPresent());
+				         System.out.println("Emp trouvé pour royaume 3 ? " + emplacementCarteDAO.findByRoyaumeId(3).isPresent());
+				         
+				         AttaqueResponse attaque1 = attaqueService.lancer(new LancerAttaqueRequest(1, 3, troupesCavaliers));
+				         AttaqueResponse attaque2 = attaqueService.lancer(new LancerAttaqueRequest(4, 2, troupesLanciers));
+				         AttaqueResponse attaque3 = attaqueService.lancer(new LancerAttaqueRequest(1, 2, troupesLanciers));
+				         
+				        
+				         ////////////////// BAGARRE  IMPACT  ////////////////////
+				        
+				         AttaqueResponse apresCombat1 = attaqueService.resoudreCombat(attaque1.id());
+				         AttaqueResponse apresCombat2 = attaqueService.resoudreCombat(attaque2.id());
+				         
+				         ////////////////// BAGARRE  RETOUR ////////////////////
+				         
+				         if (apresCombat1.statut() == StatutAttaque.RETOUR) {
+				        	    AttaqueResponse apresRetour = attaqueService.receptionnerRetour(attaque1.id());
+				        	    System.out.println("Après retour -> statut=" + apresRetour.statut());
+				        	} else {
+				        	    System.out.println("Attaque terminée sans retour (statut=" + apresCombat1.statut() + ")");
+				        	}
 				         
 
 
