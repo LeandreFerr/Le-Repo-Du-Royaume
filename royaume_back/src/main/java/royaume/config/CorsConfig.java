@@ -17,18 +17,13 @@ public class CorsConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-<<<<<<< HEAD
         configuration.setAllowedOrigins(
             List.of(
                 "http://localhost:4200",
                 "http://localhost:85"
             )
         );
-=======
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:4200",
-            "http://localhost:85"
-        ));
+
 
         configuration.setAllowedMethods(List.of(
             "GET",
@@ -107,4 +102,3 @@ public class CorsConfig {
 }
 =======
 }*/
->>>>>>> Modul_6_pikachu

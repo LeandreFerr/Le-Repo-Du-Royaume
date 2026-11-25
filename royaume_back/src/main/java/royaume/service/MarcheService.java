@@ -3,11 +3,12 @@ package royaume.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
+
 import royaume.dao.IDAOMarche;
 import royaume.dao.IDAOOffreMarche;
 import royaume.dao.IDAORoyaume;
+import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.response.OffreMarcheResponse;
 import royaume.model.Marche;
 import royaume.model.OffreMarche;
@@ -64,6 +65,7 @@ public class MarcheService {
     @Transactional(readOnly = true)
 public List<OffreMarcheResponse> recupererOffresResponse() {
 
+    	
     return offreMarcheDAO.findAll()
         .stream()
         .map(offre -> new OffreMarcheResponse(
@@ -72,11 +74,17 @@ public List<OffreMarcheResponse> recupererOffresResponse() {
             offre.getStatut(),
             offre.getVendeur().getId(),
             offre.getVendeur().getNom(),
-            offre.getPropose(),
-            offre.getDemande()
+            convertirQuantite(offre.getPropose()),
+            convertirQuantite(offre.getDemande())
         ))
         .toList();
+    
+    
 }
+    private QuantiteRessourceDTO convertirQuantite(QuantiteRessource q) {
+	    if (q == null) return null;
+	    return new QuantiteRessourceDTO(q.getRessource(), q.getQuantite());
+	}
 
   public OffreMarche recupererOffre(Integer id) {
     return offreMarcheDAO.findById(id)

@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.request.OffreMarcheRequest;
 import royaume.dto.response.OffreMarcheResponse;
 import royaume.model.OffreMarche;
+import royaume.model.QuantiteRessource;
 import royaume.service.MarcheService;
 
 @RestController
@@ -95,7 +97,7 @@ public ResponseEntity<Void> accepterOffre(
         @PathVariable Integer id,
         @RequestParam Integer acheteurId) {
 
-    marcheService.accepterOffre(id);//, acheteurId);
+    marcheService.accepterOffre(id); //acheteurId);
 
     return ResponseEntity.ok().build();
 }
@@ -104,15 +106,18 @@ public ResponseEntity<Void> accepterOffre(
     // =========================================
 
     private OffreMarcheResponse convertirEnResponse(OffreMarche offre) {
-
         return new OffreMarcheResponse(
             offre.getId(),
             offre.getDatePublication(),
             offre.getStatut(),
             offre.getVendeur().getId(),
             offre.getVendeur().getNom(),
-            offre.getPropose(),
-            offre.getDemande()
+            convertirQuantite(offre.getPropose()),
+            convertirQuantite(offre.getDemande())
         );
+    }
+    private QuantiteRessourceDTO convertirQuantite(QuantiteRessource q) {
+        if (q == null) return null;
+        return new QuantiteRessourceDTO(q.getRessource(), q.getQuantite());
     }
 }
