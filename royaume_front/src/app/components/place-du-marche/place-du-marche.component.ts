@@ -1,7 +1,12 @@
 
 
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef,
+  NgZone
+} 
+from '@angular/core';import { CommonModule } from '@angular/common';
 
 import {
   MarcheService,
@@ -16,11 +21,11 @@ import {
   styleUrls: ['./place-du-marche.component.css']
 })
 export class PlaceDuMarcheComponent implements OnInit {
-
-  constructor(
-    private marcheService: MarcheService
-  ) {}
-
+constructor(
+  private marcheService: MarcheService,
+  private cdr: ChangeDetectorRef,
+  private zone: NgZone
+) {}
   // IDENTIFICATION DU JOUEUR
   idUtilisateurEnCours = 2;
 
@@ -42,7 +47,53 @@ ngOnInit(): void {
   // CHARGEMENT DES ANNONCES
   // =========================================
 
+chargerOffres(): void {
 
+  console.log('DEBUT CHARGEMENT');
+
+  this.chargement = true;
+  this.message = '';
+
+  this.marcheService.recupererOffres().subscribe({
+
+    next: (offres) => {
+
+  console.log('REPONSE RECUE :', offres);
+
+  this.zone.run(() => {
+
+    this.offres = [...offres];
+
+    this.chargement = false;
+
+    console.log('OFFRES :', this.offres.length);
+    console.log('CHARGEMENT :', this.chargement);
+
+    this.cdr.detectChanges();
+
+  });
+
+},
+
+    error: (error) => {
+
+      console.error('ERREUR HTTP :', error);
+
+      this.message = 'Impossible de charger les annonces.';
+
+      this.chargement = false;
+
+    },
+
+    complete: () => {
+
+      console.log('REQUETE TERMINEE');
+
+    }
+
+  });
+
+}/*
 chargerOffres(): void {
 
   console.log('DEBUT CHARGEMENT DES OFFRES');
@@ -81,7 +132,7 @@ chargerOffres(): void {
 
   });
 
-}
+}*/
 
 /*
   chargerOffres(): void {
@@ -121,7 +172,21 @@ chargerOffres(): void {
   // =========================================
   // FILTRAGE
   // =========================================
+get offresDisponibles(): OffreMarcheResponse[] {
 
+  return this.offres.filter(offre =>
+    String(offre.statut).trim().toUpperCase() === 'DISPONIBLE'
+  );
+
+}
+
+get offresConclues(): OffreMarcheResponse[] {
+
+  return this.offres.filter(offre =>
+    String(offre.statut).trim().toUpperCase() === 'CONCLUE'
+  );
+
+}/*
   get offresDisponibles(): OffreMarcheResponse[] {
 
     return this.offres.filter(
@@ -136,7 +201,7 @@ chargerOffres(): void {
       offre => offre.statut === 'CONCLUE'
     );
 
-  }
+  }*/
 
   // =========================================
   // IDENTIFICATION

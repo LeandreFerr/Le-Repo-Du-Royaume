@@ -1,6 +1,6 @@
 
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export type Ressource =
@@ -64,13 +64,23 @@ export class MarcheService {
   // =========================================
   // 2. RECUPERER TOUTES LES OFFRES
   // =========================================
-
+/*
   recupererOffres(): Observable<OffreMarcheResponse[]> {
 
     return this.http.get<OffreMarcheResponse[]>(
       `${this.apiUrl}/offres`
     );
-  }
+  }*/
+  recupererOffres(): Observable<OffreMarcheResponse[]> {
+
+  const params = new HttpParams()
+    .set('_t', Date.now().toString());
+
+  return this.http.get<OffreMarcheResponse[]>(
+    `${this.apiUrl}/offres`,
+    { params }
+  );
+}
 
   // =========================================
   // 3. RECUPERER UNE OFFRE
