@@ -11,4 +11,8 @@ public interface IDAOSessionEntrainement extends JpaRepository<SessionEntraineme
 
     /** Sessions non finalisées (finalisee = false) d'un royaume. */
     List<SessionEntrainement> findByRoyaumeAndFinaliseeFalse(Royaume royaume);
+
+    List<SessionEntrainement> findByRoyaumeAndFinalisee(Royaume royaume, boolean finalisee);
+
+
 }

@@ -401,6 +401,12 @@ public class Royaume {
 				.orElse(null);
 	}
 
+	public List<SessionEntrainement> getSessions() {      // à ajouter
+    	return Collections.unmodifiableList(sessions);
+	}
+
+
+
 	public void recevoirDegats(Batiment batiment, int degats) {
 		if (batiment == null || !batiments.contains(batiment)) {
 			throw new IllegalArgumentException("Ce bâtiment n'appartient pas à ce royaume.");
@@ -751,7 +757,9 @@ public class Royaume {
 		if (cible == null || troupes == null) throw new IllegalArgumentException("Cible et troupes requises");
 		if (cible == this) throw new IllegalArgumentException("Un royaume ne peut pas s'attaquer lui-même");
 		if (estEnRuine()) throw new IllegalStateException("Un royaume en ruine ne peut pas attaquer");
-		if (cible.estEnRuine()) throw new IllegalStateException("Un royaume en ruine ne peut pas se defendre");
+		
+		// Un royaume en ruine peut quand meme etre pille s'il a encore des ressources
+		// if (cible.estEnRuine()) throw new IllegalStateException("Un royaume en ruine ne peut pas se defendre");
 
 		// Vérification avant retrait, pour ne pas vider la garnison à moitié
 		for (var e : troupes.entrySet()) {
