@@ -5,6 +5,7 @@ import java.util.List;
 import jakarta.validation.constraints.Positive;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import royaume.dto.response.SessionEntrainementResponse;
 import royaume.service.SessionEntrainementService;
 
 
+// Fait pour module 5
 // On a pas encore de royaume controller ?
 // Je crois pas, alors je met ca la
 // Faudra ptet le renommer
@@ -23,6 +25,7 @@ import royaume.service.SessionEntrainementService;
 
 
 @RestController
+@Validated 
 @RequestMapping("/api/royaumes/{royaumeId}")
 public class RoyaumeMilitaireRestController {
 

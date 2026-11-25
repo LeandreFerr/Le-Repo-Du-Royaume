@@ -9,13 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import royaume.dao.IDAOAttaque;
-import royaume.dao.IDAOEmplacementCarte;
 import royaume.dao.IDAORoyaume;
 import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.request.LancerAttaqueRequest;
 import royaume.dto.response.AttaqueResponse;
 import royaume.dto.response.ContingentTroupeResponse;
-import royaume.model.EmplacementCarte;
 import royaume.model.Royaume;
 import royaume.model.militaire.Attaque;
 import royaume.model.militaire.ContingentTroupe;
@@ -43,6 +41,11 @@ public class AttaqueService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Un royaume en ruine ne peut pas attaquer.");
         }
 
+        if (attaquant.getEmplacement() == null || defenseur.getEmplacement() == null) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Les deux royaumes doivent être placés sur la carte.");
+        }
+
         try {
             double distance = attaquant.getEmplacement().getCarte()
                     .calculerDistanceEntre(attaquant, defenseur);
@@ -51,9 +54,8 @@ public class AttaqueService {
             return convertirEnResponse(daoAttaque.save(attaque));
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
-        } catch (IllegalStateException | NullPointerException exception) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,
-                    "Les deux royaumes doivent être placés sur la carte.");
+        } catch (IllegalStateException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage());
         }
     }
 
