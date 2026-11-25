@@ -95,7 +95,7 @@ public class PartieService {
             partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
             partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
             partie.getTypeVictoire(),
-            List.of(),
+            partie.getRoyaumes() == null ? List.of() : partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList(),
             partie.getStatut()
         );
     }
