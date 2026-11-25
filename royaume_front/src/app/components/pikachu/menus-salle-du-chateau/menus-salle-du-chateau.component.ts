@@ -340,10 +340,13 @@ import {
   OffreMarcheRequest,
   Ressource
 } from '../../../services/marche/marche-service.service';
+
+import { VisuAttaques } from '../../visu-attaques/visu-attaques.component';
+
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, VisuAttaques],
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
@@ -390,12 +393,12 @@ get spriteActuel(): string {
   // Gestion des fenêtres
   modalEchange = false;
   modalAmelioration = false;
-  modalAttaque = false;
+  modalVisuAttaques = false;
 
   // Messages
   messageEchange = '';
   messageAmelioration = '';
-  messageAttaque = '';
+  messageVisuAttaques = '';
 
   typesRessources: string[] = [
   'PIERRE',
@@ -438,7 +441,7 @@ get spriteActuel(): string {
   fermerModales(): void {
     this.modalEchange = false;
     this.modalAmelioration = false;
-    this.modalAttaque = false;
+    this.modalVisuAttaques = false;
   }
 
   // Ouverture des fenêtres
@@ -452,9 +455,9 @@ get spriteActuel(): string {
     this.modalAmelioration = true;
   }
 
-  ouvrirAttaque(): void {
+  ouvrirVisuAttaques(): void {
     this.fermerModales();
-    this.modalAttaque = true;
+    this.modalVisuAttaques = true;
   }
   @HostListener('document:keydown', ['$event'])
 gererClavier(event: KeyboardEvent): void {
@@ -467,7 +470,7 @@ gererClavier(event: KeyboardEvent): void {
   if (
     this.modalEchange ||
     this.modalAmelioration ||
-    this.modalAttaque
+    this.modalVisuAttaques
   ) {
 
     if (event.key === 'Escape') {
@@ -681,7 +684,7 @@ interaction(): void {
   }
 
   else if (presDesArmes) {
-    this.ouvrirAttaque();
+    this.ouvrirVisuAttaques();
   }
 
 }
@@ -754,7 +757,7 @@ retourMenu(): void {
     this.messageAmelioration =
       'Demande d’amélioration préparée !';
   }
-
+/*
   // Déclaration d'une attaque
   attaquerRoyaume(
     event: Event,
@@ -770,8 +773,8 @@ retourMenu(): void {
 
     console.log('Royaume ciblé :', royaume);
 
-    this.messageAttaque =
+    this.messageVisuAttaques =
       'Demande d’attaque préparée !';
   }
-
+*/
 }

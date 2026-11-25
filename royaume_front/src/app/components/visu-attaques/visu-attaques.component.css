@@ -1,0 +1,314 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: "Cinzel", serif;
+}
+
+/* POLICES */
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("/assets/pikachu/fonts/Cinzel-VariableFont_wght.ttf") format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Medieval Sharp";
+  src: url("/assets/pikachu/fonts/MedievalSharp-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cinzel Decoration";
+  src: url("/assets/pikachu/fonts/EagleLake-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+/* PAGE */
+
+.attaques-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 20px;
+  background: #000;
+}
+
+.fenetre-attaques {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 850px;
+  padding: 35px;
+  color: #f5e2b4;
+  background: linear-gradient(
+    rgba(32, 23, 15, 0.97),
+    rgba(17, 12, 8, 0.98)
+  );
+  border: 2px solid #b89a5a;
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+/* EN-TETE */
+
+.entete {
+  text-align: center;
+  margin-bottom: 35px;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #8d7141;
+}
+
+.entete h1 {
+  margin: 0;
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 2.2rem;
+}
+
+.enluminure {
+  font-family: "Cinzel Decoration", serif;
+  font-size: 3.5rem;
+  color: #8b1e16;
+}
+
+.entete p {
+  color: #b89a5a;
+  letter-spacing: 3px;
+  font-size: 0.8rem;
+}
+
+/* BOUTON ACTUALISER */
+
+.actualiser {
+  padding: 10px 18px;
+  margin-top: 10px;
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  background: #21170f;
+  border: 1px solid #b89a5a;
+  cursor: pointer;
+}
+
+.actualiser:hover:not(:disabled) {
+  background: #594226;
+}
+
+.actualiser:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* SECTIONS */
+
+.section-attaques {
+  display: block;
+  margin-bottom: 40px;
+}
+
+.section-attaques:last-child {
+  margin-bottom: 0;
+}
+
+.section-attaques h2 {
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 1.5rem;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #8d7141;
+  margin-bottom: 20px;
+}
+
+/* CARTES */
+
+.carte-attaque {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 20px;
+  background: linear-gradient(145deg, #352719, #17110c);
+  border: 1px solid #8d7141;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+.carte-attaque:not(.attaque-terminee):hover {
+  border-color: #e8c982;
+}
+
+.carte-entete {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.numero {
+  color: #e8c982;
+  font-weight: bold;
+}
+
+.statut {
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.statut-aller {
+  color: #f5d388;
+  border: 1px solid #b89a5a;
+}
+
+.statut-retour {
+  color: #c8dba2;
+  border: 1px solid #738d50;
+}
+
+.terminee {
+  color: #999;
+  border: 1px solid #666;
+}
+
+/* BELLIGÉRANTS */
+
+.belligérants {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(141, 113, 65, 0.4);
+}
+
+.royaume-bloc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  text-align: center;
+}
+
+.legende {
+  color: #b89a5a;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+}
+
+.royaume-bloc strong {
+  color: #f5e2b4;
+  font-size: 1rem;
+}
+
+.fleche {
+  color: #b89a5a;
+  font-size: 1.5rem;
+}
+
+/* DÉTAILS */
+
+.details-attaque {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bloc-troupes,
+.bloc-butin,
+.bloc-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.details-attaque ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #f5e2b4;
+  font-size: 0.85rem;
+}
+
+.valeur-date,
+.valeur-secondaire {
+  color: #927d59;
+  font-size: 0.8rem;
+}
+
+/* ISSUE HISTORIQUE */
+
+.issue-ligne {
+  text-align: right;
+  margin-top: 15px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.issue-victoire {
+  color: #c8dba2;
+}
+
+.issue-defaite {
+  color: #e07a70;
+}
+
+/* ATTAQUES TERMINÉES */
+
+.attaque-terminee {
+  background: #242424;
+  border-color: #555;
+  opacity: 0.65;
+  filter: grayscale(1);
+}
+
+/* MESSAGES */
+
+.message,
+.aucune-attaque {
+  text-align: center;
+  color: #d8c58c;
+  padding: 15px;
+}
+
+.erreur {
+  color: #e07a70;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .attaques-page {
+    padding: 20px 12px;
+  }
+
+  .fenetre-attaques {
+    padding: 22px 15px;
+  }
+
+  .entete h1 {
+    font-size: 1.6rem;
+  }
+
+  .carte-attaque {
+    padding: 15px 10px;
+  }
+
+  .belligérants {
+    gap: 5px;
+  }
+
+  .royaume-bloc strong {
+    font-size: 0.85rem;
+  }
+
+  .legende {
+    font-size: 0.55rem;
+  }
+
+  .fleche {
+    font-size: 1.1rem;
+  }
+}

@@ -1,6 +1,8 @@
 package royaume;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -14,27 +16,43 @@ public class RoyaumeApplication {
 }*/
 import org.springframework.context.annotation.Bean;
 
+import royaume.dao.IDAOAttaque;
+import royaume.dao.IDAOCarte;
+import royaume.dao.IDAOEmplacementCarte;
 import royaume.dao.IDAOMarche;
 import royaume.dao.IDAOOffreMarche;
+import royaume.dao.IDAOPartie;
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAOPropositionEchange;
 import royaume.dao.IDAORoyaume;
+import royaume.dao.IDAOSessionEntrainement;
 import royaume.dao.IDAOUtilisateur;
+import royaume.dto.request.EntrainerTroupeRequest;
+import royaume.dto.request.LancerAttaqueRequest;
+import royaume.dto.response.AttaqueResponse;
+import royaume.dto.response.SessionEntrainementResponse;
+import royaume.model.Carte;
+import royaume.model.EmplacementCarte;
+import royaume.model.Partie;
 import royaume.model.PropositionEchange;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
 import royaume.model.batiment.Maison;
+import royaume.model.militaire.SessionEntrainement;
+import royaume.model.militaire.TypeTroupe;
 import royaume.model.peuple.Canards;
 import royaume.model.peuple.Gobelins;
 import royaume.model.peuple.Licornes;
 import royaume.model.peuple.Population;
 import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
+import royaume.service.AttaqueService;
 import royaume.service.BatimentService;
 import royaume.service.MarcheService;
 import royaume.service.PropositionEchangeService;
+import royaume.service.SessionEntrainementService;
 
 @SpringBootApplication
 
@@ -55,9 +73,16 @@ public class RoyaumeApplication {
 		            IDAOUtilisateur utilisateurDAO,
 		            IDAOMarche marcheDAO,
 		            IDAOPropositionEchange propositionEchangeDAO,
+		            IDAOAttaque attaqueDAO,
+		            IDAOSessionEntrainement sessionEntrainementDAO,
+		            IDAOPartie partieDAO,
+		            IDAOCarte carteDAO,
+		            IDAOEmplacementCarte emplacementCarteDAO,
 		            MarcheService marcheService,
 		            BatimentService batimentService,
-		            PropositionEchangeService propositionEchangeService) {
+		            PropositionEchangeService propositionEchangeService,
+		            AttaqueService attaqueService,
+		            SessionEntrainementService sessionEntrainementService) {
 
 		        return args -> {
 
@@ -124,6 +149,94 @@ public class RoyaumeApplication {
 				         
 				         echange = propositionEchangeService.accepterProposition(echange.getId());
 				         
+				         
+				         
+				         ////////////////// CARTE & EMPLACEMENTS (RAPIDE POUR BAGARRE) ////////////////////
+				         
+				         Partie partie = new Partie();
+				         partie.setNom("Partie test");
+				         partie.setDateCreation(LocalDateTime.now());
+				         partie = partieDAO.save(partie);
+
+				         Carte carte = new Carte();
+				         carte.setPartie(partie);
+				         carte.genererEmplacements(10);
+				         carte = carteDAO.saveAndFlush(carte);
+
+				         // Récupération des emplacements et royaumes
+				         List<EmplacementCarte> emplacements =
+				                 emplacementCarteDAO.findByCarteId(carte.getId());
+
+				         List<Royaume> royaumes = royaumeDAO.findAll();
+
+				         if (royaumes.size() < 2 || emplacements.size() < 2) {
+				             throw new RuntimeException("Pas assez de royaumes ou d'emplacements !");
+				         }
+
+				         // Placement de deux royaumes
+				         Royaume attaquant = royaumeDAO.findById(1).orElseThrow();
+				         Royaume defenseur = royaumeDAO.findById(3).orElseThrow();
+
+				         emplacements.get(0).assignerRoyaume(attaquant);
+				         emplacementCarteDAO.saveAndFlush(emplacements.get(0));
+
+				         emplacements.get(1).assignerRoyaume(defenseur);
+				         emplacementCarteDAO.saveAndFlush(emplacements.get(1));
+
+				         // Vérification
+				         System.out.println("Attaquant : " + attaquant.getId());
+				         System.out.println("Défenseur : " + defenseur.getId());
+				         
+				         ////////////////// BAGARRE ////////////////////
+				         
+				         /*Royaume attaquant = royaumeDAO.findById(1).orElseThrow();
+				         Royaume defenseur = royaumeDAO.findById(3).orElseThrow();
+				         Royaume attaquantbis = royaumeDAO.findById(4).orElseThrow();
+				         Royaume defenseurbis = royaumeDAO.findById(2).orElseThrow();
+				         
+				         List<ContingentTroupe> troupesEnvoyees = List.of(new ContingentTroupe(TypeTroupe.CAVALIER,10)
+				        );
+				         List<ContingentTroupe> troupesEnvoyeesbis = List.of(new ContingentTroupe(TypeTroupe.LANCIER,30)
+						);
+				         
+				         Attaque attaque = new Attaque(attaquant,defenseur,troupesEnvoyees, LocalDateTime.now(),1);
+				         Attaque attaquebis = new Attaque(attaquantbis,defenseurbis,troupesEnvoyeesbis, LocalDateTime.now(),0.08);
+				         Attaque attaqueter = new Attaque(attaquant,defenseurbis,troupesEnvoyeesbis, LocalDateTime.now(),1);
+				         
+				         attaque = attaqueDAO.save(attaque);
+				         attaquebis = attaqueDAO.save(attaquebis);
+				         attaqueter = attaqueDAO.save(attaqueter);*/
+				         
+				         Map<TypeTroupe, Integer> troupesCavaliers = Map.of(TypeTroupe.CAVALIER, 10);
+				         Map<TypeTroupe, Integer> troupesLanciers = Map.of(TypeTroupe.LANCIER, 30);
+
+				         AttaqueResponse attaque1 = attaqueService.lancer(new LancerAttaqueRequest(1, 3, troupesCavaliers));
+				         AttaqueResponse attaque2 = attaqueService.lancer(new LancerAttaqueRequest(4, 2, troupesLanciers));
+				         AttaqueResponse attaque3 = attaqueService.lancer(new LancerAttaqueRequest(1, 2, troupesLanciers));
+				         
+				         ////////////////// ENTRAINEMENT ////////////////////
+				         
+				         EntrainerTroupeRequest premierGroupe = new EntrainerTroupeRequest(1, TypeTroupe.ARCHER,4);
+				         EntrainerTroupeRequest secondGroupe = new EntrainerTroupeRequest(2, TypeTroupe.CAVALIER,3);
+				         
+				         SessionEntrainementResponse session = sessionEntrainementService.entrainer(premierGroupe);
+				         SessionEntrainementResponse sessionbis = sessionEntrainementService.entrainer(secondGroupe);
+				         
+				         // FINALISER ENTRAINEMENT 
+				         
+				         SessionEntrainement sessionEntity = sessionEntrainementDAO.findById(session.id()).orElseThrow();
+				         Royaume royaumeEntrainement = royaumeDAO.findById(session.royaumeId()).orElseThrow();
+
+				         sessionEntity.finaliserFormation(royaumeEntrainement);
+				         royaumeDAO.saveAndFlush(royaumeEntrainement);
+				         sessionEntrainementDAO.save(sessionEntity);
+				         
+				         
+		    
+
+				         
+				         
+
 
 		            	  // Création d'un utilisateur
 		                System.out.println("========== TEST UTILISATEUR ==========");

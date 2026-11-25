@@ -107,7 +107,7 @@ public List<OffreMarcheResponse> recupererOffresResponse() {
     }
 
     @Transactional
-public void accepterOffre(Integer id) {
+public void accepterOffre(Integer id, Integer acheteurId) {
 
     // 1. Récupérer l'offre
     OffreMarche offre = offreMarcheDAO.findById(id)

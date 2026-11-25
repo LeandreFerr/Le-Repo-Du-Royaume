@@ -172,36 +172,12 @@
   </div>
 </div>
 
-<!-- Modal attaque -->
-<div id="modalAttaque" class="modal" [class.ouverte]="modalAttaque">
+<!-- Modal suivi et historique des attaques -->
+<div id="modalVisuAttaques" class="modal" [class.ouverte]="modalVisuAttaques">
 
-  <div class="bulle">
+  <div class="bulle bulle-large">
     <button type="button" class="fermer" (click)="fermerModales()">X</button>
 
-    <h2><span class="enluminure">D</span>éclarer une attaque</h2>
-
-    <form (submit)="attaquerRoyaume($event, royaume.value, confirmationAttaque.checked)">
-
-      <label for="royaume">Royaume à attaquer :</label>
-
-      <select id="royaume" required #royaume>
-        <option value="">Choisir un royaume</option>
-        <!-- Les royaumes seront chargés depuis le backend -->
-      </select>
-
-      <label class="ligne-checkbox">
-        <input
-          id="confirmationAttaque"
-          type="checkbox"
-          required
-          #confirmationAttaque
-        >
-        Je confirme vouloir attaquer ce royaume
-      </label>
-
-      <button type="submit">Attaquer</button>
-    </form>
-
-    <p class="message">{{ messageAttaque }}</p>
+    <app-visu-attaques></app-visu-attaques>
   </div>
 </div>
