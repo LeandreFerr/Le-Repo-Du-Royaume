@@ -236,7 +236,10 @@ get offresConclues(): OffreMarcheResponse[] {
 
     this.offresEnCours.add(offre.id);
 
-    this.marcheService.accepterOffre(offre.id).subscribe({
+    this.marcheService.accepterOffre(
+  offre.id,
+  this.idUtilisateurEnCours
+).subscribe({
 
       next: () => {
 

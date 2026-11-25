@@ -5,7 +5,15 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import royaume.dto.request.OffreMarcheRequest;
 import royaume.dto.response.OffreMarcheResponse;
@@ -79,7 +87,18 @@ public class OffreMarcheRestController {
 
         return ResponseEntity.noContent().build();
     }
+ // =========================================
+    // 4.bis ACCEPTER UNE OFFRE
+    // =========================================
+    @PostMapping("/offres/{id}/accepter")
+public ResponseEntity<Void> accepterOffre(
+        @PathVariable Integer id,
+        @RequestParam Integer acheteurId) {
 
+    marcheService.accepterOffre(id);//, acheteurId);
+
+    return ResponseEntity.ok().build();
+}
     // =========================================
     // 4. CONVERSION ENTITE -> DTO
     // =========================================

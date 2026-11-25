@@ -124,11 +124,16 @@ export class MarcheService {
   // 6. ACCEPTER UNE OFFRE
   // =========================================
 
-  accepterOffre(id: number): Observable<void> {
+  accepterOffre(id: number, acheteurId: number): Observable<void> {
 
-    return this.http.post<void>(
-      `${this.apiUrl}/offres/${id}/accepter`,
-      {}
-    );
-  }
+  return this.http.post<void>(
+    `${this.apiUrl}/offres/${id}/accepter`,
+    {},
+    {
+      params: {
+        acheteurId: acheteurId.toString()
+      }
+    }
+  );
+}
 }

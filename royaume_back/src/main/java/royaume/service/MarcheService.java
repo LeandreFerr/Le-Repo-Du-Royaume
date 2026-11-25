@@ -97,4 +97,34 @@ public List<OffreMarcheResponse> recupererOffresResponse() {
 
         offreMarcheDAO.save(offre);
     }
+
+    @Transactional
+public void accepterOffre(Integer id) {
+
+    // 1. Récupérer l'offre
+    OffreMarche offre = offreMarcheDAO.findById(id)
+        .orElseThrow(() ->
+            new RuntimeException("Offre introuvable : " + id)
+        );
+
+    // 2. Vérifier que l'offre est disponible
+    if (offre.getStatut() != StatutOffre.DISPONIBLE) {
+        throw new RuntimeException(
+            "Cette offre n'est plus disponible."
+        );
+    }
+
+    // 3. Vérifier que le vendeur existe
+    Royaume vendeur = offre.getVendeur();
+
+    if (vendeur == null) {
+        throw new RuntimeException("Vendeur introuvable.");
+    }
+
+    // 4. Passer l'offre à CONCLUE
+    offre.setStatut(StatutOffre.CONCLUE);
+
+    // 5. Enregistrer la modification
+    offreMarcheDAO.save(offre);
+}
 }
