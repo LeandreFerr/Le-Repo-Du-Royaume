@@ -14,7 +14,6 @@ import royaume.dto.request.CarteRequest;
 import royaume.dto.response.CarteResponse;
 import royaume.dto.response.EmplacementCarteResponse;
 import royaume.model.Carte;
-import royaume.model.EmplacementCarte;
 import royaume.model.Partie;
 
 @Service

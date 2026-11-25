@@ -5,24 +5,42 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import jakarta.persistence.EntityManager;
 import royaume.model.OffreMarche;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.StatutOffre;
+import royaume.model.peuple.Canards;
+import royaume.model.peuple.Population;
 
 @DataJpaTest
 public class IDAOOffreMarcheTest {
 	
 	@Autowired
 	private IDAOOffreMarche daoOffreMarche;
+
+	@Autowired
+	private IDAORoyaume daoRoyaume;
+
+	@Autowired
+	private EntityManager entityManager;
 	
 	private Royaume vendeur;
+
+	@BeforeEach
+	void setUp() {
+		Population peuple = new Canards(null, "Canards", "Archiduc", 0.05);
+		entityManager.persist(peuple);
+		entityManager.flush();
+		vendeur = daoRoyaume.saveAndFlush(new Royaume(null, "Vendeur", peuple));
+	}
 	
 	@Test
 	@DisplayName("Valide le find by statut")
@@ -46,9 +64,9 @@ public class IDAOOffreMarcheTest {
 		List<OffreMarche> resultats = daoOffreMarche.findByStatut(StatutOffre.DISPONIBLE);
 		
 		// Then
-		assertThat(resultats).hasSize(1); // vérifie qu'on a bien une offre dispo
-        assertThat(resultats.get(0).getStatut()).isEqualTo(StatutOffre.DISPONIBLE); // vérifie que le premier élément de la liste a un statut dispo
-        assertThat(resultats.get(2).getStatut()).isEqualTo(StatutOffre.DISPONIBLE); // vérifie que le troisième élément de la liste a un statut dispo
+		assertThat(resultats).hasSize(2);
+        assertThat(resultats.get(0).getStatut()).isEqualTo(StatutOffre.DISPONIBLE);
+        assertThat(resultats.get(1).getStatut()).isEqualTo(StatutOffre.DISPONIBLE);
         
 	}
 	
