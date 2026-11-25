@@ -1,0 +1,31 @@
+<div class="login-container">
+
+  <h1>Connexion au Royaume</h1>
+
+  <form [formGroup]="formLogin" (ngSubmit)="login()">
+
+    <label for="pseudo">Pseudo</label>
+    <input
+      id="pseudo"
+      type="text"
+      formControlName="pseudo"
+      placeholder="Votre pseudo"
+    >
+
+    <label for="password">Mot de passe</label>
+    <input
+      id="password"
+      type="password"
+      formControlName="password"
+      placeholder="Votre mot de passe"
+    >
+
+    <p class="error" *ngIf="erreur">
+      {{ erreur }}
+    </p>
+
+    <button type="submit">Se connecter</button>
+
+  </form>
+
+</div>
