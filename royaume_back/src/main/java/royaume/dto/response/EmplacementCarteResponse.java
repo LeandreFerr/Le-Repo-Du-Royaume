@@ -7,7 +7,8 @@ public record EmplacementCarteResponse(
         int coordY,
         boolean occupe,
         Integer carteId,
-        Integer royaumeId
+        Integer royaumeId,
+        String name
 ) {
 
 }
