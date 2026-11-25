@@ -1,0 +1,265 @@
+
+<div class="marche-page">
+
+  <div class="fenetre-marche">
+
+    <!-- EN-TÊTE -->
+
+    <div class="entete">
+
+      <h1>
+        <span class="enluminure">P</span>lace du marché
+      </h1>
+
+      <p>LES ÉCHANGES ENTRE ROYAUMES</p>
+
+      <button
+        type="button"
+        class="actualiser"
+        (click)="chargerOffres()"
+        [disabled]="chargement"
+      >
+        ↻ Actualiser les annonces
+      </button>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <p class="message" *ngIf="message">
+      {{ message }}
+    </p>
+
+
+    <!-- CHARGEMENT -->
+
+    <p class="aucune-offre" *ngIf="chargement">
+      Chargement des annonces...
+    </p>
+
+
+    <!-- =====================================
+         OFFRES DISPONIBLES
+    ====================================== -->
+
+    <section class="section-offres">
+
+      <h2>Offres disponibles</h2>
+
+      <p
+        class="aucune-offre"
+        *ngIf="!chargement && offresDisponibles.length === 0"
+      >
+        Aucune annonce disponible actuellement.
+      </p>
+
+
+      <div
+        class="offre"
+        *ngFor="let offre of offresDisponibles"
+      >
+
+        <!-- EN-TÊTE -->
+
+        <div class="offre-entete">
+
+          <span class="numero">
+            Annonce #{{ offre.id }}
+          </span>
+
+          <span class="statut disponible">
+            DISPONIBLE
+          </span>
+
+        </div>
+
+
+        <!-- VENDEUR -->
+
+        <div class="vendeur">
+
+          <span>Vendeur :</span>
+
+          <strong>{{ offre.vendeurNom }}</strong>
+
+          <span
+            class="mon-offre"
+            *ngIf="estMonOffre(offre)"
+          >
+            (Votre annonce)
+          </span>
+
+        </div>
+
+
+        <!-- DATE -->
+
+        <div class="date-publication">
+
+          Publiée le {{ formaterDate(offre.datePublication) }}
+
+        </div>
+
+
+        <!-- ECHANGE -->
+
+        <div class="echange">
+
+          <div class="ressource">
+
+            <span class="legende">
+              RESSOURCE PROPOSÉE
+            </span>
+
+            <strong>
+              {{ offre.propose.quantite }}
+              {{ offre.propose.ressource }}
+            </strong>
+
+          </div>
+
+
+          <span class="fleche">⇄</span>
+
+
+          <div class="ressource">
+
+            <span class="legende">
+              RESSOURCE DEMANDÉE
+            </span>
+
+            <strong>
+              {{ offre.demande.quantite }}
+              {{ offre.demande.ressource }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- ACTIONS -->
+
+        <div class="actions">
+
+          <button
+            *ngIf="!estMonOffre(offre)"
+            type="button"
+            class="bouton accepter"
+            (click)="accepterOffre(offre)"
+          >
+            Accepter l'offre
+          </button>
+
+
+          <button
+            *ngIf="estMonOffre(offre)"
+            type="button"
+            class="bouton annuler"
+            (click)="annulerOffre(offre)"
+          >
+            Annuler mon annonce
+          </button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- =====================================
+         OFFRES CONCLUES
+    ====================================== -->
+
+    <section class="section-offres conclues">
+
+      <h2>Offres conclues</h2>
+
+      <p
+        class="aucune-offre"
+        *ngIf="!chargement && offresConclues.length === 0"
+      >
+        Aucune transaction terminée.
+      </p>
+
+
+      <div
+        class="offre offre-conclue"
+        *ngFor="let offre of offresConclues"
+      >
+
+        <div class="offre-entete">
+
+          <span class="numero">
+            Annonce #{{ offre.id }}
+          </span>
+
+          <span class="statut terminee">
+            CONCLUE
+          </span>
+
+        </div>
+
+
+        <div class="vendeur">
+
+          Vendeur : {{ offre.vendeurNom }}
+
+        </div>
+
+
+        <div class="date-publication">
+
+          Publiée le {{ formaterDate(offre.datePublication) }}
+
+        </div>
+
+
+        <div class="echange">
+
+          <div class="ressource">
+
+            <span class="legende">
+              RESSOURCE PROPOSÉE
+            </span>
+
+            <strong>
+              {{ offre.propose.quantite }}
+              {{ offre.propose.ressource }}
+            </strong>
+
+          </div>
+
+
+          <span class="fleche">⇄</span>
+
+
+          <div class="ressource">
+
+            <span class="legende">
+              RESSOURCE DEMANDÉE
+            </span>
+
+            <strong>
+              {{ offre.demande.quantite }}
+              {{ offre.demande.ressource }}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="mention-terminee">
+          Transaction terminée
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+</div>

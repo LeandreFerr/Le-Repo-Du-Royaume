@@ -1,0 +1,207 @@
+
+<!-- Conteneur principal du jeu -->
+<div
+  class="game-container"
+  [class.game-active]="demarre"
+  [style.background-image]="'url(' + fondEau + ')'"
+>
+
+  <!-- Écran de démarrage -->
+  <div id="formStart" [hidden]="demarre">
+
+    <input
+      id="inputName"
+      type="text"
+      placeholder="gobelin ou licorne"
+      autocomplete="off"
+      maxlength="30"
+      [value]="nomGobelin"
+      (input)="modifierNom($event)"
+      (keydown.enter)="demarrerJeu()"
+    >
+
+    <button
+      id="btnStart"
+      type="button"
+      [disabled]="!nomGobelin.trim()"
+      (click)="demarrerJeu()"
+    >
+      Start !
+    </button>
+
+  </div>
+<div
+  class="game-container"
+  [style.background-image]="'url(' + fondEau + ')'"
+>
+
+  <!-- Ton écran de démarrage actuel -->
+  <div id="formStart" [hidden]="demarre">
+
+    <!-- Conserve ici tes inputs et ton bouton -->
+
+  </div>
+
+  <!-- Ton terrain de jeu -->
+  <div id="grass" [class.visible]="demarre">
+
+    <div
+      id="personnage"
+      [style.left.px]="posX"
+      [style.top.px]="posY"
+    >
+      <img
+        id="imgPersonnage"
+        [src]="spriteActuel"
+        [alt]="nomPersonnage"
+        draggable="false"
+      >
+    </div>
+
+  </div>
+
+</div>
+<!-- Écran de démarrage -->
+<!--<div id="formStart" [hidden]="demarre">
+
+  <input
+    id="inputName"
+    type="text"
+    placeholder="gobelin ou licorne"
+    autocomplete="off"
+    maxlength="30"
+    [value]="nomGobelin"
+    (input)="modifierNom($event)"
+  >
+
+  <button
+    id="btnStart"
+    type="button"
+    [disabled]="!nomGobelin.trim()"
+    (click)="demarrerJeu()"
+  >
+    Start !
+  </button>
+
+</div>-->
+<!-- Terrain de jeu -->
+<!--<div
+  id="grass"
+  [class.visible]="demarre"
+>
+  <div id="personnage">
+  <img
+    id="imgPersonnage"
+    [src]="nomGobelin.toLowerCase().trim() === 'licorne'
+      ? 'assets/pikachu/img/licorneDown.png'
+      : 'assets/pikachu/img/gobelinDown.png'"
+    alt="Personnage"
+  >
+</div>
+  
+</div> -->
+<!-- Modal échange -->
+<div id="modalEchange" class="modal" [class.ouverte]="modalEchange">
+
+  <div class="bulle">
+    <button type="button" class="fermer" (click)="fermerModales()">X</button>
+
+    <h2><span class="enluminure">M</span>arché des ressources</h2>
+
+   <form (submit)="posterEchange(
+  $event,
+  ressourceDemandee.value,
+  quantiteDemandee.value,
+  ressourceProposee.value,
+  quantiteProposee.value
+)">
+
+      <label for="ressourceDemandee">Ressource demandée :</label>
+     <select id="ressourceDemandee" required #ressourceDemandee>
+  <option value="">Choisir</option>
+  <option value="OR">Or</option>
+  <option value="PIERRE">Pierre</option>
+  <option value="BOIS">Bois</option>
+  <option value="NOURRITURE">Nourriture</option>
+</select>
+      <label for="quantiteDemandee">Quantité demandée :</label>
+      <input id="quantiteDemandee" type="number" min="1" required #quantiteDemandee>
+
+      <label for="ressourceProposee">Ressource proposée :</label>
+      <select id="ressourceProposee" required #ressourceProposee>
+  <option value="">Choisir</option>
+  <option value="OR">Or</option>
+  <option value="PIERRE">Pierre</option>
+  <option value="BOIS">Bois</option>
+  <option value="NOURRITURE">Nourriture</option>
+</select>
+
+      <label for="quantiteProposee">Quantité proposée :</label>
+      <input id="quantiteProposee" type="number" min="1" required #quantiteProposee>
+
+      <button type="submit">Poster l'annonce</button>
+    </form>
+
+    <p class="message">{{ messageEchange }}</p>
+  </div>
+</div>
+
+<!-- Modal amélioration -->
+<div id="modalAmelioration" class="modal" [class.ouverte]="modalAmelioration">
+
+  <div class="bulle">
+    <button type="button" class="fermer" (click)="fermerModales()">X</button>
+
+    <h2><span class="enluminure">A</span>mélioration du royaume</h2>
+
+    <form (submit)="ameliorerBatiment($event, batiment.value)">
+
+      <label for="batiment">Bâtiment à améliorer :</label>
+
+      <select id="batiment" required #batiment>
+        <option value="">Choisir un bâtiment</option>
+        <option value="la caserne">Caserne</option>
+        <option value="la forge">Forge</option>
+        <option value="la mairie">Mairie</option>
+      </select>
+
+      <button type="submit">Améliorer</button>
+    </form>
+
+    <p class="message">{{ messageAmelioration }}</p>
+  </div>
+</div>
+
+<!-- Modal attaque -->
+<div id="modalAttaque" class="modal" [class.ouverte]="modalAttaque">
+
+  <div class="bulle">
+    <button type="button" class="fermer" (click)="fermerModales()">X</button>
+
+    <h2><span class="enluminure">D</span>éclarer une attaque</h2>
+
+    <form (submit)="attaquerRoyaume($event, royaume.value, confirmationAttaque.checked)">
+
+      <label for="royaume">Royaume à attaquer :</label>
+
+      <select id="royaume" required #royaume>
+        <option value="">Choisir un royaume</option>
+        <!-- Les royaumes seront chargés depuis le backend -->
+      </select>
+
+      <label class="ligne-checkbox">
+        <input
+          id="confirmationAttaque"
+          type="checkbox"
+          required
+          #confirmationAttaque
+        >
+        Je confirme vouloir attaquer ce royaume
+      </label>
+
+      <button type="submit">Attaquer</button>
+    </form>
+
+    <p class="message">{{ messageAttaque }}</p>
+  </div>
+</div>
