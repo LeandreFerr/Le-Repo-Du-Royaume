@@ -16,7 +16,6 @@ import royaume.dto.response.EmplacementCarteResponse;
 import royaume.model.Carte;
 import royaume.model.EmplacementCarte;
 import royaume.model.Partie;
-import royaume.model.Royaume;
 
 @Service
 @Transactional(readOnly = true)
@@ -73,7 +72,7 @@ public class CarteService {
 
         return daoEmplacementCarte.findByCarteId(carteId)
                 .stream()
-                .map(this::convertirEmplacementEnResponse)
+                .map(EmplacementCarteService::convertirEnResponse)
                 .toList();
     }
 
@@ -84,7 +83,7 @@ public class CarteService {
 
         return daoEmplacementCarte
                 .findByCarteIdAndOccupeFalse(carteId).stream()
-                .map(this::convertirEmplacementEnResponse).toList();
+                .map(EmplacementCarteService::convertirEnResponse).toList();
     }
 
     @Transactional
@@ -109,9 +108,9 @@ public class CarteService {
     private CarteResponse convertirEnResponse(Carte carte) {
 
         List<EmplacementCarteResponse> emplacements = carte.getEmplacements().stream()
-                .map(this::convertirEmplacementEnResponse).toList();
+                .map(EmplacementCarteService::convertirEnResponse).toList();
 
-        EmplacementCarteResponse emplacementMarche = convertirEmplacementEnResponse(carte.getEmplacementMarche());
+        EmplacementCarteResponse emplacementMarche = EmplacementCarteService.convertirEnResponse(carte.getEmplacementMarche());
 
         return new CarteResponse(
                 carte.getId(),
@@ -122,23 +121,6 @@ public class CarteService {
                 carte.getPartie() != null ? carte.getPartie().getId() : null,
                 emplacements,
                 emplacementMarche
-        );
-    }
-
-    private EmplacementCarteResponse convertirEmplacementEnResponse(
-            EmplacementCarte emplacement) {
-
-        Royaume royaume = emplacement.getRoyaume();
-
-        return new EmplacementCarteResponse(
-                emplacement.getId(),
-                emplacement.getNumero(),
-                emplacement.getCoordX(),
-                emplacement.getCoordY(),
-                emplacement.isOccupe(),
-                emplacement.getCarte() != null ? emplacement.getCarte().getId() : null,
-                royaume != null ? royaume.getId() : null,
-                royaume != null ? royaume.getNom() : null
         );
     }
 }

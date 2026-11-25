@@ -82,8 +82,12 @@ public class EmplacementCarteService {
                 ));
     }
 
-    private EmplacementCarteResponse convertirEnResponse(
+    public static EmplacementCarteResponse convertirEnResponse(
             EmplacementCarte emplacement) {
+
+        if (emplacement == null) {
+            return null;
+        }
 
         Royaume royaume = emplacement.getRoyaume();
 
