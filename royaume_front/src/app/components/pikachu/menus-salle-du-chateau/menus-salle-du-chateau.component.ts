@@ -5,23 +5,28 @@ import {
   NgZone
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
+import { AmeliorerRoyaumeService } from '../../../services/royaume/ameliorer-royaume.service';
+import { CommonModule } from '@angular/common';
+import { PalierNiveau } from '../../../models/palier-niveau.model';
 import {
   MarcheService,
   OffreMarcheRequest,
   Ressource
 } from '../../../services/marche/marche-service.service';
+
+
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
 export class MenusSalleDuChateauComponent {
 
   constructor(
-  private marcheService: MarcheService,
+    private marcheService: MarcheService,
+  private ameliorerRoyaumeService: AmeliorerRoyaumeService,
   private cdr: ChangeDetectorRef,
   private zone: NgZone
 ) {}
@@ -49,6 +54,11 @@ direction = 'Down';
 
 positionMaxX = 610;
 positionMaxY = 610;
+
+prochainPalier: PalierNiveau| null = null;
+
+chargementAmelioration = false;
+
 
 // CHEMINS DES IMAGES
 
@@ -124,10 +134,6 @@ get spriteActuel(): string {
     this.modalEchange = true;
   }
 
-  ouvrirAmelioration(): void {
-    this.fermerModales();
-    this.modalAmelioration = true;
-  }
 
   ouvrirAttaque(): void {
     this.fermerModales();
@@ -484,22 +490,114 @@ private terminerPublication(signature: string): void {
   }
 
 }
+//_______________________________________________________________  🐸
+ouvrirAmelioration(): void {
 
+  this.fermerModales();
 
-  // Amélioration d'un bâtiment
-  ameliorerBatiment(
-    event: Event,
-    batiment: string
-  ): void {
+  this.modalAmelioration = true;
 
-    event.preventDefault();
+  this.chargerProchainPalier();
 
-    console.log('Bâtiment à améliorer :', batiment);
+}
 
-    this.messageAmelioration =
-      'Demande d’amélioration préparée !';
+  // Amélioration d'un Royaume
+  chargerProchainPalier(): void {
+
+  this.chargementAmelioration = true;
+  this.messageAmelioration = '';
+  this.prochainPalier = null;
+
+  this.ameliorerRoyaumeService
+    .obtenirProchainPalier(this.vendeurId)
+    .subscribe({
+
+      next: (palier) => {
+
+        this.zone.run(() => {
+
+          this.prochainPalier = palier;
+          this.chargementAmelioration = false;
+
+          this.cdr.detectChanges();
+
+        });
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur chargement palier :', error);
+
+        this.zone.run(() => {
+
+          this.chargementAmelioration = false;
+
+          this.messageAmelioration =
+            'Impossible de récupérer le prochain palier.';
+
+          this.cdr.detectChanges();
+
+        });
+
+      }
+
+    });
+
+}
+  ameliorerRoyaume(): void {
+
+  if (!this.prochainPalier || this.chargementAmelioration) {
+    return;
   }
 
+  this.messageAmelioration = '';
+  this.chargementAmelioration = true;
+
+  this.ameliorerRoyaumeService
+    .ameliorerRoyaume(this.vendeurId)
+    .subscribe({
+
+      next: (message) => {
+
+        this.zone.run(() => {
+
+          this.messageAmelioration = message;
+
+          this.chargementAmelioration = false;
+
+          // Actualiser le prochain palier
+          this.chargerProchainPalier();
+
+          this.cdr.detectChanges();
+
+        });
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur amélioration :', error);
+
+        this.zone.run(() => {
+
+          this.chargementAmelioration = false;
+
+          this.messageAmelioration =
+            typeof error.error === 'string'
+              ? error.error
+              : 'Impossible d’améliorer le royaume.';
+
+          this.cdr.detectChanges();
+
+        });
+
+      }
+
+    });
+
+}
+//________________________________________________________________  🐸
   // Déclaration d'une attaque
   attaquerRoyaume(
     event: Event,

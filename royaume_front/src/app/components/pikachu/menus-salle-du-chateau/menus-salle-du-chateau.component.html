@@ -146,30 +146,82 @@
   </div>
 </div>
 
-<!-- Modal amélioration -->
-<div id="modalAmelioration" class="modal" [class.ouverte]="modalAmelioration">
+<!-- MODAL AMELIORATION DU ROYAUME -->
+<div
+  id="modalAmelioration"
+  class="modal"
+  [class.ouverte]="modalAmelioration"
+>
 
   <div class="bulle">
-    <button type="button" class="fermer" (click)="fermerModales()">X</button>
 
-    <h2><span class="enluminure">A</span>mélioration du royaume</h2>
+    <button
+      type="button"
+      class="fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
 
-    <form (submit)="ameliorerBatiment($event, batiment.value)">
+    <h2>
+      <span class="enluminure">A</span>mélioration du royaume
+    </h2>
 
-      <label for="batiment">Bâtiment à améliorer :</label>
+    <!-- CHARGEMENT -->
+    <div *ngIf="chargementAmelioration">
+      <p>Chargement des informations du royaume...</p>
+    </div>
 
-      <select id="batiment" required #batiment>
-        <option value="">Choisir un bâtiment</option>
-        <option value="la caserne">Caserne</option>
-        <option value="la forge">Forge</option>
-        <option value="la mairie">Mairie</option>
-      </select>
+    <!-- INFORMATIONS DU PALIER -->
+    <div *ngIf="!chargementAmelioration && prochainPalier">
 
-      <button type="submit">Améliorer</button>
-    </form>
+      <h3>
+        Passage au niveau {{ prochainPalier.niveau }}
+      </h3>
 
-    <p class="message">{{ messageAmelioration }}</p>
+      <div class="informations-palier">
+
+        <h4>Population requise</h4>
+
+        <p>
+          {{ prochainPalier.populationRequise }} habitants
+        </p>
+
+        <h4>Ressources nécessaires</h4>
+
+        <div
+          *ngFor="let ressource of prochainPalier.prerequis"
+          class="ressource-palier"
+        >
+
+          <span>{{ ressource.ressource }}</span>
+
+          <strong>{{ ressource.quantite }}</strong>
+
+        </div>
+
+      </div>
+
+      <button
+        type="button"
+        (click)="ameliorerRoyaume()"
+        [disabled]="chargementAmelioration"
+      >
+        Améliorer mon royaume
+      </button>
+
+    </div>
+
+    <!-- MESSAGE -->
+    <p
+      class="message"
+      *ngIf="messageAmelioration"
+    >
+      {{ messageAmelioration }}
+    </p>
+
   </div>
+
 </div>
 
 <!-- Modal attaque -->

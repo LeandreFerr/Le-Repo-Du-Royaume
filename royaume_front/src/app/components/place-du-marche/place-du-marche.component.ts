@@ -43,6 +43,10 @@ ngOnInit(): void {
   console.log('INITIALISATION PLACE DU MARCHE');
   this.chargerOffres();
 }
+
+getImageRessource(ressource: string): string {
+  return `/assets/imago/${ressource}.png`;
+}
   // =========================================
   // CHARGEMENT DES ANNONCES
   // =========================================
