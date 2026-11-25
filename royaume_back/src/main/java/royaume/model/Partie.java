@@ -81,6 +81,16 @@ public class Partie {
 
 	public Partie() {}
 
+	public Partie(String nom, double vitesseJeu, int maxJoueurs) {
+		this.nom = nom;
+		this.dateCreation = LocalDateTime.now();
+		this.vitesseJeu = vitesseJeu;
+		this.maxJoueurs = maxJoueurs;
+		this.messages =  new ArrayList<>(messages);
+		this.royaumes = new ArrayList<>(royaumes);
+		this.statut = StatutPartie.EN_ATTENTE;
+	}
+
 	public Partie(Integer id, String nom, LocalDateTime dateCreation, double vitesseJeu, int maxJoueurs,
 			Utilisateur vainqueur, TypeVictoire typeVictoire, List<Message> messages,
 			List<Royaume> royaumes, StatutPartie statut) {
