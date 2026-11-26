@@ -10,7 +10,19 @@ export const MOCK_CATALOGUE_BATIMENTS: ModeleBatiment[] = [
     description: 'Permet de produire du bois.',
     type: TypeBatiment.PRODUCTION,
     typeRessource: Ressource.BOIS,
-    icone: '/img/buildings/scierie.svg'
+    icone: '/img/buildings/scierie.svg',
+
+    quantiteMax: 1,
+    niveauRoyaumeRequis: 1,
+    tempsConstructionSecondes: 180,
+    ouvriersMinimum: 1,
+
+    coutConstruction: [
+      { ressource: Ressource.BOIS, quantite: 30 },
+      { ressource: Ressource.PIERRE, quantite: 20 },
+      { ressource: Ressource.NOURRITURE, quantite: 20 },
+      { ressource: Ressource.OR, quantite: 10 }
+    ]
   },
 
   {
@@ -19,7 +31,19 @@ export const MOCK_CATALOGUE_BATIMENTS: ModeleBatiment[] = [
     description: 'Permet de produire de la pierre.',
     type: TypeBatiment.PRODUCTION,
     typeRessource: Ressource.PIERRE,
-    icone: '/img/buildings/carriere.svg'
+    icone: '/img/buildings/carriere.svg',
+
+    quantiteMax: 1,
+    niveauRoyaumeRequis: 1,
+    tempsConstructionSecondes: 180,
+    ouvriersMinimum: 1,
+
+    coutConstruction: [
+      { ressource: Ressource.BOIS, quantite: 20 },
+      { ressource: Ressource.PIERRE, quantite: 30 },
+      { ressource: Ressource.NOURRITURE, quantite: 20 },
+      { ressource: Ressource.OR, quantite: 10 }
+    ]
   },
 
   {
@@ -28,7 +52,19 @@ export const MOCK_CATALOGUE_BATIMENTS: ModeleBatiment[] = [
     description: 'Permet de produire de la nourriture.',
     type: TypeBatiment.PRODUCTION,
     typeRessource: Ressource.NOURRITURE,
-    icone: '/img/buildings/ferme.svg'
+    icone: '/img/buildings/ferme.svg',
+
+    quantiteMax: 1,
+    niveauRoyaumeRequis: 1,
+    tempsConstructionSecondes: 180,
+    ouvriersMinimum: 1,
+
+    coutConstruction: [
+      { ressource: Ressource.BOIS, quantite: 30 },
+      { ressource: Ressource.PIERRE, quantite: 30 },
+      { ressource: Ressource.NOURRITURE, quantite: 20 },
+      { ressource: Ressource.OR, quantite: 10 }
+    ]
   },
 
   {
@@ -37,7 +73,19 @@ export const MOCK_CATALOGUE_BATIMENTS: ModeleBatiment[] = [
     description: 'Permet de produire de l’or.',
     type: TypeBatiment.PRODUCTION,
     typeRessource: Ressource.OR,
-    icone: '/img/buildings/mine.svg'
+    icone: '/img/buildings/mine.svg',
+
+    quantiteMax: 1,
+    niveauRoyaumeRequis: 1,
+    tempsConstructionSecondes: 180,
+    ouvriersMinimum: 1,
+
+    coutConstruction: [
+      { ressource: Ressource.BOIS, quantite: 40 },
+      { ressource: Ressource.PIERRE, quantite: 40 },
+      { ressource: Ressource.NOURRITURE, quantite: 30 },
+      { ressource: Ressource.OR, quantite: 20 }
+    ]
   },
 
   {
@@ -45,7 +93,19 @@ export const MOCK_CATALOGUE_BATIMENTS: ModeleBatiment[] = [
     nom: 'Maison',
     description: 'Favorise la croissance démographique.',
     type: TypeBatiment.MAISON,
-    icone: '/img/buildings/maison.svg'
+    icone: '/img/buildings/maison.svg',
+
+    quantiteMax: null,
+    niveauRoyaumeRequis: 1,
+    tempsConstructionSecondes: 120,
+    ouvriersMinimum: 1,
+
+    coutConstruction: [
+      { ressource: Ressource.BOIS, quantite: 10 },
+      { ressource: Ressource.PIERRE, quantite: 10 },
+      { ressource: Ressource.NOURRITURE, quantite: 10 },
+      { ressource: Ressource.OR, quantite: 1 }
+    ]
   }
 
 ];

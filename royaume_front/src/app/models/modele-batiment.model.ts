@@ -13,12 +13,14 @@ export interface ModeleBatiment {
 
   icone: string;
 
-  niveauRoyaumeRequis?: number;
+  quantiteMax: number | null;
 
-  coutConstruction?: QuantiteRessource[];
+  niveauRoyaumeRequis: number;
 
-  tempsConstructionSecondes?: number;
+  coutConstruction: QuantiteRessource[];
 
-  ouvriersMinimum?: number;
+  tempsConstructionSecondes: number;
+
+  ouvriersMinimum: number;
 
 }

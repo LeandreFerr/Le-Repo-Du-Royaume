@@ -655,77 +655,744 @@
    ======================================== */
 
 .catalogue-list {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  gap: 12px;
-  margin-top: 20px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 .catalogue-item {
-  background: #f4efe3;
-  border: 1px solid var(--border);
+    background: #f4efe3;
+    border: 1px solid var(--border);
 
-  transition: border-color .2s ease;
+    transition: border-color .2s ease;
 }
 
 .catalogue-item:hover {
-  border-color: var(--gold);
+    border-color: var(--gold);
 }
 
 .catalogue-item.selected {
-  border-color: #53785c;
+    border-color: #53785c;
 }
 
 
 /* En-tête du bâtiment */
 
 .catalogue-heading {
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 
-  gap: 12px;
-  padding: 16px;
+    gap: 12px;
+    padding: 16px;
 
-  width: 100%;
+    width: 100%;
 
-  background: transparent;
-  border: none;
+    background: transparent;
+    border: none;
 
-  text-align: left;
-  cursor: pointer;
+    text-align: left;
+    cursor: pointer;
 }
 
 .catalogue-arrow {
-  color: var(--gold);
+    color: var(--gold);
 
-  font-size: 20px;
-  font-weight: 400;
+    font-size: 20px;
+    font-weight: 400;
 }
 
 
 /* Détails de construction */
 
 .catalogue-details {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 
-  gap: 12px;
-  padding: 16px;
+    gap: 12px;
+    padding: 16px;
 
-  background: #e9eee2;
-  border-top: 1px solid var(--border);
+    background: #e9eee2;
+    border-top: 1px solid var(--border);
 }
 
 .catalogue-details p {
-  margin: 0;
+    margin: 0;
 
-  color: var(--text-muted);
+    color: var(--text-muted);
 
-  font-size: 11px;
-  line-height: 1.5;
+    font-size: 11px;
+    line-height: 1.5;
 }
 
 .catalogue-details .building-action {
-  width: 100%;
+    width: 100%;
+}
+
+/* Limites de construction */
+
+.catalogue-quantity {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    gap: 4px;
+    flex-shrink: 0;
+
+    color: var(--gold);
+    font-size: 11px;
+}
+
+.catalogue-quantity small {
+    font-size: 9px;
+}
+
+.catalogue-quantity.limit-reached {
+    color: var(--text-muted);
+}
+
+/* ========================================
+   COÛTS DE CONSTRUCTION
+   ======================================== */
+
+.construction-costs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 8px;
+}
+
+.cost-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 6px;
+    padding: 12px 6px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    text-align: center;
+}
+
+.cost-item img {
+    width: 24px;
+    height: 24px;
+
+    object-fit: contain;
+}
+
+.cost-name {
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.cost-value {
+    color: #53785c;
+
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.cost-stock {
+    color: var(--text-muted);
+    font-size: 9px;
+}
+
+.cost-item.insufficient {
+    border-color: #a25343;
+    background: #f3e5dc;
+}
+
+.cost-item.insufficient .cost-value {
+    color: #a25343;
+}
+
+
+/* ========================================
+   PRÉREQUIS DE CONSTRUCTION
+   ======================================== */
+
+.construction-requirements {
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.requirement-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
+    padding: 10px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.requirement-item strong {
+    color: #53785c;
+    font-weight: 500;
+}
+
+.requirement-item.insufficient strong {
+    color: #a25343;
+}
+
+.catalogue-details .construction-warning {
+    padding: 10px;
+
+    background: #f3e5dc;
+    border: 1px solid #d5b3a5;
+
+    color: #a25343;
+    font-size: 11px;
+}
+
+
+/* Responsive */
+
+@media (max-width: 600px) {
+
+    .construction-costs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* ========================================
+   AFFECTATION DES OUVRIERS
+   ======================================== */
+
+.workers-assignment {
+    display: flex;
+    flex-direction: column;
+
+    gap: 16px;
+    padding: 16px 0;
+
+    border-top: 1px solid var(--border);
+}
+
+
+/* Nombre d'ouvriers */
+
+.workers-heading {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.workers-heading img {
+    width: 26px;
+    height: 26px;
+
+    object-fit: contain;
+}
+
+.workers-heading span {
+    flex: 1;
+
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.workers-heading strong {
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+
+/* Curseur */
+
+.workers-slider {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 100%;
+    height: 6px;
+
+    margin: 0;
+
+    background: var(--border);
+    border-radius: 0;
+
+    cursor: pointer;
+}
+
+.workers-slider::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+
+    width: 16px;
+    height: 16px;
+
+    background: var(--gold);
+    border: 2px solid var(--surface);
+
+    box-shadow: 0 0 0 1px var(--gold);
+
+    cursor: grab;
+}
+
+.workers-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+
+    background: var(--gold);
+    border: 2px solid var(--surface);
+    border-radius: 0;
+
+    cursor: grab;
+}
+
+.workers-slider:active::-webkit-slider-thumb {
+    cursor: grabbing;
+}
+
+.workers-slider:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+
+/* Limites */
+
+.workers-limits {
+    display: flex;
+    justify-content: space-between;
+
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+
+/* Population restante */
+
+.workers-remaining {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 12px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.workers-remaining strong {
+    color: var(--forest);
+    font-weight: 500;
+}
+
+
+/* ========================================
+   ESTIMATION DE LA CONSTRUCTION
+   ======================================== */
+
+.construction-estimation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 12px;
+    padding: 20px;
+
+    background: linear-gradient(110deg,
+            #102e25,
+            #24483a);
+
+    border: 3px double #647b66;
+
+    text-align: center;
+}
+
+.construction-estimation .section-label {
+    color: #b3c3b4;
+}
+
+.estimation-value {
+    color: #d7bb7b;
+
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.estimation-base {
+    color: #b3c3b4;
+    font-size: 10px;
+}
+
+/* ========================================
+   LANCEMENT DE LA CONSTRUCTION
+   ======================================== */
+
+.launch-construction-button {
+    width: 100%;
+
+    padding: 14px;
+
+    background: var(--forest);
+    border: 3px double #647b66;
+
+    color: var(--surface);
+
+    font-size: 12px;
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition: background .2s ease;
+}
+
+.launch-construction-button:hover:not(:disabled) {
+    background: #2b5142;
+}
+
+.launch-construction-button:disabled {
+    background: transparent;
+    border: 1px solid var(--border);
+
+    color: var(--text-muted);
+
+    opacity: .6;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   COMPTE À REBOURS DES CHANTIERS
+   ======================================== */
+
+.construction-timer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 8px;
+    padding: 10px 0;
+
+    font-size: 11px;
+    color: #837d6d;
+}
+
+.construction-timer strong {
+    font-size: 13px;
+    font-weight: 600;
+    color: #193b30;
+
+    font-variant-numeric: tabular-nums;
+}
+
+.construction-pending {
+    color: #a77b31;
+    font-style: italic;
+}
+
+.construction-fill {
+    transition: width 1s linear;
+}
+
+/* ========================================
+   AMÉLIORATION DES BÂTIMENTS
+   ======================================== */
+
+.upgrade-details {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+    padding: 16px;
+    margin-top: 12px;
+
+    background: #e9eee2;
+
+    border: 1px solid #c8d1c0;
+}
+
+
+/* ========================================
+   ÉVOLUTION DU NIVEAU
+   ======================================== */
+
+.upgrade-levels {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 32px;
+    padding: 20px;
+
+    background: #f8f5ec;
+
+    border: 1px solid #d8cdb5;
+}
+
+.upgrade-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+}
+
+.upgrade-level span {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+
+    color: #837d6d;
+}
+
+.upgrade-level strong {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+
+    color: #193b30;
+}
+
+.upgrade-level.next-level strong {
+    color: #a77b31;
+}
+
+.upgrade-arrow {
+    font-size: 28px;
+    font-weight: 300;
+
+    color: #a77b31;
+}
+
+
+/* ========================================
+   BOUTON D'AMÉLIORATION ACTIF
+   ======================================== */
+
+.building-action.action-active {
+    background: #193b30;
+
+    border-color: #193b30;
+
+    color: #f8f5ec;
+}
+
+.building-action.action-active:hover:not(:disabled) {
+    background: #2b5142;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 600px) {
+
+    .upgrade-levels {
+        gap: 16px;
+        padding: 12px;
+    }
+
+    .upgrade-level strong {
+        font-size: 28px;
+    }
+
+}
+
+.upgrade-details .construction-warning {
+    color: #a25343;
+    background: #f3e5dc;
+    border: 1px solid #d5b5a8;
+    padding: 12px;
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   RÉPARATION DES BÂTIMENTS
+   ======================================== */
+
+.repair-details {
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+    padding: 16px;
+    margin-top: 12px;
+
+    background: #e9eee2;
+
+    border: 1px solid #c8d1c0;
+}
+
+
+/* ========================================
+   APERÇU DES POINTS DE VIE
+   ======================================== */
+
+.repair-health-preview {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+    padding: 20px;
+
+    background: #f8f5ec;
+
+    border: 1px solid #d8cdb5;
+}
+
+.repair-health-values {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 24px;
+}
+
+.repair-health-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+
+    flex: 1;
+}
+
+.repair-health-stat span {
+    font-size: 10px;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 1px;
+
+    color: #837d6d;
+}
+
+.repair-health-stat strong {
+    font-family: Georgia, serif;
+    font-size: 36px;
+    font-weight: 400;
+}
+
+.repair-current-health {
+    color: #a25343;
+}
+
+.repair-next-health {
+    color: #53785c;
+}
+
+
+/* ========================================
+   BARRE DE VIE PRÉVISIONNELLE
+   ======================================== */
+
+.repair-health-bar {
+    position: relative;
+
+    height: 10px;
+
+    overflow: hidden;
+
+    background: #e4dcc9;
+
+    border: 1px solid #d8cdb5;
+}
+
+.repair-health-fill {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    background: #a5b99c;
+
+    transition: width 0.2s ease;
+}
+
+.repair-health-current {
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    background: #53785c;
+}
+
+.repair-health-caption {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 8px;
+
+    font-size: 11px;
+
+    color: #837d6d;
+}
+
+.repair-health-caption span:first-child {
+    color: #53785c;
+    font-weight: 600;
+}
+
+
+/* ========================================
+   MESSAGES D'ERREUR
+   ======================================== */
+
+.repair-details .construction-warning {
+    color: #a25343;
+
+    background: #f3e5dc;
+
+    border: 1px solid #d5b5a8;
+
+    padding: 12px;
+    margin: 0;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 600px) {
+
+    .repair-health-preview {
+        padding: 12px;
+    }
+
+    .repair-health-values {
+        gap: 12px;
+    }
+
+    .repair-health-stat strong {
+        font-size: 28px;
+    }
+
+    .repair-health-stat span {
+        font-size: 9px;
+    }
+
 }
