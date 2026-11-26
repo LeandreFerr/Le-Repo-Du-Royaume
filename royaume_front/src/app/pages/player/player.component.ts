@@ -54,15 +54,13 @@ export class PlayerComponent implements OnInit {
 
   selectedEmplacementNumero: number | null = null;
 
-  activePage: string | null = null;
-
+activePage: string | null = 'royaume';
   // Données provenant du backend
   royaume: Royaume | null = null;
 
   paliers: PalierNiveau[] = [];
 
-  chargement = false;
-
+  chargement = true;
   erreur: string | null = null;
 
   ngOnInit(): void {
@@ -73,10 +71,11 @@ export class PlayerComponent implements OnInit {
       this.route.snapshot.paramMap.get('royaumeId')
     );
 
-    if (!Number.isInteger(id) || id <= 0) {
-      this.erreur = 'Identifiant du royaume invalide.';
-      return;
-    }
+   if (!Number.isInteger(id) || id <= 0) {
+  this.erreur = 'Identifiant du royaume invalide.';
+  this.chargement = false;
+  return;
+}
 
     this.royaumeId = id;
 
@@ -106,33 +105,43 @@ export class PlayerComponent implements OnInit {
   // Récupération du royaume depuis Spring
   chargerRoyaume(): void {
 
-    this.chargement = true;
-    this.erreur = null;
+  console.log('Début chargement royaume');
+  console.log('ID du royaume :', this.royaumeId);
 
-    this.royaumeService.obtenirRoyaume(this.royaumeId)
-      .subscribe({
+  this.chargement = true;
+  this.erreur = null;
 
-        next: (royaume: Royaume) => {
+  this.royaumeService.obtenirRoyaume(this.royaumeId)
+    .subscribe({
 
-          this.royaume = royaume;
-          this.chargement = false;
+      next: (royaume: Royaume) => {
 
-        },
+        console.log('Royaume reçu depuis Spring :', royaume);
 
-        error: (error) => {
+        this.royaume = royaume;
+        this.chargement = false;
 
-          console.error(
-            'Erreur de récupération du royaume :',
-            error
-          );
+        console.log('Chargement terminé');
+        console.log('Royaume affichable :', this.royaume);
 
-          this.erreur = 'Impossible de récupérer votre royaume.';
-          this.chargement = false;
+      },
 
-        }
+      error: (error) => {
 
-      });
-  }
+        console.error('ERREUR HTTP :', error);
+
+        this.erreur =
+          error.error?.message ||
+          error.message ||
+          'Impossible de récupérer votre royaume.';
+
+        this.chargement = false;
+
+      }
+
+    });
+
+}
 
   // Récupération des informations du prochain palier
   chargerPaliers(): void {

@@ -16,7 +16,7 @@ import { Chantier } from '../../../models/chantier.model';
 import { ModeleBatiment } from '../../../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../../../models/amelioration-batiment.model';
 
-import { RoyaumeService } from '../../../services/royaume.service';
+import { RoyaumeService } from '../../../services/royaume/royaume-service.service';
 
 import { ReparationBatiment } from '../../../models/reparation-batiment.model';
 
