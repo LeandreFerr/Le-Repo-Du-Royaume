@@ -31,6 +31,7 @@ import royaume.dto.request.EntrainerTroupeRequest;
 import royaume.dto.request.LancerAttaqueRequest;
 import royaume.dto.response.AttaqueResponse;
 import royaume.dto.response.SessionEntrainementResponse;
+import royaume.dto.response.UtilisateurResponse;
 import royaume.model.Carte;
 import royaume.model.EmplacementCarte;
 import royaume.model.Partie;
@@ -52,8 +53,10 @@ import royaume.model.peuple.Teuteus;
 import royaume.service.AttaqueService;
 import royaume.service.BatimentService;
 import royaume.service.MarcheService;
+import royaume.service.PartieService;
 import royaume.service.PropositionEchangeService;
 import royaume.service.SessionEntrainementService;
+import royaume.service.UtilisateurService;
 
 @SpringBootApplication
 
@@ -83,7 +86,9 @@ public class RoyaumeApplication {
 		            BatimentService batimentService,
 		            PropositionEchangeService propositionEchangeService,
 		            AttaqueService attaqueService,
-		            SessionEntrainementService sessionEntrainementService) {
+		            SessionEntrainementService sessionEntrainementService,
+		            UtilisateurService utilisateurService,
+		            PartieService partieService) {
 
 		        return args -> {
 
@@ -166,6 +171,14 @@ public class RoyaumeApplication {
 				             partie.setNom("Partie test");
 				             partie.setDateCreation(LocalDateTime.now());
 				             partie = partieDAO.save(partie);
+				             
+				             List<Integer> royaumeIds = tousRoyaumes.stream()
+				                     .filter(r -> !r.isEnRuine())
+				                     .map(Royaume::getId)
+				                     .toList();
+
+				             partieService.inscrireRoyaumes(partie.getId(), royaumeIds);
+				             System.out.println("Royaumes inscrits dans la partie id=" + partie.getId());
 
 				             Carte carte = new Carte();
 				             carte.setPartie(partie);
@@ -270,40 +283,35 @@ public class RoyaumeApplication {
 
 
 		            	  // Création d'un utilisateur
-		                System.out.println("========== TEST UTILISATEUR ==========");
+				         System.out.println("========== TEST UTILISATEUR ==========");
 
-		                Utilisateur utilisateur = new Utilisateur(
-		                    null,
-		                    "Kat",
-		                    "kitkat@test.fr",
-		                    "motdepasse123",
-		                    false,
-		                    true,
-		                    null
-		                );
+				         Utilisateur utilisateur = utilisateurDAO.findByEmail("kitkat@test.fr")
+				                 .orElseGet(() -> utilisateurDAO.save(new Utilisateur(
+				                         null,
+				                         "Kat",
+				                         "kitkat@test.fr",
+				                         "motdepasse123",
+				                         false,
+				                         true,
+				                         null
+				                 )));
 
-						if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
-							utilisateurDAO.save(utilisateur);
-						}
-		                System.out.println("Utilisateur créé : " + utilisateur);
+				         UtilisateurResponse katResp = utilisateurService.assignerRoyaume(utilisateur.getId(), 1);
+				         System.out.println("Utilisateur Kat : id=" + katResp.id() + ", royaumeId=" + katResp.royaumeId());
 
-		                Utilisateur kit = new Utilisateur(
-		                	    null,
-		                	    "Kit",
-		                	    "kit@test.fr",
-		                	    "motdepasse123",
-		                	    false,
-		                	    false,
-		                	    null
-		                	);
+				         Utilisateur kit = utilisateurDAO.findByEmail("kit@test.fr")
+				                 .orElseGet(() -> utilisateurDAO.save(new Utilisateur(
+				                         null,
+				                         "Kit",
+				                         "kit@test.fr",
+				                         "motdepasse123",
+				                         false,
+				                         false,
+				                         null
+				                 )));
 
-		                	if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
-		                	    utilisateurDAO.save(kit);
-		                	    System.out.println("Utilisateur Kit créé !");
-		                	} else {
-		                	    System.out.println("Utilisateur Kit existe déjà.");
-		                	}
-
+				         UtilisateurResponse kitResp = utilisateurService.assignerRoyaume(kit.getId(), 2);
+				         System.out.println("Utilisateur Kit : id=" + kitResp.id() + ", royaumeId=" + kitResp.royaumeId());
 		                
 		    
 		};
