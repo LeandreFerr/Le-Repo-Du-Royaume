@@ -1,0 +1,144 @@
+<section class="creation-partie">
+
+  <h1>Création d'une partie</h1>
+
+  <button
+    type="button"
+    (click)="ouvrirPopup()"
+  >
+    Créer une partie
+  </button>
+
+  @if (popupOuverte) {
+
+    <div
+      class="popup-fond"
+      (click)="fermerPopup()"
+    >
+
+      <div
+        class="popup-contenu"
+        (click)="$event.stopPropagation()"
+      >
+
+        <h2>Créer une nouvelle partie</h2>
+
+        <form
+          [formGroup]="creationForm"
+          (ngSubmit)="creerPartie()"
+        >
+
+          <div class="champ-formulaire">
+
+            <label for="nom">
+              Nom de la partie
+            </label>
+
+            <input
+              id="nom"
+              type="text"
+              formControlName="nom"
+              placeholder="Nom de la partie"
+            >
+
+            @if (
+              creationForm.controls.nom.touched &&
+              creationForm.controls.nom.hasError('required')
+            ) {
+              <p class="erreur">
+                Le nom de la partie est obligatoire.
+              </p>
+            }
+
+            @if (
+              creationForm.controls.nom.touched &&
+              creationForm.controls.nom.hasError('minlength')
+            ) {
+              <p class="erreur">
+                Le nom doit contenir au moins 2 caractères.
+              </p>
+            }
+
+            @if (
+              creationForm.controls.nom.touched &&
+              creationForm.controls.nom.hasError('maxlength')
+            ) {
+              <p class="erreur">
+                Le nom ne peut pas dépasser 100 caractères.
+              </p>
+            }
+
+          </div>
+
+          <div class="champ-formulaire">
+
+            <label for="maxJoueurs">
+              Nombre de joueurs
+            </label>
+
+            <input
+              id="maxJoueurs"
+              type="number"
+              min="2"
+              max="10"
+              formControlName="maxJoueurs"
+            >
+
+            @if (
+              creationForm.controls.maxJoueurs.touched &&
+              creationForm.controls.maxJoueurs.hasError('min')
+            ) {
+              <p class="erreur">
+                La partie doit contenir au moins 2 joueurs.
+              </p>
+            }
+
+            @if (
+              creationForm.controls.maxJoueurs.touched &&
+              creationForm.controls.maxJoueurs.hasError('max')
+            ) {
+              <p class="erreur">
+                La partie ne peut pas dépasser 10 joueurs.
+              </p>
+            }
+
+          </div>
+
+          @if (messageErreur) {
+            <p class="erreur">
+              {{ messageErreur }}
+            </p>
+          }
+
+          <div class="actions">
+
+            <button
+              type="button"
+              (click)="fermerPopup()"
+              [disabled]="chargement"
+            >
+              Annuler
+            </button>
+
+            <button
+              type="submit"
+              [disabled]="creationForm.invalid || chargement"
+            >
+              @if (chargement) {
+                Création en cours...
+              } @else {
+                Créer
+              }
+            </button>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  }
+
+</section>

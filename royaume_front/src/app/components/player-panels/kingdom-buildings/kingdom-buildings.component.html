@@ -1,0 +1,1344 @@
+<section class="buildings-panel">
+
+  <!-- ========================================
+       EN-TÊTE
+       ======================================== -->
+
+  <header class="panel-header">
+
+    <div class="panel-heading">
+
+      <span class="section-label">
+        Aménagement du domaine
+      </span>
+
+      <h1>Bâtiments</h1>
+
+      <p>
+        Construisez, améliorez et entretenez
+        les infrastructures de votre royaume.
+      </p>
+
+    </div>
+
+  </header>
+
+
+  <div class="panel-content">
+
+    <!-- ========================================
+         STATISTIQUES
+         ======================================== -->
+
+    <section class="buildings-banner">
+
+      <div class="banner-stat">
+
+        <span class="stat-label">Bâtiments</span>
+
+        <strong class="stat-value">
+          {{ nombreBatiments | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+      <div class="banner-stat">
+
+        <span class="stat-label">Ouvriers affectés</span>
+
+        <strong class="stat-value">
+          {{ royaume.populationOuvriere | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+      <div class="banner-stat">
+
+        <span class="stat-label">Chantiers actifs</span>
+
+        <strong class="stat-value">
+          {{ nombreChantiers | number:'1.0-0' }}
+        </strong>
+
+      </div>
+
+    </section>
+
+
+    <div class="buildings-grid">
+
+      <!-- ========================================
+           COLONNE DES BÂTIMENTS
+           ======================================== -->
+
+      <section class="buildings-card">
+
+        @if (catalogueOuvert) {
+
+        <!-- ========================================
+               CATALOGUE DE CONSTRUCTION
+               ======================================== -->
+
+        <span class="section-label">
+          Extension du domaine
+        </span>
+
+        <div class="card-heading">
+
+          <div class="card-title">
+
+            <h2>Catalogue de construction</h2>
+
+            <span>
+              Sélectionnez un bâtiment à construire.
+            </span>
+
+          </div>
+
+          <button type="button" class="construct-button" (click)="fermerCatalogue()">
+
+            Retour
+
+          </button>
+
+        </div>
+
+
+        <div class="catalogue-list">
+
+          @for (modele of catalogueBatiments; track modele.id) {
+
+          <article class="catalogue-item" [class.selected]="batimentSelectionne?.id === modele.id">
+
+            <button type="button" class="catalogue-heading" [attr.aria-expanded]="batimentSelectionne?.id === modele.id"
+              (click)="selectionnerBatiment(modele)">
+
+              <div class="building-icon">
+
+                <img [src]="modele.icone" [alt]="modele.nom">
+
+              </div>
+
+              <div class="building-identity">
+
+                <h3>{{ modele.nom }}</h3>
+
+                <p>{{ modele.description }}</p>
+
+              </div>
+
+              <div class="catalogue-quantity" [class.limit-reached]="limiteConstructionAtteinte(modele)">
+
+                @if (modele.quantiteMax === null) {
+
+                <span>Illimité</span>
+
+                } @else {
+
+                <span>
+
+                  {{ getQuantiteBatiment(modele) }} /
+                  {{ modele.quantiteMax }}
+
+                </span>
+
+                @if (limiteConstructionAtteinte(modele)) {
+
+                <small>Limite atteinte</small>
+
+                }
+
+                }
+
+              </div>
+
+              <span class="catalogue-arrow">
+
+                {{ batimentSelectionne?.id === modele.id
+                ? '−'
+                : '+' }}
+
+              </span>
+
+            </button>
+
+
+            @if (batimentSelectionne?.id === modele.id) {
+
+            <div class="catalogue-details">
+
+              <!-- Coûts de construction -->
+
+              <span class="section-label">
+                Coût de construction
+              </span>
+
+              <div class="construction-costs">
+
+                @for (cout of modele.coutConstruction; track cout.ressource) {
+
+                <div class="cost-item" [class.insufficient]="!ressourceSuffisante(cout)">
+
+                  <img [src]="iconesRessources[cout.ressource]" [alt]="nomsRessources[cout.ressource]">
+
+                  <span class="cost-name">
+
+                    {{ nomsRessources[cout.ressource] }}
+
+                  </span>
+
+                  <strong class="cost-value">
+
+                    {{ cout.quantite | number:'1.0-0' }}
+
+                  </strong>
+
+                  <span class="cost-stock">
+
+                    Stock :
+                    {{ getStockRessource(cout.ressource) | number:'1.0-0' }}
+
+                  </span>
+
+                </div>
+
+                }
+
+              </div>
+
+
+              <!-- Prérequis de construction -->
+
+              <span class="section-label">
+                Prérequis de construction
+              </span>
+
+              <div class="construction-requirements">
+
+                <div class="requirement-item" [class.insufficient]="!niveauSuffisant(modele)">
+
+                  <span>Niveau du royaume</span>
+
+                  <strong>
+
+                    {{ royaume.niveau }} /
+                    {{ modele.niveauRoyaumeRequis }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item" [class.insufficient]="!ouvriersSuffisants(modele)">
+
+                  <span>Ouvriers minimum</span>
+
+                  <strong>
+
+                    {{ modele.ouvriersMinimum }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item">
+
+                  <span>Durée de base</span>
+
+                  <strong>
+
+                    {{ formaterDuree(modele.tempsConstructionSecondes) }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item" [class.insufficient]="limiteConstructionAtteinte(modele)">
+
+                  <span>Limite de construction</span>
+
+                  <strong>
+
+                    @if (modele.quantiteMax === null) {
+
+                    Illimitée
+
+                    } @else {
+
+                    {{ getQuantiteBatiment(modele) }} /
+                    {{ modele.quantiteMax }}
+
+                    }
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Avertissements -->
+
+              @if (limiteConstructionAtteinte(modele)) {
+
+              <p class="construction-warning">
+                Vous possédez déjà ce bâtiment.
+              </p>
+
+              } @else if (!ressourcesSuffisantes(modele)) {
+
+              <p class="construction-warning">
+                Vos ressources sont insuffisantes.
+              </p>
+
+              } @else if (!niveauSuffisant(modele)) {
+
+              <p class="construction-warning">
+                Le niveau de votre royaume est insuffisant.
+              </p>
+
+              } @else if (!ouvriersSuffisants(modele)) {
+
+              <p class="construction-warning">
+                Votre population disponible est insuffisante.
+              </p>
+
+              } @else if (royaume.enRuine) {
+
+              <p class="construction-warning">
+                Votre royaume est en ruine.
+              </p>
+
+              }
+
+
+              <!-- Affectation des ouvriers -->
+
+              @if (peutConstruire(modele)) {
+
+              <div class="workers-assignment">
+
+                <span class="section-label">
+                  Affectation des ouvriers
+                </span>
+
+                <div class="workers-heading">
+
+                  <img src="/img/population.svg" alt="">
+
+                  <span>Ouvriers assignés</span>
+
+                  <strong>
+
+                    {{ ouvriersAssignes | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+                <input type="range" class="workers-slider" aria-label="Nombre d'ouvriers assignés"
+                  [min]="modele.ouvriersMinimum" [max]="ouvriersMaximum" [value]="ouvriersAssignes"
+                  [disabled]="ouvriersMaximum <= modele.ouvriersMinimum || constructionEnCours" step="1"
+                  (input)="modifierOuvriers($event)">
+
+                <div class="workers-limits">
+
+                  <span>
+                    Min. {{ modele.ouvriersMinimum }}
+                  </span>
+
+                  <span>
+                    Max. {{ ouvriersMaximum }}
+                  </span>
+
+                </div>
+
+                <div class="workers-remaining">
+
+                  <span>Population restante</span>
+
+                  <strong>
+
+                    {{ populationRestante | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Durée estimée -->
+
+              <div class="construction-estimation">
+
+                <span class="section-label">
+                  Durée estimée
+                </span>
+
+                <strong class="estimation-value">
+
+                  {{ formaterDuree(getDureeConstruction(modele)) }}
+
+                </strong>
+
+                <span class="estimation-base">
+
+                  Durée de base :
+                  {{ formaterDuree(modele.tempsConstructionSecondes) }}
+
+                </span>
+
+              </div>
+
+              }
+
+
+              <!-- Erreur de construction -->
+
+              @if (erreurConstruction) {
+
+              <p class="construction-warning">
+
+                {{ erreurConstruction }}
+
+              </p>
+
+              }
+
+
+              <!-- Confirmation -->
+
+              <button type="button" class="building-action launch-construction-button"
+                [disabled]="!peutLancerConstruction(modele)" (click)="lancerConstruction(modele)">
+
+                {{ constructionEnCours
+                ? 'Lancement en cours...'
+                : 'Lancer la construction' }}
+
+              </button>
+
+            </div>
+
+            }
+
+          </article>
+
+          } @empty {
+
+          <p class="empty-message">
+            Aucun bâtiment disponible.
+          </p>
+
+          }
+
+        </div>
+
+
+        } @else {
+
+
+        <!-- ========================================
+               LISTE DES BÂTIMENTS
+               ======================================== -->
+
+        <span class="section-label">
+          Infrastructures du domaine
+        </span>
+
+        <div class="card-heading">
+
+          <div class="card-title">
+
+            <h2>Vos bâtiments</h2>
+
+            <span>
+              {{ batimentsFiltres.length }} bâtiment(s)
+            </span>
+
+          </div>
+
+          <button type="button" class="construct-button" (click)="ouvrirCatalogue()">
+
+            <span>+</span>
+
+            Construire
+
+          </button>
+
+        </div>
+
+
+        <!-- Filtres -->
+
+        <div class="building-filters">
+
+          @for (filtre of filtres; track filtre.valeur) {
+
+          <button type="button" class="filter-button" [class.active]="filtreActif === filtre.valeur"
+            (click)="changerFiltre(filtre.valeur)">
+
+            {{ filtre.nom }}
+
+          </button>
+
+          }
+
+        </div>
+
+
+        <div class="buildings-list">
+
+          @for (batiment of batimentsFiltres; track batiment.id) {
+
+          <article class="building-card">
+
+            <!-- Identité du bâtiment -->
+
+            <div class="building-heading">
+
+              <div class="building-icon">
+
+                <img [src]="getIconeBatiment(batiment)" [alt]="batiment.nom">
+
+              </div>
+
+              <div class="building-identity">
+
+                <h3>{{ batiment.nom }}</h3>
+
+                <p>{{ getDescriptionBatiment(batiment) }}</p>
+
+              </div>
+
+              <div class="building-meta">
+
+                <span class="building-level">
+
+                  Niveau {{ batiment.niveau }}
+
+                </span>
+
+                <span class="building-status" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                  [class.in-progress]="batiment.enConstruction">
+
+                  {{ getEtatBatiment(batiment) }}
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+            @if (!batiment.enConstruction) {
+
+            <!-- Production -->
+
+            @if (batiment.productionBaseHeure !== undefined) {
+
+            <div class="building-production">
+
+              <span>Production horaire de base</span>
+
+              <strong>
+
+                {{ batiment.productionBaseHeure | number:'1.0-0' }} / h
+
+              </strong>
+
+            </div>
+
+            }
+
+
+            <!-- Points de vie -->
+
+            <div class="building-health">
+
+              <div class="health-heading">
+
+                <span>Points de vie</span>
+
+                <strong>
+
+                  {{ batiment.pointsDeVie | number:'1.0-0' }} /
+                  {{ batiment.pointsDeVieMax | number:'1.0-0' }}
+
+                </strong>
+
+              </div>
+
+              <div class="health-bar">
+
+                <div class="health-fill" [class.damaged]="batiment.pointsDeVie < batiment.pointsDeVieMax"
+                  [style.width.%]="getPourcentageVie(batiment)">
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- Actions du bâtiment -->
+
+            <div class="building-actions">
+
+              @if (batiment.type !== 'CHATEAU') {
+
+              <button type="button" class="building-action"
+                [class.action-active]="batimentAmeliorationId === batiment.id"
+                [attr.aria-expanded]="batimentAmeliorationId === batiment.id" [disabled]="
+                batiment.niveau >= 10 ||
+                batiment.pointsDeVie <= 0 ||
+                ameliorationEnCours ||
+                reparationEnCours
+                " (click)="ouvrirAmelioration(batiment)">
+
+                {{ batimentAmeliorationId === batiment.id
+                ? 'Annuler'
+                : 'Améliorer' }}
+
+              </button>
+
+              }
+
+              <button type="button" class="building-action" [class.action-active]="batimentReparationId === batiment.id"
+                [attr.aria-expanded]="batimentReparationId === batiment.id" [disabled]="
+                batiment.pointsDeVie >= batiment.pointsDeVieMax ||
+                batiment.enConstruction ||
+                reparationEnCours ||
+                ameliorationEnCours
+                " (click)="ouvrirReparation(batiment)">
+
+                {{ batimentReparationId === batiment.id
+                ? 'Annuler'
+                : 'Réparer' }}
+
+              </button>
+
+            </div>
+
+            <!-- ========================================
+     INTERFACE DE RÉPARATION
+     ======================================== -->
+
+            @if (batimentReparationId === batiment.id) {
+
+            <div class="repair-details">
+
+              <span class="section-label">
+                Réparation du bâtiment
+              </span>
+
+
+              @if (reparationSelectionnee; as reparation) {
+
+              <!-- Évolution des points de vie -->
+
+              <div class="repair-health-preview">
+
+                <div class="repair-health-values">
+
+                  <div class="repair-health-stat">
+
+                    <span>Points de vie actuels</span>
+
+                    <strong class="repair-current-health">
+
+                      {{ reparation.pointsDeVieActuels | number:'1.0-0' }}
+
+                    </strong>
+
+                  </div>
+
+                  <span class="upgrade-arrow">→</span>
+
+                  <div class="repair-health-stat">
+
+                    <span>Après réparation</span>
+
+                    <strong class="repair-next-health">
+
+                      {{ pointsDeVieApresReparation | number:'1.0-0' }}
+
+                    </strong>
+
+                  </div>
+
+                </div>
+
+
+                <div class="repair-health-bar">
+
+                  <div class="repair-health-fill" [style.width.%]="pourcentageVieApresReparation">
+                  </div>
+
+                  <div class="repair-health-current" [style.width.%]="getPourcentageVie(batiment)">
+                  </div>
+
+                </div>
+
+
+                <div class="repair-health-caption">
+
+                  <span>
+
+                    +{{ montantReparation | number:'1.0-0' }} PV
+
+                  </span>
+
+                  <span>
+
+                    Maximum :
+                    {{ reparation.pointsDeVieMax | number:'1.0-0' }} PV
+
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- Montant de la réparation -->
+
+              <div class="workers-assignment">
+
+                <span class="section-label">
+                  Montant de la réparation
+                </span>
+
+                <div class="workers-heading">
+
+                  <span>Points de vie à restaurer</span>
+
+                  <strong>
+
+                    {{ montantReparation | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+                <input type="range" class="workers-slider" aria-label="Points de vie à restaurer" [min]="1"
+                  [max]="pointsDeVieManquants" [value]="montantReparation"
+                  [disabled]="pointsDeVieManquants <= 1 || reparationEnCours" step="1"
+                  (input)="modifierMontantReparation($event)">
+
+                <div class="workers-limits">
+
+                  <span>Min. 1 PV</span>
+
+                  <span>
+
+                    Max. {{ pointsDeVieManquants }} PV
+
+                  </span>
+
+                </div>
+
+              </div>
+
+
+              <!-- Prérequis de réparation -->
+
+              <span class="section-label">
+                Prérequis de réparation
+              </span>
+
+              <div class="construction-requirements">
+
+                <div class="requirement-item" [class.insufficient]="!ouvriersReparationSuffisants(reparation)">
+
+                  <span>Ouvriers minimum</span>
+
+                  <strong>
+
+                    {{ reparation.ouvriersMinimum }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item">
+
+                  <span>Durée de base</span>
+
+                  <strong>
+
+                    {{ formaterDuree(reparation.tempsReparationSecondes) }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Avertissements -->
+
+              @if (!ouvriersReparationSuffisants(reparation)) {
+
+              <p class="construction-warning">
+
+                Votre population disponible est insuffisante.
+
+              </p>
+
+              }
+
+
+              <!-- Affectation des ouvriers -->
+
+              @if (peutReparer(batiment, reparation)) {
+
+              <div class="workers-assignment">
+
+                <span class="section-label">
+                  Affectation des ouvriers
+                </span>
+
+                <div class="workers-heading">
+
+                  <img src="/img/population.svg" alt="">
+
+                  <span>Ouvriers assignés</span>
+
+                  <strong>
+
+                    {{ ouvriersReparation | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+                <input type="range" class="workers-slider" aria-label="Nombre d'ouvriers assignés à la réparation"
+                  [min]="reparation.ouvriersMinimum" [max]="ouvriersMaximum" [value]="ouvriersReparation" [disabled]="
+              ouvriersMaximum <= reparation.ouvriersMinimum ||
+              reparationEnCours
+            " step="1" (input)="modifierOuvriersReparation($event)">
+
+                <div class="workers-limits">
+
+                  <span>
+
+                    Min. {{ reparation.ouvriersMinimum }}
+
+                  </span>
+
+                  <span>
+
+                    Max. {{ ouvriersMaximum }}
+
+                  </span>
+
+                </div>
+
+                <div class="workers-remaining">
+
+                  <span>Population restante</span>
+
+                  <strong>
+
+                    {{ populationRestanteReparation | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Durée estimée -->
+
+              <div class="construction-estimation">
+
+                <span class="section-label">
+                  Durée estimée
+                </span>
+
+                <strong class="estimation-value">
+
+                  {{ formaterDuree(getDureeReparation(reparation)) }}
+
+                </strong>
+
+                <span class="estimation-base">
+
+                  Durée de base :
+                  {{ formaterDuree(reparation.tempsReparationSecondes) }}
+
+                </span>
+
+              </div>
+
+              }
+
+
+              <!-- Confirmation -->
+
+              <button type="button" class="building-action launch-construction-button"
+                [disabled]="!peutLancerReparation(batiment, reparation)" (click)="lancerReparation(batiment)">
+
+                {{ reparationEnCours
+                ? 'Lancement en cours...'
+                : 'Lancer la réparation' }}
+
+              </button>
+
+
+              } @else if (!erreurReparation) {
+
+              <p class="empty-message">
+
+                Chargement de la réparation...
+
+              </p>
+
+              }
+
+
+              <!-- Erreur de réparation -->
+
+              @if (erreurReparation) {
+
+              <p class="construction-warning">
+
+                {{ erreurReparation }}
+
+              </p>
+
+              }
+
+            </div>
+
+            }
+
+            <!-- ========================================
+                     INTERFACE D'AMÉLIORATION
+            ======================================== -->
+
+            @if (batimentAmeliorationId === batiment.id) {
+
+            <div class="upgrade-details">
+
+              <span class="section-label">
+                Amélioration du bâtiment
+              </span>
+
+              @if (ameliorationSelectionnee; as amelioration) {
+
+              <!-- Évolution du niveau -->
+
+              <div class="upgrade-levels">
+
+                <div class="upgrade-level">
+
+                  <span>Niveau actuel</span>
+
+                  <strong>
+
+                    {{ amelioration.niveauActuel }}
+
+                  </strong>
+
+                </div>
+
+                <span class="upgrade-arrow">→</span>
+
+                <div class="upgrade-level next-level">
+
+                  <span>Niveau suivant</span>
+
+                  <strong>
+
+                    {{ amelioration.niveauSuivant }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Coût de l'amélioration -->
+
+              <span class="section-label">
+                Coût de l'amélioration
+              </span>
+
+              <div class="construction-costs">
+
+                @for (cout of amelioration.coutAmelioration; track cout.ressource) {
+
+                <div class="cost-item" [class.insufficient]="!ressourceSuffisante(cout)">
+
+                  <img [src]="iconesRessources[cout.ressource]" [alt]="nomsRessources[cout.ressource]">
+
+                  <span class="cost-name">
+
+                    {{ nomsRessources[cout.ressource] }}
+
+                  </span>
+
+                  <strong class="cost-value">
+
+                    {{ cout.quantite | number:'1.0-0' }}
+
+                  </strong>
+
+                  <span class="cost-stock">
+
+                    Stock :
+                    {{ getStockRessource(cout.ressource) | number:'1.0-0' }}
+
+                  </span>
+
+                </div>
+
+                }
+
+              </div>
+
+
+              <!-- Prérequis d'amélioration -->
+
+              <span class="section-label">
+                Prérequis d'amélioration
+              </span>
+
+              <div class="construction-requirements">
+
+                <div class="requirement-item" [class.insufficient]="!niveauChateauSuffisant(amelioration)">
+
+                  <span>Niveau du château</span>
+
+                  <strong>
+
+                    {{ niveauChateau }} /
+                    {{ amelioration.niveauChateauRequis }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item" [class.insufficient]="!ouvriersAmeliorationSuffisants(amelioration)">
+
+                  <span>Ouvriers minimum</span>
+
+                  <strong>
+
+                    {{ amelioration.ouvriersMinimum }}
+
+                  </strong>
+
+                </div>
+
+                <div class="requirement-item">
+
+                  <span>Durée de base</span>
+
+                  <strong>
+
+                    {{ formaterDuree(amelioration.tempsConstructionSecondes) }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Avertissements -->
+
+              @if (royaume.enRuine) {
+
+              <p class="construction-warning">
+                Votre royaume est en ruine.
+              </p>
+
+              } @else if (!niveauChateauSuffisant(amelioration)) {
+
+              <p class="construction-warning">
+                Le niveau de votre château est insuffisant.
+              </p>
+
+              } @else if (!ressourcesAmeliorationSuffisantes(amelioration)) {
+
+              <p class="construction-warning">
+                Vos ressources sont insuffisantes.
+              </p>
+
+              } @else if (!ouvriersAmeliorationSuffisants(amelioration)) {
+
+              <p class="construction-warning">
+                Votre population disponible est insuffisante.
+              </p>
+
+              }
+
+
+              <!-- Affectation des ouvriers -->
+
+              @if (peutAmeliorer(batiment, amelioration)) {
+
+              <div class="workers-assignment">
+
+                <span class="section-label">
+                  Affectation des ouvriers
+                </span>
+
+                <div class="workers-heading">
+
+                  <img src="/img/population.svg" alt="">
+
+                  <span>Ouvriers assignés</span>
+
+                  <strong>
+
+                    {{ ouvriersAmelioration | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+                <input type="range" class="workers-slider" aria-label="Nombre d'ouvriers assignés à l'amélioration"
+                  [min]="amelioration.ouvriersMinimum" [max]="ouvriersMaximum" [value]="ouvriersAmelioration"
+                  [disabled]="ouvriersMaximum <= amelioration.ouvriersMinimum || ameliorationEnCours" step="1"
+                  (input)="modifierOuvriersAmelioration($event)">
+
+                <div class="workers-limits">
+
+                  <span>
+                    Min. {{ amelioration.ouvriersMinimum }}
+                  </span>
+
+                  <span>
+                    Max. {{ ouvriersMaximum }}
+                  </span>
+
+                </div>
+
+                <div class="workers-remaining">
+
+                  <span>Population restante</span>
+
+                  <strong>
+
+                    {{ populationRestanteAmelioration | number:'1.0-0' }}
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- Durée estimée -->
+
+              <div class="construction-estimation">
+
+                <span class="section-label">
+                  Durée estimée
+                </span>
+
+                <strong class="estimation-value">
+
+                  {{ formaterDuree(getDureeAmelioration(amelioration)) }}
+
+                </strong>
+
+                <span class="estimation-base">
+
+                  Durée de base :
+                  {{ formaterDuree(amelioration.tempsConstructionSecondes) }}
+
+                </span>
+
+              </div>
+
+              }
+
+
+              <!-- Confirmation -->
+
+              <button type="button" class="building-action launch-construction-button"
+                [disabled]="!peutLancerAmelioration(batiment, amelioration)" (click)="lancerAmelioration(batiment)">
+
+                {{ ameliorationEnCours
+                ? 'Lancement en cours...'
+                : "Lancer l'amélioration" }}
+
+              </button>
+
+              } @else if (!erreurAmelioration) {
+
+              <p class="empty-message">
+                Chargement de l'amélioration...
+              </p>
+
+              }
+
+
+              <!-- Erreur d'amélioration -->
+
+              @if (erreurAmelioration) {
+
+              <p class="construction-warning">
+
+                {{ erreurAmelioration }}
+
+              </p>
+
+              }
+
+            </div>
+
+            }
+
+
+            } @else {
+
+            <div class="building-notice">
+
+              Travaux en cours — voir les chantiers.
+
+            </div>
+
+            }
+
+          </article>
+
+          } @empty {
+
+          <p class="empty-message">
+            Aucun bâtiment dans cette catégorie.
+          </p>
+
+          }
+
+        </div>
+
+        }
+
+      </section>
+
+
+      <!-- ========================================
+           COLONNE DES CHANTIERS
+           ======================================== -->
+
+      <aside class="construction-card">
+
+        <span class="section-label">
+          Travaux du domaine
+        </span>
+
+        <h2>Chantiers en cours</h2>
+
+        <div class="construction-list">
+
+          @for (batiment of chantiersActifs; track batiment.id) {
+
+          @if (batiment.chantier; as chantier) {
+
+          <article class="construction-item">
+
+            <span class="section-label">
+
+              {{ getTypeChantier(batiment, chantier) }}
+
+            </span>
+
+            <h3>{{ batiment.nom }}</h3>
+
+
+            <!-- Progression -->
+
+            <div class="construction-progress">
+
+              <span>Avancement estimé</span>
+
+              <strong>
+
+                {{ getProgressionChantier(chantier) | number:'1.0-0' }} %
+
+              </strong>
+
+            </div>
+
+            <div class="construction-bar">
+
+              <div class="construction-fill" [style.width.%]="getProgressionChantier(chantier)">
+              </div>
+
+            </div>
+
+
+            <!-- Compte à rebours -->
+
+            <div class="construction-timer">
+
+              @if (getTempsRestantChantier(chantier) > 0) {
+
+              <span>Temps restant</span>
+
+              <strong>
+
+                {{ formaterDuree(getTempsRestantChantier(chantier)) }}
+
+              </strong>
+
+              } @else {
+
+              <span class="construction-pending">
+
+                En attente de confirmation
+
+              </span>
+
+              }
+
+            </div>
+
+
+            <!-- Ouvriers assignés -->
+
+            <div class="construction-workers">
+
+              <img src="/img/population.svg" alt="">
+
+              <div>
+
+                <span>Ouvriers assignés</span>
+
+                <strong>
+
+                  {{ chantier.ouvriersAssignes }}
+
+                </strong>
+
+              </div>
+
+            </div>
+
+          </article>
+
+          }
+
+          } @empty {
+
+          <p class="empty-message">
+            Aucun chantier en cours.
+          </p>
+
+          }
+
+        </div>
+
+      </aside>
+
+    </div>
+
+  </div>
+
+</section>

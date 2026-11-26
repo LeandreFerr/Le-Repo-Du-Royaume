@@ -70,87 +70,8 @@
 .panel-title { margin: 0 0 8px; font-size: 0.92rem; font-weight: 700; color: #fde68a; }
 .panel-header-inline .panel-title { margin: 0; }
 .seed-row, .circle-action-row { display: flex; gap: 6px; margin-bottom: 6px; }
-.medieval-input {
-  flex: 1;
-  min-width: 0;
-  padding: 6px 9px;
-  border-radius: 6px;
-  border: 1px solid #785630;
-  background: #140f0a;
-  color: #fffbeb;
-  font-size: 0.82rem;
-}
-.coord-input {
-  width: 62px;
-  padding: 3px 6px;
-  border-radius: 6px;
-  border: 1px solid #785630;
-  background: #140f0a;
-  color: #fde68a;
-  font-size: 0.75rem;
-}
-.medieval-slider {
-  width: 100%;
-  accent-color: #d97706;
-  cursor: pointer;
-}
-.btn-medieval {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 7px;
-  border: 1px solid #b47b28;
-  background: linear-gradient(180deg, #8c5818 0%, #683f0e 100%);
-  color: #fffbeb;
-  font-size: 0.78rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-medieval:hover {
-  border-color: #fbbf24;
-  filter: brightness(1.1);
-}
-.btn-medieval.btn-secondary {
-  background: #2c2015;
-  border-color: #6b4e2e;
-}
-.btn-medieval.btn-secondary.active {
-  background: #42301f;
-  border-color: #fbbf24;
-}
-.btn-full {
-  flex: 1;
-}
-.java-export-panel,
-.panel-card {
-  background: linear-gradient(180deg, #291e14 0%, #20170f 100%);
-  border: 1px solid #634729;
-  border-radius: 10px;
-  padding: 12px 14px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-}
-.java-code-block {
-  margin: 8px 0 0;
-  padding: 10px;
-  border-radius: 7px;
-  background: #100c08;
-  border: 1px solid rgba(217, 167, 74, 0.25);
-  color: #fef3c7;
-  font: 0.76rem/1.4 Consolas, monospace;
-  overflow-x: auto;
-  max-height: 200px;
-}
-.value-pill {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(251, 191, 36, 0.16);
-  border: 1px solid rgba(251, 191, 36, 0.4);
-  color: #fde68a;
-  font-size: 0.76rem;
-  font-weight: 700;
-}
+.medieval-input { flex: 1; min-width: 0; }
+.coord-input { width: 62px; padding: 3px 6px; color: #fde68a; font-size: 0.75rem; }
 .archetype-grid, .emplacement-list, .distance-list { display: flex; flex-direction: column; gap: 6px; }
 .archetype-card, .emplacement-item {
   text-align: left;

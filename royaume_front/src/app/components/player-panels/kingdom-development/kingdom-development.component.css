@@ -1,0 +1,579 @@
+/* ========================================
+   CONTENEUR PRINCIPAL
+   ======================================== */
+
+:host {
+    --parchment: #ece5d4;
+    --surface: #f8f5ec;
+    --forest: #193b30;
+    --gold: #a77b31;
+    --text-muted: #837d6d;
+    --border: #d8cdb5;
+
+    position: absolute;
+
+    top: 14px;
+    bottom: 14px;
+    left: calc(var(--sidebar-width, 74px) + 14px);
+
+    width: 1000px;
+    max-width: calc(100% - var(--sidebar-width, 74px) - 28px);
+
+    z-index: 20;
+}
+
+.development-panel {
+    display: flex;
+    flex-direction: column;
+
+    height: 100%;
+
+    background: var(--parchment);
+    border: 1px solid var(--border);
+
+    box-shadow: 0 8px 30px #00000020;
+
+    overflow: hidden;
+}
+
+
+/* ========================================
+   EN-TÊTE
+   ======================================== */
+
+.panel-header {
+    padding: 24px;
+
+    border-bottom: 1px solid var(--border);
+
+    flex-shrink: 0;
+}
+
+.section-label {
+    color: var(--gold);
+
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+.panel-heading h1 {
+    margin: 8px 0;
+
+    color: var(--forest);
+
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 400;
+}
+
+.panel-heading p {
+    margin: 0;
+
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+
+/* ========================================
+   CONTENU
+   ======================================== */
+
+.panel-content {
+    display: flex;
+    flex-direction: column;
+
+    gap: 20px;
+    padding: 24px;
+
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+}
+
+
+/* ========================================
+   BANDEAU DU ROYAUME
+   ======================================== */
+
+.development-banner {
+    display: grid;
+    grid-template-columns: 1.4fr .7fr 1fr;
+    align-items: center;
+
+    min-height: 150px;
+    padding: 24px;
+
+    background: linear-gradient(110deg,
+            #102e25,
+            #24483a);
+
+    border: 3px double #647b66;
+
+    flex-shrink: 0;
+}
+
+.kingdom-identity {
+    padding-right: 20px;
+}
+
+.kingdom-identity h2 {
+    margin: 10px 0;
+
+    color: var(--surface);
+
+    font-family: Georgia, serif;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+.kingdom-identity p {
+    margin: 0;
+
+    color: #b3c3b4;
+    font-size: 11px;
+}
+
+
+/* Niveau du royaume */
+
+.kingdom-level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+    padding: 12px;
+
+    border-left: 1px solid #ffffff15;
+    border-right: 1px solid #ffffff15;
+}
+
+.level-label {
+    color: #b3c3b4;
+
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.level-value {
+    color: #d7bb7b;
+
+    font-family: Georgia, serif;
+    font-size: 42px;
+    font-weight: 400;
+}
+
+
+/* Progression */
+
+.kingdom-progression {
+    padding-left: 24px;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 800px) {
+
+    .development-banner {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+    .kingdom-level {
+        align-items: flex-start;
+
+        padding: 16px 0;
+
+        border-left: none;
+        border-right: none;
+        border-top: 1px solid #ffffff15;
+        border-bottom: 1px solid #ffffff15;
+    }
+
+    .kingdom-progression {
+        padding-left: 0;
+    }
+}
+
+/* ========================================
+   PROGRESSION GLOBALE
+   ======================================== */
+
+.progression-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.progression-value {
+    color: #d7bb7b;
+
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 400;
+}
+
+.global-progress-bar {
+    height: 7px;
+    margin-top: 12px;
+
+    background: #0c2922;
+    border: 1px solid #ffffff15;
+
+    overflow: hidden;
+}
+
+.global-progress-fill {
+    height: 100%;
+
+    background: linear-gradient(90deg,
+            #a77b31,
+            #d7bb7b);
+
+    transition: width .4s ease;
+}
+
+.progression-description {
+    margin: 10px 0 0;
+
+    color: #b3c3b4;
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+/* ========================================
+   GRILLE PRINCIPALE
+   ======================================== */
+
+.development-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+
+  gap: 16px;
+
+  align-items: stretch;
+}
+
+.progression-card,
+.history-card {
+  min-width: 0;
+  padding: 20px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  box-shadow: 0 3px 10px #00000005;
+}
+
+.progression-card h2,
+.history-card h2 {
+  margin: 8px 0;
+
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 23px;
+  font-weight: 400;
+}
+
+
+/* ========================================
+   EN-TÊTE DES CONDITIONS
+   ======================================== */
+
+.card-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.card-heading p {
+  margin: 0;
+
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.level-transition {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.level-transition span:not(.transition-arrow) {
+  display: grid;
+  place-items: center;
+
+  width: 30px;
+  height: 30px;
+
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+
+  color: var(--gold);
+
+  font-family: Georgia, serif;
+  font-size: 15px;
+}
+
+.transition-arrow {
+  color: var(--gold);
+}
+
+
+/* ========================================
+   CONDITIONS DE PROGRESSION
+   ======================================== */
+
+.conditions-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.condition-card {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+  padding: 14px;
+
+  background: #f4efe3;
+  border: 1px solid var(--border);
+}
+
+.condition-card.completed {
+  background: #e9eee2;
+  border-color: #bdcdb6;
+}
+
+
+/* Icônes */
+
+.condition-icon {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  background: #eae0c5;
+  border-radius: 50%;
+
+  color: var(--gold);
+
+  flex-shrink: 0;
+}
+
+.condition-icon img {
+  width: 20px;
+  height: 20px;
+
+  object-fit: contain;
+}
+
+.completed .condition-icon {
+  background: #dce7d8;
+  color: #53785c;
+}
+
+
+/* Informations */
+
+.condition-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.condition-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.condition-name {
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 14px;
+}
+
+.condition-quantity {
+  color: var(--text-muted);
+
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.condition-quantity strong {
+  color: var(--forest);
+  font-weight: 600;
+}
+
+
+/* Barres de progression */
+
+.condition-progress-bar {
+  height: 5px;
+
+  background: #ded7c7;
+
+  overflow: hidden;
+}
+
+.condition-progress-fill {
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #193b30,
+    #789581
+  );
+
+  transition: width .3s ease;
+}
+
+.completed .condition-progress-fill {
+  background: #b39553;
+}
+
+
+/* Statut */
+
+.condition-status {
+  min-width: 85px;
+  padding: 7px;
+
+  background: #ece5d4;
+  border: 1px solid #d8cdb5;
+
+  color: var(--gold);
+
+  font-size: 8px;
+  letter-spacing: .5px;
+  text-align: center;
+  text-transform: uppercase;
+
+  flex-shrink: 0;
+}
+
+.completed .condition-status {
+  background: #dce7d8;
+  border-color: #bdcdb6;
+
+  color: #53785c;
+}
+
+
+/* ========================================
+   BOUTON D'AMÉLIORATION
+   ======================================== */
+
+.upgrade-button {
+  width: 100%;
+  margin-top: 20px;
+  padding: 16px;
+
+  background: var(--forest);
+  border: 3px double #647b66;
+
+  color: var(--surface);
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background .2s ease;
+}
+
+.upgrade-button:hover:not(:disabled) {
+  background: #2b5142;
+}
+
+.upgrade-button:disabled {
+  background: #d8cdb5;
+  border-color: #c5baa2;
+
+  color: var(--text-muted);
+
+  cursor: not-allowed;
+}
+
+.upgrade-description {
+  margin: 10px 0 0;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+
+/* ========================================
+   CHRONIQUE DU RÈGNE
+   ======================================== */
+
+.history-placeholder {
+  margin-top: 16px;
+  padding: 16px 0;
+
+  border-top: 1px solid var(--border);
+}
+
+.history-placeholder p {
+  color: var(--text-muted);
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1050px) {
+
+  .development-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .condition-card {
+    flex-wrap: wrap;
+  }
+
+  .condition-status {
+    margin-left: auto;
+  }
+
+  .condition-heading {
+    flex-wrap: wrap;
+  }
+
+}
