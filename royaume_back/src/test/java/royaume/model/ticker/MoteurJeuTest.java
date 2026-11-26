@@ -54,6 +54,9 @@ class MoteurJeuTest {
         royaumeA = new Royaume(1, "Avalon", PEUPLE_A, 1, 100, 0, 0, 0, false, new ArrayList<>());
         royaumeB = new Royaume(2, "Mordor", PEUPLE_B, 1, 100, 0, 0, 0, false, new ArrayList<>());
 
+        viderRessources(royaumeA);
+        viderRessources(royaumeB);
+
         partie = new Partie(
                 1, "Partie Test", DATE_DEPART, 1.0, 10,
                 null, null, new ArrayList<>(), new ArrayList<>(), StatutPartie.EN_ATTENTE
@@ -63,6 +66,13 @@ class MoteurJeuTest {
         partie.demarrer();
 
         moteur = new MoteurJeu(partie, horloge);
+    }
+
+    /** Les royaumes demarrent avec des ressources initiales : on repart de zero pour ces tests de production. */
+    private static void viderRessources(Royaume royaume) {
+        royaume.setRessources(java.util.Arrays.stream(Ressource.values())
+                .map(r -> new QuantiteRessource(0, r))
+                .toList());
     }
 
     private static int getStock(Royaume royaume, Ressource type) {

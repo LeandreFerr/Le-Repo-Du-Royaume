@@ -1,0 +1,402 @@
+
+<!-- ====================== MANUSCRIT ====================== -->
+
+<main class="manuscrit">
+
+  <!-- PAGE 1 -->
+  <div class="page" *ngIf="pageActuelle === 0">
+
+    <h1>Chroniques des Cinq Royaumes</h1>
+    <p class="introduction">Extraits des manuscrits anciens.</p>
+
+    <section>
+      <h2 class="bloc medieval-sharp">Le chant des diseuses d'aventures</h2>
+
+      <p class="bloc cinzel">
+        <img src="/assets/imago/diseuse.png" alt="Diseuse d'aventures" class="image-paragraphe-2">
+
+        <span class="enluminure">A</span>u cœur d'un territoire oublié, les chroniques chantent
+        l'histoire des rois errants, des gobelins-chevaliers et des grandes batailles.
+        Ces pages conservent la mémoire du temps légendaire, où les Cinq Royaumes
+        se réveillaient chaque matin dans le froid, la torpeur et l'obscurité.
+
+        <br><br>
+
+        <span class="enluminure">C</span>haque coup bas, chaque estafade portée,
+        offrait fêtes et banquets, tout en développant un peu plus l'emprise des reines,
+        princesses et autres roitelets sur la Grande Terre des Cinq Royaumes.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="bloc medieval-sharp">Le grimoire des anciens</h2>
+
+      <p class="bloc cinzel">
+        <span class="enluminure">V</span>ous incarnez l'un des Cinq Royaumes,
+        la croissance de votre territoire dépendra de vos dons dictatoriaux
+        et de vos capacités stratégiques.
+
+        <br><br>
+
+        Vous commencez cette aventure avec un château rikiki (juste une tour),
+        quelques bijoux et un peu d'or, dont vous avez "hérité"
+        (plus sincèrement les avez-vous dérobés ?).
+
+        <br><br>
+
+        Quelques compagnons de votre engeance sont tout de même prêts
+        à vous faire allégeance (malgré votre piètre allure),
+        ils ont apporté quelques ressources avec eux.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="bloc medieval-sharp">Déroulé d'un tour</h2>
+
+      <p class="bloc cinzel">
+        <img src="/assets/imago/fleur.png" alt="Fleur" class="image-paragraphe">
+
+        <span class="enluminure">L</span>orsque le soleil se lève
+        sur les montagnes alentours, vous devez commencer à vous comporter
+        en dirigeant compétent.
+
+        Chaque jour, vous prenez de royales décisions :
+
+        Faut-il construire un bâtiment pour que votre royaume ressemble
+        un peu plus à quelque chose ?
+
+        <br><br>
+
+        <span class="enluminure">N'</span>étant pas encore très à l'aise
+        dans vos nouvelles fonctions, vous pouvez vous entourer de compères
+        des royaumes avoisinants...
+
+        Attention cependant à ne pas faire confiance au premier venu...
+        Certains sont déjà intéressés par vos maigres réserves.
+      </p>
+    </section>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="page" *ngIf="pageActuelle === 1">
+
+    <section>
+      <h2 class="bloc medieval-sharp">
+        Les Cinq Royaumes - Description des peuplades
+      </h2>
+
+      <div class="peuples-container">
+
+        <div class="peuple" (click)="ouvrirModal('licornes')">
+          <img src="/assets/imago/lico.jpeg" alt="Les licornes">
+          <h3>Nastralos</h3>
+        </div>
+
+        <div class="peuple" (click)="ouvrirModal('gobelins')">
+          <img src="/assets/imago/gobi.png" alt="Les gobelins">
+          <h3>Gobzarks</h3>
+        </div>
+
+        <div class="peuple" (click)="ouvrirModal('teuteux')">
+          <img src="/assets/imago/teut.jpg" alt="Les Teuteux">
+          <h3>Fadastram</h3>
+        </div>
+
+        <div class="peuple" (click)="ouvrirModal('princesses')">
+          <img src="/assets/imago/fire.jpg" alt="Les princesses de feu">
+          <h3>Pyrosse</h3>
+        </div>
+
+        <div class="peuple" (click)="ouvrirModal('canards')">
+          <img src="/assets/imago/canrad.jpeg" alt="Les canards">
+          <h3>Palmipedia</h3>
+        </div>
+
+      </div>
+    </section>
+
+    <section>
+      <h2 class="bloc medieval-sharp">Interactions avec les royaumes voisins</h2>
+
+      <p class="bloc cinzel">
+        <img src="/assets/imago/combat.png" alt="Combat entre royaumes" class="image-combat">
+
+        <span class="enluminure2">V</span>ous pouvez procéder à des échanges
+        de ressources en allant au Marché Central, n'hésitez pas à arnaquer
+        autrui, ils vous le rendront.
+
+        <br><br>
+
+        <span class="enluminure2">N</span>ul royaume ne vit éternellement
+        en paix... Guerroyer peut être une solution à vos déboires,
+        vous prenez cependant quelques risques... Prenez garde aux trahisons
+        probables dans ces contrées désolées.
+      </p>
+    </section>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="page" *ngIf="pageActuelle === 2">
+
+    <section>
+      <h2 class="bloc medieval-sharp">
+        Faire évoluer votre royaume (qui en a bien besoin...)
+      </h2>
+
+      <p class="bloc cinzel">
+        <span class="enluminure3">T</span><span class="enluminure4-b">able des niveaux</span>
+
+        <br>
+
+        <button class="bouton-niveaux" (click)="ouvrirNiveaux()">
+          ✦ Consulter ce vieux bout de parchemin ✦
+        </button>
+      </p>
+
+      <p class="bloc cinzel">
+        <span class="enluminure3">R</span><span class="enluminure4">essources</span>
+
+        <br><br>
+
+        <span class="enluminure3">P</span>our vous améliorer il vous faudra
+        de la nourriture
+
+        <img class="ressource" src="/assets/imago/NOURRITURE.png" alt="Nourriture">
+
+        , du bois
+
+        <img class="ressource" src="/assets/imago/BOIS.png" alt="Bois">
+
+        , des pierres
+
+        <img class="ressource" src="/assets/imago/PIERRE.png" alt="Pierre">
+
+        et surtout, surtout, de l'OR
+
+        <img class="ressource" src="/assets/imago/OR.png" alt="Or">
+
+        ! Rassurez-vous, l'argent appelle l'argent.
+
+        <br><br>
+
+        Les ressources sont échangeables contre toutes les autres au marché.
+        Vous pouvez aussi faire une proposition plus personnelle à vos alliés.
+        Certains bâtiments vous donnent un bonus d'extraction.
+      </p>
+
+      <p class="bloc cinzel">
+        <img src="/assets/imago/royaume.png" alt="Royaume" class="image-paragraphe">
+
+        <span class="enluminure3">B</span><span class="enluminure4">âtiments</span>
+
+        <br><br>
+
+        <span class="enluminure3">L</span>es bâtiments de production
+        (Mine, Carrière, Scierie et Taverne) vous octroient un bonus
+        pour une ressource spécifique : vous en aurez plus et plus vite.
+        Faites évoluer ces bâtiments pour obtenir un bonus plus conséquent.
+
+        <br><br>
+
+        Les maisons apportent un bon niveau de vie à votre peuple,
+        augmentant ainsi le taux de croissance de votre population.
+        Vous pouvez en construire autant que vous le souhaitez et les améliorer.
+
+        <br><br>
+
+        Le Château : Il évolue avec votre royaume, en plus ça vous fait
+        une belle jambe :
+
+        <br>
+
+        Il vous permet de faire évoluer vos autres bâtiments.
+
+        <br><br>
+
+        En cas d'attaque, vous pouvez subir des dégâts sur vos constructions
+        (pensez à réparer les trous dans la toiture).
+        Si votre bâtiment est détruit vous perdez le bonus associé.
+      </p>
+
+      <p class="bloc cinzel">
+        <span class="enluminure3">P</span><span class="enluminure4">opulation</span>
+
+        <br><br>
+
+        <span class="enluminure3">V</span>otre population est plutôt mal famée,
+        mais si elle est heureuse de votre gouvernance, elle vous le rendra ;
+        essayez donc d'en prendre soin.
+
+        <br><br>
+
+        Comme à Poule-Renard-Vipère, votre population est un peu plus efficace
+        contre tel-ou-tel adversaire mais se retrouvera en difficulté face
+        à tel-autre, à vous de voir...
+      </p>
+    </section>
+  </div>
+
+  <!-- PAGE 4 -->
+  <div class="page" *ngIf="pageActuelle === 3">
+
+    <section>
+      <h2 class="bloc medieval-sharp">
+        Victoires <span class="enluminure4">✦</span>
+      </h2>
+
+      <p class="bloc cinzel">
+        <img src="/assets/imago/ruine.png" alt="Ruines" class="image-ruine">
+
+        <span class="enluminure3-b">N</span><span class="enluminure4-b">iveau 10 !</span>
+
+        Vous avez atteint la prospérité, nul ne vous égale,
+        <br>
+        vous pouvez rejoindre vos prédécesseurs sur le mur des trophées...
+
+        <span class="enluminure4">✦</span>
+
+        <br><br>
+
+        <span class="enluminure3-b">A</span><span class="enluminure4-b">bandon adverse,</span>
+
+        plus personne ne viendra vous chercher des noises.
+
+        <span class="enluminure4">✦</span>
+
+        <br><br>
+
+        <span class="enluminure3-b">D</span><span class="enluminure4-b">omination militaire,</span>
+
+        vous faites peur à tout le monde.
+
+        <span class="enluminure4">✦</span>
+      </p>
+    </section>
+
+    <section>
+      <h2 class="bloc medieval-sharp">Défaite</h2>
+
+      <p class="bloc cinzel">
+        <span class="texte-centre">
+          <span class="enluminure2">V</span>
+          <span class="enluminure4-b">
+            otre château a subi trop de dégâts et vous voilà en banqueroute.
+          </span>
+
+          <br><br>
+
+          <span class="enluminure3">V</span>
+          <span class="enluminure4">otre royaume est en ruine !</span>
+        </span>
+      </p>
+    </section>
+  </div>
+
+  <!-- NAVIGATION -->
+  <nav class="navigation" aria-label="Navigation du manuscrit">
+
+    <button class="fleche"
+            (click)="pagePrecedente()"
+            [disabled]="pageActuelle === 0"
+            aria-label="Page précédente">
+      ❧
+    </button>
+
+    <span class="numero-page">
+      Page {{ pageActuelle + 1 }} / {{ nombrePages }}
+    </span>
+
+    <button class="fleche"
+            (click)="pageSuivante()"
+            [disabled]="pageActuelle === nombrePages - 1"
+            aria-label="Page suivante">
+      ➳
+    </button>
+
+  </nav>
+</main>
+
+<!-- MODALE DES PEUPLES -->
+<div class="modal" *ngIf="modalPeuple" (click)="fermerModal()">
+
+  <div class="modal-contenu" (click)="$event.stopPropagation()">
+
+    <button class="modal-fermer"
+            (click)="fermerModal()"
+            aria-label="Fermer">
+      &times;
+    </button>
+
+    <ng-container *ngIf="peupleSelectionne">
+
+      <img [src]="peupleSelectionne.image"
+           [alt]="peupleSelectionne.titre">
+
+      <h2>{{ peupleSelectionne.titre }}</h2>
+      <p>{{ peupleSelectionne.description }}</p>
+      <p>{{ peupleSelectionne.infos }}</p>
+      <p>{{ peupleSelectionne.batiment }}</p>
+      <p>{{ peupleSelectionne.bonusmalus }}</p>
+
+    </ng-container>
+  </div>
+</div>
+
+<!-- MODALE DES NIVEAUX -->
+<!-- MODALE DES NIVEAUX -->
+<div class="modal-niveaux"
+     *ngIf="modalNiveaux"
+     (click)="fermerNiveaux()">
+
+  <div class="contenu-niveaux"
+       (click)="$event.stopPropagation()">
+
+    <button class="fermer-niveaux"
+            (click)="fermerNiveaux()"
+            aria-label="Fermer">
+      &times;
+    </button>
+
+    <h2 class="titre-niveaux">Les niveaux du royaume</h2>
+
+    <p class="intro-niveaux">
+      Chaque évolution demande des ressources et une population suffisante.
+    </p>
+
+    <div class="liste-niveaux">
+
+      <article class="carte-niveau" *ngFor="let niveau of niveaux">
+
+        <h3>✦ {{ niveau.nom }}</h3>
+
+        <ul>
+          <li>
+            <strong><img class="ressource" src="/assets/imago/OR.png" alt="Or"> :</strong>
+            {{ niveau.or }}
+          </li>
+
+          <li>
+            <strong><img class="ressource" src="/assets/imago/PIERRE.png" alt="Pierre"> :</strong>
+            {{ niveau.pierre }}
+          </li>
+
+          <li>
+            <strong><img class="ressource" src="/assets/imago/BOIS.png" alt="Bois"> :</strong>
+            {{ niveau.bois }}
+          </li>
+
+          <li>
+            <strong><img class="ressource" src="/assets/imago/NOURRITURE.png" alt="Nourriture"> :</strong>
+            {{ niveau.nourriture | number:'1.0-0':'fr-FR' }}
+          </li>
+
+          <li>
+            {{ niveau.population }} habitants
+          </li>
+        </ul>
+
+      
+      </article>
+    </div>
+  </div>
+</div>

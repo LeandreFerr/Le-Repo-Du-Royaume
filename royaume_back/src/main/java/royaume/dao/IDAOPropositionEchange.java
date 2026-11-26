@@ -11,4 +11,9 @@ import royaume.model.StatutEchange;
 public interface IDAOPropositionEchange extends JpaRepository<PropositionEchange, Integer> {
 	
 	List<PropositionEchange> findByDestinataireAndStatut(Royaume destinataire, StatutEchange statut);
+List<PropositionEchange> findByStatut(StatutEchange statut);
+
+    List<PropositionEchange> findByDestinataireId(Integer destinataireId);
+
+    List<PropositionEchange> findByExpediteurId(Integer expediteurId);
 }

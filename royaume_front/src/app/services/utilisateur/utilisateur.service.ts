@@ -34,4 +34,10 @@ export class UtilisateurService {
       { pseudo, password }
     );
   }
+
+  getUtilisateurById(id: number): Observable<UtilisateurResponse> {
+  return this.http.get<UtilisateurResponse>(
+    `${this.apiUrl}/${id}`
+  );
+}
 }

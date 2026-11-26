@@ -1,19 +1,19 @@
-﻿import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
-import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import {
   FormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
 
-import { UtilisateurService, UtilisateurResponse }
-  from '../../services/utilisateur/utilisateur.service';
+
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { UtilisateurResponse, UtilisateurService } from '../../services/utilisateur/utilisateur.service';
 
 @Component({
   selector: 'app-page-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgIf],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './page-login.component.html',
   styleUrl: './page-login.component.css'
 })

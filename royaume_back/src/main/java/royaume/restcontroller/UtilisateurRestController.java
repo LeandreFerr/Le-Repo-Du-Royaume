@@ -1,6 +1,8 @@
 package royaume.restcontroller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,4 +33,12 @@ public class UtilisateurRestController {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+    @GetMapping("/{id}")
+public ResponseEntity<UtilisateurResponse> getUtilisateurById(
+    @PathVariable Integer id
+) {
+    // Récupération de l'utilisateur
+    UtilisateurResponse utilisateur = utilisateurService.getUtilisateurById(id);
+    return ResponseEntity.ok(utilisateur);
+}
 }

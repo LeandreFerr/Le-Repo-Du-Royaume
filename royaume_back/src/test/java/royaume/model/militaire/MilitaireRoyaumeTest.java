@@ -39,6 +39,9 @@ class MilitaireRoyaumeTest {
     void setUp() {
         attaquant = new Royaume(1, "Attaquant", PEUPLE_TEST);
         defenseur = new Royaume(2, "Defenseur", PEUPLE_TEST);
+        // Les défauts sont 200/200/500/200 : on repart de stocks vides
+        attaquant.setRessources(List.of(new QuantiteRessource(0, Ressource.PIERRE), new QuantiteRessource(0, Ressource.BOIS), new QuantiteRessource(0, Ressource.OR), new QuantiteRessource(0, Ressource.NOURRITURE)));
+        defenseur.setRessources(List.of(new QuantiteRessource(0, Ressource.PIERRE), new QuantiteRessource(0, Ressource.BOIS), new QuantiteRessource(0, Ressource.OR), new QuantiteRessource(0, Ressource.NOURRITURE)));
     }
 
     // ------------------------------------------------------------- helpers

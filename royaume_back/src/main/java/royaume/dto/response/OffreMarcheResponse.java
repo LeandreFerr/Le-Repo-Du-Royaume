@@ -12,5 +12,4 @@ public record OffreMarcheResponse(
     Integer vendeurId,
     String vendeurNom,
     QuantiteRessourceDTO propose,
-    QuantiteRessourceDTO demande
-) {}
+    QuantiteRessourceDTO demande) {}

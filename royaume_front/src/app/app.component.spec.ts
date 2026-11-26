@@ -19,12 +19,10 @@ describe('App', () => {
     fixture.detectChanges();
   });
 
-  it('creates the clean base app without rendering the map component on root', () => {
+  it('creates the base app with a router outlet and without the map component on root', () => {
     expect(app).toBeTruthy();
-    expect(app.title).toBe('Le Royaume');
 
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Le Royaume');
     expect(compiled.querySelector('router-outlet')).not.toBeNull();
     expect(compiled.querySelector('app-carte-royaume')).toBeNull();
     expect(compiled.querySelector('app-carte-royaume-sandbox')).toBeNull();

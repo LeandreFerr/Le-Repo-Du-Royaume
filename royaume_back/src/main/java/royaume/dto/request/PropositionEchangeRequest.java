@@ -6,7 +6,7 @@ import royaume.dto.QuantiteRessourceDTO;
 
 public record PropositionEchangeRequest(
 		Integer expediteurId,
-		Integer destinataireId, 
+	//	Integer destinataireId, 
 		QuantiteRessourceDTO offerte, 
 		QuantiteRessourceDTO demandee) {
 
