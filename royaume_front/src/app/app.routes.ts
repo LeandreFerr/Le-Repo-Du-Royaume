@@ -11,6 +11,10 @@ export const routes: Routes = [
   { path: 'login', component: PageLogin },
   { path: 'parties/creation', component: PartieCreation },
   { path: 'player', component: PlayerComponent },
+  {
+  path: 'player/:royaumeId',
+  component: PlayerComponent
+},
   { path: 'admin', component: AdminComponent },
   { path: 'carte-sandbox', redirectTo: 'admin', pathMatch: 'full' },
   {

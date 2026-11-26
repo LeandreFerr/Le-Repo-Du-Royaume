@@ -1,4 +1,6 @@
+
 import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 import { CarteRoyaumeComponent } from '../../components/carte-royaume/carte-royaume.component';
 
@@ -11,17 +13,20 @@ import { KingdomBuildingsComponent } from '../../components/player-panels/kingdo
 import {
   CarteDto,
   EmplacementCarteDto,
-  createDefaultCarte,
+  createDefaultCarte
 } from '../../models/carte.model';
 
 import {
   createDefaultRoyaume,
-  genererEmplacementsCercle,
+  genererEmplacementsCercle
 } from '../../services/placement-royaumes.util';
 
-import { Royaume } from '../../models/royaume.model';
 import { PalierNiveau } from '../../models/palier-niveau.model';
-import { RoyaumeService } from '../../services/royaume.service';
+import { Royaume } from '../../models/royaume.model';
+
+import {
+  AmeliorerRoyaumeService
+} from '../../services/royaume/ameliorer-royaume.service';
 
 @Component({
   selector: 'app-player',
@@ -33,11 +38,15 @@ import { RoyaumeService } from '../../services/royaume.service';
     KingdomBuildingsComponent
   ],
   templateUrl: './player.component.html',
-  styleUrl: './player.component.css',
+  styleUrl: './player.component.css'
 })
 export class PlayerComponent implements OnInit {
 
-  private readonly royaumeService = inject(RoyaumeService);
+  private readonly royaumeService = inject(AmeliorerRoyaumeService);
+  private readonly route = inject(ActivatedRoute);
+
+  // Identifiant récupéré depuis l'URL
+  royaumeId!: number;
 
   seed = 'royaume-1';
 
@@ -47,64 +56,117 @@ export class PlayerComponent implements OnInit {
 
   activePage: string | null = null;
 
-  // Données du joueur
-
+  // Données provenant du backend
   royaume: Royaume | null = null;
 
   paliers: PalierNiveau[] = [];
 
+  chargement = false;
+
+  erreur: string | null = null;
 
   ngOnInit(): void {
 
-    // Initialisation de la carte
+    this.initialiserCarte();
+
+    const id = Number(
+      this.route.snapshot.paramMap.get('royaumeId')
+    );
+
+    if (!Number.isInteger(id) || id <= 0) {
+      this.erreur = 'Identifiant du royaume invalide.';
+      return;
+    }
+
+    this.royaumeId = id;
+
+    this.chargerDonneesRoyaume();
+  }
+
+  // Initialisation visuelle de la carte
+  initialiserCarte(): void {
 
     const emplacements = genererEmplacementsCercle(6, this.seed)
       .map((emp, index) => ({
         ...emp,
         occupe: index < 4,
-        royaume: createDefaultRoyaume(emp.numero),
+        royaume: createDefaultRoyaume(emp.numero)
       }));
 
     this.carte = createDefaultCarte(emplacements);
+  }
 
-    // Récupération des données du joueur
+  // Chargement complet des données
+  chargerDonneesRoyaume(): void {
 
     this.chargerRoyaume();
     this.chargerPaliers();
   }
 
-
-  // Récupération du royaume
-
+  // Récupération du royaume depuis Spring
   chargerRoyaume(): void {
 
-    this.royaumeService.getMonRoyaume().subscribe({
-      next: (royaume) => {
-        this.royaume = royaume;
-      },
-      error: (error) => {
-        console.error('Erreur de récupération du royaume', error);
-      }
-    });
+    this.chargement = true;
+    this.erreur = null;
 
+    this.royaumeService.obtenirRoyaume(this.royaumeId)
+      .subscribe({
+
+        next: (royaume: Royaume) => {
+
+          this.royaume = royaume;
+          this.chargement = false;
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur de récupération du royaume :',
+            error
+          );
+
+          this.erreur = 'Impossible de récupérer votre royaume.';
+          this.chargement = false;
+
+        }
+
+      });
   }
 
-
-  // Récupération des paliers
-
+  // Récupération des informations du prochain palier
   chargerPaliers(): void {
 
-    this.royaumeService.getPaliers().subscribe({
-      next: (paliers) => {
-        this.paliers = paliers;
-      },
-      error: (error) => {
-        console.error('Erreur de récupération des paliers', error);
-      }
-    });
+    this.royaumeService.obtenirProchainPalier(this.royaumeId)
+      .subscribe({
 
+        next: (response) => {
+
+          this.paliers = response.prochainPalier
+            ? [response.prochainPalier]
+            : [];
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur de récupération du prochain palier :',
+            error
+          );
+
+          this.paliers = [];
+
+        }
+
+      });
   }
 
+  // Appelé après une amélioration du royaume
+  onRoyaumeModifie(): void {
+
+    this.chargerDonneesRoyaume();
+  }
 
   onEmplacementSelectionne(
     emplacement: EmplacementCarteDto | null
@@ -115,19 +177,13 @@ export class PlayerComponent implements OnInit {
     if (emplacement) {
       console.log('Royaume sélectionné :', emplacement);
     }
-
   }
-
 
   togglePage(page: string): void {
 
-    if (this.activePage === page) {
-      this.activePage = null;
-      console.log('Fermeture :', page);
-    } else {
-      this.activePage = page;
-      console.log('Ouverture :', page);
-    }
+    this.activePage = this.activePage === page
+      ? null
+      : page;
 
   }
 

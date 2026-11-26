@@ -68,7 +68,7 @@
                 <div class="progression-heading">
 
                     <span class="level-label">
-                        Progression vers le niveau {{ palier.niveau }}
+                        Progression vers le niveau {{ prochainPalier?.prochainPalier?.niveau }}
                     </span>
 
                     <strong class="progression-value">
@@ -136,7 +136,7 @@
 
                     <div>
 
-                        <h2>Préparer le niveau {{ palier.niveau }}</h2>
+                        <h2>Préparer le niveau {{ prochainPalier?.prochainPalier?.niveau }}</h2>
 
                         <p>
                             Chaque exigence doit être satisfaite
@@ -151,7 +151,7 @@
 
                         <span class="transition-arrow">→</span>
 
-                        <span>{{ palier.niveau }}</span>
+                        <span>{{ prochainPalier?.prochainPalier?.niveau }}</span>
 
                     </div>
 
@@ -225,13 +225,23 @@
 
 
                 <!-- Amélioration du royaume -->
+<button
+    class="upgrade-button"
+    type="button"
+    [disabled]="!peutAmeliorer || ameliorationEnCours"
+    (click)="ameliorerRoyaume()">
 
-                <button class="upgrade-button" type="button" [disabled]="!peutAmeliorer">
+    {{ ameliorationEnCours
+      ? 'Amélioration en cours...'
+      : 'Améliorer mon royaume' }}
+
+</button>
+                <!--<button class="upgrade-button" type="button" [disabled]="!peutAmeliorer">
 
                     Améliorer mon royaume
 
                 </button>
-
+            -->
                 <p class="upgrade-description">
 
                     @if (royaume.enRuine) {
