@@ -127,7 +127,79 @@
 
     <div class="contenu-modal">
 
-      <!-- FUTUR CONTENU DE LA MODALE MESSAGE -->
+      <!-- CONTENU DE LA MODALE MESSAGE -->
+
+     
+
+<div
+  id="modalMessage"
+  class="modal"
+  [class.ouverte]="modalMessage"
+  (click)="fermerModales()"
+>
+  <div
+    class="bulle fenetre-message"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreMessage"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreMessage">
+      <span class="enluminure">E</span>nvoyer un message
+    </h2>
+
+     <p class="destinataire-message">
+
+  À :
+
+  <strong>
+    {{ chargementAdverse
+      ? 'Chargement...'
+      : pseudoAdverse || 'Destinataire indisponible'
+    }}
+  </strong>
+
+</p>
+
+    <form (ngSubmit)="envoyerMessage()">
+
+      <textarea
+        [(ngModel)]="contenuMessage"
+        name="contenuMessage"
+        placeholder="Écrire un message..."
+        maxlength="1000"
+        required
+      ></textarea>
+
+      <div class="compteur-message">
+        {{ contenuMessage.length }} / 1000
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="!contenuMessage.trim() || envoiEnCours"
+      >
+        {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer' }}
+      </button>
+
+    </form>
+
+    <p class="message" *ngIf="messageEnvoi">
+      {{ messageEnvoi }}
+    </p>
+
+  </div>
+</div>
+
 
       <p class="message">
         Espace réservé à la messagerie.

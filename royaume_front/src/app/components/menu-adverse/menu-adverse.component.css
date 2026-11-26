@@ -329,4 +329,90 @@
     margin-bottom: 22px;
   }
 
+
+/* =========================================
+   MODALE MESSAGERIE
+========================================= */
+
+#modalMessage .fenetre-message {
+  max-width: 550px;
+}
+
+/* Destinataire */
+
+.destinataire-message {
+  margin-bottom: 18px;
+  color: #d8c58c;
+  font-size: 0.85rem;
+  text-align: left;
+}
+
+/* Zone de texte */
+
+#modalMessage textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+
+  padding: 15px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+
+  background: #21170f;
+  border: 1px solid #8d7141;
+  border-radius: 2px;
+}
+
+#modalMessage textarea::placeholder {
+  color: #8d7141;
+  opacity: 0.5;
+}
+
+#modalMessage textarea:focus {
+  outline: 2px solid #b89a5a;
+  outline-offset: 2px;
+}
+
+/* Compteur */
+
+.compteur-message {
+  margin-top: 7px;
+  color: #8d7141;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* Bouton envoyer */
+
+#modalMessage form button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 13px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+
+  background: linear-gradient(145deg, #352719, #17110c);
+  border: 2px solid #b89a5a;
+
+  cursor: pointer;
+}
+
+#modalMessage form button:hover:not(:disabled) {
+  color: #fff1cc;
+  background: #594226;
+  border-color: #f5d78b;
+  box-shadow: 0 0 15px rgba(201, 166, 91, 0.3);
+}
+
+#modalMessage form button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+
 }
