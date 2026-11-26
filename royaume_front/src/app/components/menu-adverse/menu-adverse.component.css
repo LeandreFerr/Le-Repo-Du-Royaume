@@ -1,0 +1,332 @@
+
+/* =========================================
+   1. CONTENEUR PRINCIPAL
+========================================= */
+
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: "Cinzel", serif;
+}
+
+
+/* =========================================
+   2. POLICES MÉDIÉVALES
+========================================= */
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("/assets/pikachu/fonts/Cinzel-VariableFont_wght.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Medieval Sharp";
+  src: url("/assets/pikachu/fonts/MedievalSharp-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cinzel Decoration";
+  src: url("/assets/pikachu/fonts/EagleLake-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+
+/* =========================================
+   3. MENU PRINCIPAL
+========================================= */
+
+.menu-adverse {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.menu-adverse-contenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 380px;
+  padding: 35px 30px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(53, 39, 25, 0.96),
+    rgba(23, 17, 12, 0.97)
+  );
+
+  border: 2px solid #b89a5a;
+  outline: 1px solid rgba(184, 154, 90, 0.35);
+  outline-offset: 5px;
+
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+
+/* =========================================
+   4. TITRE DU MENU
+========================================= */
+
+.titre-menu {
+  margin: 0 0 15px;
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+
+/* =========================================
+   5. ENLUMINURES
+========================================= */
+
+.enluminure {
+  font-family: "Cinzel Decoration", serif;
+  font-size: 3.5rem;
+  color: #8b1e16;
+  line-height: 1;
+}
+
+
+/* =========================================
+   6. BOUTONS DU MENU
+========================================= */
+
+.bouton-adverse {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 55px;
+  padding: 14px 18px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  background: linear-gradient(
+    145deg,
+    #352719,
+    #17110c
+  );
+
+  border: 2px solid #b89a5a;
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.bouton-adverse:hover {
+  color: #fff1cc;
+
+  background: linear-gradient(
+    145deg,
+    #594226,
+    #352719
+  );
+
+  border-color: #f5d78b;
+
+  box-shadow: 0 0 18px rgba(201, 166, 91, 0.35);
+
+  transform: translateY(-2px);
+}
+
+.bouton-adverse:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================
+   7. FENÊTRES MODALES
+========================================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(8, 6, 4, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.modal.ouverte {
+  display: flex;
+}
+
+
+/* =========================================
+   8. CONTENU DES MODALES
+========================================= */
+
+.bulle {
+  position: relative;
+  box-sizing: border-box;
+
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+
+  overflow-y: auto;
+  padding: 35px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  text-align: center;
+
+  background: linear-gradient(
+    145deg,
+    rgba(53, 39, 25, 0.97),
+    rgba(23, 17, 12, 0.98)
+  );
+
+  border: 2px solid #b89a5a;
+  outline: 1px solid rgba(184, 154, 90, 0.35);
+  outline-offset: 5px;
+
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+
+/* =========================================
+   9. TITRES DES MODALES
+========================================= */
+
+.bulle h2 {
+  margin: 0 30px 25px;
+
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 1.8rem;
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   10. CONTENU INTÉRIEUR
+========================================= */
+
+.contenu-modal {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+
+/* =========================================
+   11. CROIX DE FERMETURE
+========================================= */
+
+.fermer {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+
+  width: 35px;
+  height: 35px;
+  padding: 0;
+
+  color: #e8c982;
+  font-family: serif;
+  font-size: 1.8rem;
+  line-height: 1;
+
+  background: transparent;
+  border: none;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s,
+    transform 0.2s;
+}
+
+.fermer:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+
+/* =========================================
+   12. MESSAGES
+========================================= */
+
+.message {
+  margin-top: 18px;
+
+  color: #d8c58c;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  line-height: 1.6;
+
+  text-align: center;
+}
+
+
+/* =========================================
+   13. RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .menu-adverse {
+    padding: 20px;
+  }
+
+  .menu-adverse-contenu {
+    max-width: 340px;
+    padding: 30px 20px;
+    gap: 16px;
+  }
+
+  .titre-menu {
+    font-size: 1.4rem;
+  }
+
+  .bouton-adverse {
+    min-height: 50px;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+
+  .modal {
+    padding: 15px;
+  }
+
+  .bulle {
+    padding: 30px 20px;
+    max-height: 80vh;
+  }
+
+  .bulle h2 {
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+  }
+
+}

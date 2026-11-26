@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
 import { CarteRoyaumeSandboxComponent } from './components/carte-royaume/carte-royaume-sandbox.component';
-import { PageLogin} from './pages/page-login/page-login.component';
+import { PageLogin } from './pages/page-login/page-login.component';
 
-import {PlaceDuMarcheComponent} from './components/place-du-marche/place-du-marche.component';
+import { PlaceDuMarcheComponent } from './components/place-du-marche/place-du-marche.component';
+import { MenuAdverseComponent } from './components/menu-adverse/menu-adverse.component';
 
 export const routes: Routes = [
   {
@@ -28,5 +29,9 @@ export const routes: Routes = [
   {
     path: 'place-du-marche',
     component: PlaceDuMarcheComponent
-  }
+  },
+  {
+  path: 'menu-adverse',
+  component: MenuAdverseComponent
+},
 ];

@@ -1,0 +1,187 @@
+
+<!-- =====================================================
+     MENU PRINCIPAL DU ROYAUME ADVERSE
+====================================================== -->
+
+<div class="menu-adverse">
+
+  <div class="menu-adverse-contenu">
+
+    <h2 class="titre-menu">
+      <span class="enluminure">R</span>oyaume adverse
+    </h2>
+
+    <!-- BOUTON ÉCHANGE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirEchange()"
+    >
+      Proposer un échange
+    </button>
+
+    <!-- BOUTON MESSAGE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirMessage()"
+    >
+      Envoyer un message
+    </button>
+
+    <!-- BOUTON ATTAQUE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirAttaque()"
+    >
+      Attaquer
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODALE ÉCHANGE
+====================================================== -->
+
+<div
+  id="modalEchange"
+  class="modal"
+  [class.ouverte]="modalEchange"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreEchange"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreEchange">
+      <span class="enluminure">P</span>roposer un échange
+    </h2>
+
+    <div class="contenu-modal">
+
+      <!-- FUTUR CONTENU DE LA MODALE ÉCHANGE -->
+
+      <p class="message">
+        Espace réservé à la proposition d'échange.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODALE MESSAGE
+====================================================== -->
+
+<div
+  id="modalMessage"
+  class="modal"
+  [class.ouverte]="modalMessage"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreMessage"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreMessage">
+      <span class="enluminure">E</span>nvoyer un message
+    </h2>
+
+    <div class="contenu-modal">
+
+      <!-- FUTUR CONTENU DE LA MODALE MESSAGE -->
+
+      <p class="message">
+        Espace réservé à la messagerie.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODALE ATTAQUE
+====================================================== -->
+
+<div
+  id="modalAttaque"
+  class="modal"
+  [class.ouverte]="modalAttaque"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreAttaque"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreAttaque">
+      <span class="enluminure">A</span>ttaquer
+    </h2>
+
+    <div class="contenu-modal">
+
+      <!-- FUTUR CONTENU DE LA MODALE ATTAQUE -->
+
+      <p class="message">
+        Espace réservé aux informations d'attaque.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
