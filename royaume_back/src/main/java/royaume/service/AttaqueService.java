@@ -64,6 +64,8 @@ public class AttaqueService {
         }
     }
     
+     
+    
     private void rattacherEmplacementSiAbsent(Royaume royaume) {
         if (royaume.getEmplacement() == null && royaume.getId() != null) {
             daoEmplacementCarte.findByRoyaumeId(royaume.getId())
@@ -165,6 +167,15 @@ public class AttaqueService {
     private ContingentTroupeResponse convertirContingentEnResponse(ContingentTroupe c) {
         return new ContingentTroupeResponse(c.getType(), c.getQuantite());
     }
+    
+    public List<ContingentTroupeResponse> trouverTroupesDisponibles(Integer royaumeId) {
+        Royaume royaume = trouverRoyaume(royaumeId);
+
+        return royaume.getGarnison().stream()
+                .map(this::convertirContingentEnResponse)
+                .toList();
+    }
+    
     
     
 }

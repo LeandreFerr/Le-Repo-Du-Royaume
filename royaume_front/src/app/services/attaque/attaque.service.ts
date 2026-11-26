@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface ContingentTroupeResponse {
@@ -35,6 +35,23 @@ export class AttaqueService {
   private apiUrl = 'http://localhost:8080/api/attaques';
 
   constructor(private http: HttpClient) {}
+
+  lancer(request: {
+  attaquantId: number;
+  defenseurId: number;
+  troupes: Record<string, number>;
+}) {
+  return this.http.post<AttaqueResponse>(
+    `${this.apiUrl}`,
+    request
+  );
+}
+
+trouverTroupesDisponibles(royaumeId: number) {
+  return this.http.get<ContingentTroupeResponse[]>(
+    `${this.apiUrl}/royaume/${royaumeId}/troupes-disponibles`
+  );
+}
   
   listerToutes(): Observable<AttaqueResponse[]> {
     return this.http.get<AttaqueResponse[]>(this.apiUrl);

@@ -78,7 +78,7 @@ public class UtilisateurService {
         );
     }
     
-    
+    @Transactional
     public UtilisateurResponse getUtilisateurById(Integer id) {
 
     Utilisateur utilisateur = utilisateurDAO.findById(id)

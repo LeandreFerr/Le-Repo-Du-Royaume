@@ -664,3 +664,26 @@
 }
 
 }
+
+/* =========================================
+   MODALE ATTAQUE
+========================================= */
+
+#modalAttaque {
+  z-index: 1001;
+}
+
+#modalAttaque .fenetre-attaque {
+  max-width: 600px;
+  padding: 35px;
+}
+
+#modalAttaque app-attaque-adverse {
+  display: block;
+  width: 100%;
+}
+
+#modalAttaque .bulle {
+  overflow-y: auto;
+  max-height: 90vh;
+}
