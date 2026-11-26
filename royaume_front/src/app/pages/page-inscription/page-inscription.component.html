@@ -1,0 +1,35 @@
+<div class="login-container">
+
+  <h1>Inscription au Royaume</h1>
+
+  <form [formGroup]="formInscription" (ngSubmit)="inscrire()">
+
+    <label for="pseudo">Pseudo</label>
+    <input id="pseudo" type="text" formControlName="pseudo" placeholder="3 à 30 caractères">
+    @if (formInscription.controls.pseudo.touched && formInscription.controls.pseudo.invalid) {
+      <p class="error">Le pseudo doit contenir entre 3 et 30 caractères.</p>
+    }
+
+    <label for="email">Email</label>
+    <input id="email" type="email" formControlName="email" placeholder="vous@exemple.fr">
+    @if (formInscription.controls.email.touched && formInscription.controls.email.invalid) {
+      <p class="error">Email invalide.</p>
+    }
+
+    <label for="password">Mot de passe</label>
+    <input id="password" type="password" formControlName="password" placeholder="6 caractères minimum">
+    @if (formInscription.controls.password.touched && formInscription.controls.password.invalid) {
+      <p class="error">Le mot de passe doit contenir au moins 6 caractères.</p>
+    }
+
+    @if (erreur) {
+      <p class="error">{{ erreur }}</p>
+    }
+
+    <button type="submit">S'inscrire</button>
+
+    <p>Déjà inscrit ? <a routerLink="/login">Se connecter</a></p>
+
+  </form>
+
+</div>

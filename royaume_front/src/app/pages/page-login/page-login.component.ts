@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   FormBuilder,
   ReactiveFormsModule,
@@ -12,7 +12,7 @@ import { UtilisateurService, UtilisateurResponse }
 @Component({
   selector: 'app-page-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './page-login.component.html',
   styleUrl: './page-login.component.css'
 })

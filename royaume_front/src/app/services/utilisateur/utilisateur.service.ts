@@ -32,7 +32,9 @@ export interface InscriptionRequest {
 })
 export class UtilisateurService {
 
-  private apiUrl = 'http://localhost:8080/api/utilisateurs';
+  
+  //private apiUrl = 'http://localhost:8080/api/utilisateurs';
+  private apiUrl = 'http://localhost:8090/api/utilisateurs';
 
   constructor(private http: HttpClient) {}
 

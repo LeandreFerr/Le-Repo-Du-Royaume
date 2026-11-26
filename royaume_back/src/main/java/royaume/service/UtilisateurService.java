@@ -1,12 +1,16 @@
 package royaume.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
 import royaume.dao.IDAOUtilisateur;
+import royaume.dto.request.InscriptionRequest;
 import royaume.dto.request.UtilisateurRequest;
 import royaume.dto.response.UtilisateurResponse;
-import royaume.model.Utilisateur;
 import royaume.model.Royaume;
+import royaume.model.Utilisateur;
 
 @Service
 public class UtilisateurService {
