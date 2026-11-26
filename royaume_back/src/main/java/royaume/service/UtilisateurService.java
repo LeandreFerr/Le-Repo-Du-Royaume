@@ -32,8 +32,7 @@ public class UtilisateurService {
         Utilisateur utilisateur = utilisateurDAO
                 .findByPseudo(request.pseudo())
                 .or(() -> utilisateurDAO.findByEmail(request.pseudo()))
-                .orElseThrow(() ->
-                        new RuntimeException("Identifiants incorrects"));
+                .orElseThrow(() -> new RuntimeException("Identifiants incorrects"));
 
         // Vérification du mot de passe
         if (!utilisateur.seConnecter(request.password())) {
@@ -52,8 +51,7 @@ public class UtilisateurService {
                 utilisateur.isOnline(),
                 utilisateur.isAdmin(),
                 royaume != null ? royaume.getId() : null,
-                royaume != null ? royaume.getNom() : null
-        );
+                royaume != null ? royaume.getNom() : null);
     }
 
     @Transactional
@@ -74,7 +72,15 @@ public class UtilisateurService {
         return new UtilisateurResponse(
                 sauvegarde.getId(), sauvegarde.getPseudo(), sauvegarde.getEmail(),
                 sauvegarde.isOnline(), sauvegarde.isAdmin(), null, null);
-    }  
+    }
 
+    @Transactional
+    public void logout(Integer id) {
+        Utilisateur utilisateur = utilisateurDAO.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "L'utilisateur " + id + " n'existe pas."));
+        utilisateur.seDeconnecter();
+        utilisateurDAO.save(utilisateur);
+    }
 
 }

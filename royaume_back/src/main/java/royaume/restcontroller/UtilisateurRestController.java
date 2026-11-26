@@ -3,6 +3,7 @@ package royaume.restcontroller;
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,4 +42,11 @@ public class UtilisateurRestController {
         UtilisateurResponse response = utilisateurService.inscrire(request);
         return ResponseEntity.created(URI.create("/api/utilisateurs/" + response.id())).body(response);
     }
+
+    @PostMapping("/{id}/logout")
+    public ResponseEntity<Void> logout(@PathVariable Integer id) {
+        utilisateurService.logout(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

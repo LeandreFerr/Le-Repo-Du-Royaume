@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
 import { PartieCreation } from './components/carte-royaume/partie-creation/partie-creation.component';
-import { PageLogin } from './pages/page-login/page-login.component';
 import { AdminComponent } from './pages/admin/admin.component';
-import { PlayerComponent } from './pages/player/player.component';
 import { PageInscription } from './pages/page-inscription/page-inscription.component';
+import { PageLogin } from './pages/page-login/page-login.component';
+import { PlayerComponent } from './pages/player/player.component';
 
 
 export const routes: Routes = [
@@ -14,6 +14,7 @@ export const routes: Routes = [
   { path: 'carte-sandbox', redirectTo: 'admin', pathMatch: 'full' },
   { path: '', redirectTo: 'player', pathMatch: 'full' },
   { path: 'inscription', component: PageInscription },
+
 ];
 
 

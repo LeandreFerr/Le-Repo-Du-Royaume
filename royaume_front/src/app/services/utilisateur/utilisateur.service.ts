@@ -32,11 +32,11 @@ export interface InscriptionRequest {
 })
 export class UtilisateurService {
 
-  
+
   //private apiUrl = 'http://localhost:8080/api/utilisateurs';
   private apiUrl = 'http://localhost:8090/api/utilisateurs';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   login(pseudo: string, password: string): Observable<UtilisateurResponse> {
 
@@ -48,6 +48,10 @@ export class UtilisateurService {
 
   inscrire(request: InscriptionRequest): Observable<UtilisateurResponse> {
     return this.http.post<UtilisateurResponse>(this.apiUrl, request);
+  }
+
+  logout(id: number): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/logout`, {});
   }
 
 

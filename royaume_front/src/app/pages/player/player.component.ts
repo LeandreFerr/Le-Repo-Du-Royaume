@@ -1,11 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
-
 import { CarteRoyaumeComponent } from '../../components/carte-royaume/carte-royaume.component';
-
 import { KingdomOverviewComponent } from '../../components/player-panels/kingdom-overview/kingdom-overview.component';
-
 import { KingdomDevelopmentComponent } from '../../components/player-panels/kingdom-development/kingdom-development.component';
-
 import { KingdomBuildingsComponent } from '../../components/player-panels/kingdom-buildings/kingdom-buildings.component';
 
 import {
@@ -23,6 +19,8 @@ import { Royaume } from '../../models/royaume.model';
 import { PalierNiveau } from '../../models/palier-niveau.model';
 import { RoyaumeService } from '../../services/royaume.service';
 
+import { BoutonDeconnexion } from '../../components/bouton-deconnexion/bouton-deconnexion.component';
+
 @Component({
   selector: 'app-player',
   standalone: true,
@@ -30,7 +28,8 @@ import { RoyaumeService } from '../../services/royaume.service';
     CarteRoyaumeComponent,
     KingdomOverviewComponent,
     KingdomDevelopmentComponent,
-    KingdomBuildingsComponent
+    KingdomBuildingsComponent,
+    BoutonDeconnexion
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css',

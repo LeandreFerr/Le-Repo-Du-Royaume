@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CarteRoyaumeComponent } from '../../components/carte-royaume/carte-royaume.component';
+import { BoutonDeconnexion } from '../../components/bouton-deconnexion/bouton-deconnexion.component';
+
 import {
   ARCHETYPES_CARTE,
   ArchetypeCarte,
@@ -31,7 +33,7 @@ import { randomSeedString } from '../../services/prng.util';
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarteRoyaumeComponent],
+  imports: [CommonModule, FormsModule, CarteRoyaumeComponent, BoutonDeconnexion,],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
 })

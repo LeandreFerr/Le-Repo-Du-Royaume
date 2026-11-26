@@ -2,6 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AdminComponent } from './admin.component';
 
+
 function createStub2DContext(): CanvasRenderingContext2D {
   const gradientStub = { addColorStop: vi.fn() };
   return {

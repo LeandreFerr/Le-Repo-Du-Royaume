@@ -2,6 +2,8 @@
 import { Component } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
+import { SessionService } from '../../services/session/session.service';
+
 
 import {
   FormBuilder,
@@ -29,6 +31,7 @@ export class PageLogin {
   constructor(
     private fb: FormBuilder,
     private utilisateurService: UtilisateurService,
+    private session: SessionService,
     private router: Router
   ) {
     this.formLogin = this.fb.group({
@@ -49,9 +52,9 @@ export class PageLogin {
     this.utilisateurService.login(pseudo!, password!).subscribe({
 
       next: (utilisateur: UtilisateurResponse) => {
-        console.log('Utilisateur connectÃ© :', utilisateur);
+        this.session.enregistrer(utilisateur);
         this.erreur = '';
-        this.router.navigate(['/carte-sandbox']);
+        this.router.navigate([utilisateur.admin ? '/admin' : '/player']);
       },
 
       error: () => {
@@ -60,4 +63,6 @@ export class PageLogin {
 
     });
   }
+
+
 }
