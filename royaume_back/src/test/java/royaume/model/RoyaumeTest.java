@@ -49,9 +49,20 @@ class RoyaumeTest {
     void setUp() {
         List<QuantiteRessource> listeRessources = new ArrayList<>(List.of(
                 new QuantiteRessource(100, Ressource.BOIS),
-                new QuantiteRessource(50, Ressource.PIERRE)
+                new QuantiteRessource(50, Ressource.PIERRE),
+                new QuantiteRessource(0, Ressource.OR),
+                new QuantiteRessource(0, Ressource.NOURRITURE)
         ));
         royaume = new Royaume(1, "TPT", PEUPLE_TEST, 1, 100, 0, 0, 0, false, listeRessources);
+    }
+
+    /** Remet à zéro les 4 stocks (défauts du Royaume : 200/200/500/200). */
+    private static void zeroStocks(Royaume cible) {
+        cible.setRessources(List.of(
+                new QuantiteRessource(0, Ressource.PIERRE),
+                new QuantiteRessource(0, Ressource.BOIS),
+                new QuantiteRessource(0, Ressource.OR),
+                new QuantiteRessource(0, Ressource.NOURRITURE)));
     }
 
     /**
@@ -382,6 +393,7 @@ class RoyaumeTest {
         void testConstructeurCompletAvecListeRessourcesNull() {
             // When
             Royaume sansListe = new Royaume(1, "Avalon", PEUPLE_TEST, 1, 100, 0, 0, 0, false, null);
+            zeroStocks(sansListe); // départ à zéro pour tester le crédit
 
             // Then
             assertNotNull(sansListe.getRessources(), "ressources null en entrée doit être converti en liste vide sûre");
@@ -466,6 +478,7 @@ class RoyaumeTest {
             // Given : List.of est immuable (cas fréquent dans les configurations et tests)
             List<QuantiteRessource> listeImmuable = List.of(new QuantiteRessource(50, Ressource.BOIS));
             Royaume r = new Royaume(3, "Sylve", PEUPLE_TEST, 1, 100, 0, 0, 0, false, listeImmuable);
+            zeroStocks(r);
 
             // When / Then : ne doit pas lever UnsupportedOperationException lors de l'ajout d'OR
             assertDoesNotThrow(() -> r.crediterRessources(Ressource.OR, 40));
@@ -740,7 +753,8 @@ class RoyaumeTest {
             // setRessources(null) -> initialise liste par défaut
             royaume.setRessources(null);
             assertNotNull(royaume.getRessources());
-            assertEquals(0, getStock(royaume, Ressource.BOIS));
+            assertEquals(200, getStock(royaume, Ressource.BOIS), "Défaut BOIS");
+            assertEquals(500, getStock(royaume, Ressource.OR), "Défaut OR");
         }
     }
 
@@ -822,6 +836,7 @@ class RoyaumeTest {
         void testCrediterRessourceAbsenteSurNouveauRoyaume(Ressource type) {
             // Given : Royaume neuf sans aucun stock prérempli
             Royaume neuf = new Royaume(10, "Fondation", PEUPLE_TEST);
+            zeroStocks(neuf);
 
             // When : deux crédits successifs sur une ressource initialement absente
             neuf.crediterRessources(type, 40);
@@ -894,6 +909,7 @@ class RoyaumeTest {
         @DisplayName("Retourne false sans altérer aucun stock si le solde est insuffisant ou la ressource absente")
         void testDebiterEchecSoldeInsuffisantOuRessourceAbsente() {
             Royaume neuf = new Royaume(11, "Pauvre", PEUPLE_TEST);
+            zeroStocks(neuf);
 
             assertAll(
                 () -> assertFalse(royaume.debiterRessources(Ressource.BOIS, 101), "Stock insuffisant"),

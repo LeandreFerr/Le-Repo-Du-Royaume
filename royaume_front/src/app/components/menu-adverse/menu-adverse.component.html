@@ -1,0 +1,256 @@
+
+<!-- =====================================================
+     MENU PRINCIPAL DU ROYAUME ADVERSE
+====================================================== -->
+
+<div class="menu-adverse">
+
+  <div class="menu-adverse-contenu">
+
+    <h2 class="titre-menu">
+      <span class="enluminure">R</span>oyaume adverse
+    </h2>
+
+    <!-- BOUTON ÉCHANGE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirEchange()"
+    >
+      Proposer un échange
+    </button>
+
+    <!-- BOUTON MESSAGE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirMessage()"
+    >
+      Envoyer un message
+    </button>
+
+    <!-- BOUTON ATTAQUE -->
+
+    <button
+      type="button"
+      class="bouton-adverse"
+      (click)="ouvrirAttaque()"
+    >
+      ⚔ Attaquer ⚔
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODALE ÉCHANGE
+====================================================== -->
+
+<div
+  id="modalEchange"
+  class="modal"
+  [class.ouverte]="modalEchange"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreEchange"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreEchange">
+      <span class="enluminure">P</span>roposer un échange
+    </h2>
+
+    <form
+      (submit)="proposerEchange(
+        $event,
+        ressourceDemandee.value,
+        quantiteDemandee.value,
+        ressourceProposee.value,
+        quantiteProposee.value
+      )"
+    >
+
+      <label for="ressourceDemandee">
+        Ressource demandée :
+      </label>
+
+      <select
+        id="ressourceDemandee"
+        required
+        #ressourceDemandee
+      >
+        <option value="">Choisir</option>
+        <option value="OR">Or</option>
+        <option value="PIERRE">Pierre</option>
+        <option value="BOIS">Bois</option>
+        <option value="NOURRITURE">Nourriture</option>
+      </select>
+
+      <label for="quantiteDemandee">
+        Quantité demandée :
+      </label>
+
+      <input
+        id="quantiteDemandee"
+        type="text"
+        min="1"
+        inputmode="numeric" 
+        required
+        #quantiteDemandee
+      >
+
+      <label for="ressourceProposee">
+        Ressource proposée :
+      </label>
+
+      <select
+        id="ressourceProposee"
+        required
+        #ressourceProposee
+      >
+        <option value="">Choisir</option>
+        <option value="OR">Or</option>
+        <option value="PIERRE">Pierre</option>
+        <option value="BOIS">Bois</option>
+        <option value="NOURRITURE">Nourriture</option>
+      </select>
+
+      <label for="quantiteProposee">
+        Quantité proposée :
+      </label>
+
+      <input
+        id="quantiteProposee"
+        type="text"
+        inputmode="numeric"
+        min="1"
+        required
+        #quantiteProposee
+      >
+
+      <button type="submit" [disabled]="envoiEchangeEnCours">
+        {{ envoiEchangeEnCours ? 'Envoi en cours...' : 'Proposer cet échange' }}
+      </button>
+
+    </form>
+
+    <p class="message" *ngIf="messageEchange">
+      {{ messageEchange }}
+    </p>
+
+  </div>
+
+</div>
+
+
+<!-- =====================================================
+     MODALE MESSAGE
+====================================================== -->
+
+<div
+  id="modalMessage"
+  class="modal"
+  [class.ouverte]="modalMessage"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle fenetre-message"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreMessage"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    <h2 id="titreMessage">
+      <span class="enluminure">E</span>nvoyer un message
+    </h2>
+
+    <div class="contenu-modal">
+
+      <p class="destinataire-message">
+        À :
+        <strong>
+          {{ chargementAdverse
+            ? 'Chargement...'
+            : pseudoAdverse || 'Destinataire indisponible'
+          }}
+        </strong>
+      </p>
+
+      
+<form
+  class="formulaire-message"
+  (ngSubmit)="envoyerMessage()"
+>
+
+  <label for="contenuMessage">
+    Votre message :
+  </label>
+
+  <textarea
+    id="contenuMessage"
+    class="champ-message"
+    [(ngModel)]="contenuMessage"
+    name="contenuMessage"
+    placeholder="Écrire votre message..."
+    maxlength="1000"
+    required
+  ></textarea>
+
+  <div class="compteur-message">
+    {{ contenuMessage.length }} / 1000
+  </div>
+
+  <button
+    type="submit"
+    class="bouton-envoyer-message"
+    [disabled]="!contenuMessage.trim() || envoiEnCours"
+  >
+    <span class="icone-envoi">✉</span>
+    {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer le message' }}
+  </button>
+
+</form>
+
+<p class="message message-succes" *ngIf="messageSucces">
+  {{ messageSucces }}
+</p>
+
+<p class="message message-erreur" *ngIf="erreurMessage">
+  {{ erreurMessage }}
+</p>
+
+
+    </div>
+
+  </div>
+
+</div>

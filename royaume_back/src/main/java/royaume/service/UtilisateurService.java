@@ -83,4 +83,28 @@ public class UtilisateurService {
         utilisateurDAO.save(utilisateur);
     }
 
+    public UtilisateurResponse getUtilisateurById(Integer id) {
+
+    Utilisateur utilisateur = utilisateurDAO.findById(id)
+            .orElseThrow(() ->
+                    new RuntimeException("Utilisateur introuvable : " + id));
+
+    Royaume royaume = utilisateur.getRoyaume();
+
+    return new UtilisateurResponse(
+            utilisateur.getId(),
+            utilisateur.getPseudo(),
+            utilisateur.getEmail(),
+            utilisateur.isOnline(),
+            utilisateur.isAdmin(),
+            royaume != null ? royaume.getId() : null,
+            royaume != null ? royaume.getNom() : null
+    );
+}
+/* 
+getUtilisateurById(id: number): Observable<UtilisateurResponse> {
+  return this.http.get<UtilisateurResponse>(
+    `${this.apiUrl}/${id}`
+  );
+}*/
 }

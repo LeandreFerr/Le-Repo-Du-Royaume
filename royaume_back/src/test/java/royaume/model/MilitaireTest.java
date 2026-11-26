@@ -54,7 +54,8 @@ public class MilitaireTest {
 
     @Test
     void recruterSansRessourcesEchoue() {
-        Royaume pauvre = new Royaume(2, "Pauvre", PEUPLE_TEST);   // stocks à 0
+        Royaume pauvre = new Royaume(2, "Pauvre", PEUPLE_TEST);
+        pauvre.setRessources(List.of(new QuantiteRessource(0, Ressource.PIERRE), new QuantiteRessource(0, Ressource.BOIS), new QuantiteRessource(0, Ressource.OR), new QuantiteRessource(0, Ressource.NOURRITURE)));   // stocks à 0 explicitement
 
         assertFalse(pauvre.recruterTroupe(TypeTroupe.ARCHER));
         assertEquals(0, pauvre.getPopulationEnEntrainement());

@@ -82,6 +82,7 @@ public class Marche {
 		vendeur.debiterRessources(aVendre.getRessource(), aVendre.getQuantite());
 
 		OffreMarche annonce = new OffreMarche(null, LocalDateTime.now(), StatutOffre.DISPONIBLE, vendeur, aVendre, aRecevoir);
+		annonce.setMarche(this);
 		this.offres.add(annonce);
 		return annonce;
 	}

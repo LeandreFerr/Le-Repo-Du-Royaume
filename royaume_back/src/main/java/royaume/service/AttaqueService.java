@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import royaume.dao.IDAOAttaque;
+import royaume.dao.IDAOEmplacementCarte;
 import royaume.dao.IDAORoyaume;
 import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.request.LancerAttaqueRequest;
@@ -25,11 +26,12 @@ public class AttaqueService {
 
     private final IDAOAttaque daoAttaque;
     private final IDAORoyaume daoRoyaume;
+    private final IDAOEmplacementCarte daoEmplacementCarte;
 
-    public AttaqueService(IDAOAttaque daoAttaque, IDAORoyaume daoRoyaume) {
+    public AttaqueService(IDAOAttaque daoAttaque, IDAORoyaume daoRoyaume, IDAOEmplacementCarte daoEmplacementCarte) {
         this.daoAttaque = daoAttaque;
         this.daoRoyaume = daoRoyaume;
-    }
+        this.daoEmplacementCarte = daoEmplacementCarte;   }
 
     @Transactional
     public AttaqueResponse lancer(LancerAttaqueRequest request) {
@@ -37,6 +39,9 @@ public class AttaqueService {
         Royaume attaquant = trouverRoyaume(request.attaquantId());
         Royaume defenseur = trouverRoyaume(request.defenseurId());
 
+        rattacherEmplacementSiAbsent(attaquant);
+        rattacherEmplacementSiAbsent(defenseur);
+        
         if (attaquant.estEnRuine()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Un royaume en ruine ne peut pas attaquer.");
         }
@@ -51,6 +56,49 @@ public class AttaqueService {
                     .calculerDistanceEntre(attaquant, defenseur);
 
             Attaque attaque = attaquant.lancerAttaque(defenseur, request.troupes(), distance, LocalDateTime.now());
+            return convertirEnResponse(daoAttaque.save(attaque));
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (IllegalStateException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage());
+        }
+    }
+    
+    private void rattacherEmplacementSiAbsent(Royaume royaume) {
+        if (royaume.getEmplacement() == null && royaume.getId() != null) {
+            daoEmplacementCarte.findByRoyaumeId(royaume.getId())
+                    .ifPresent(royaume::setEmplacement);
+        }
+    }
+    
+    @Transactional
+    public AttaqueResponse resoudreCombat(Integer attaqueId) {
+        Attaque attaque = trouverEntiteParId(attaqueId);
+
+        rattacherEmplacementSiAbsent(attaque.getAttaquant());
+        rattacherEmplacementSiAbsent(attaque.getDefenseur());
+
+        try {
+            attaque.resoudreCombat();
+            daoRoyaume.save(attaque.getAttaquant());
+            daoRoyaume.save(attaque.getDefenseur());
+            return convertirEnResponse(daoAttaque.save(attaque));
+        } catch (IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (IllegalStateException exception) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, exception.getMessage());
+        }
+    }
+
+    @Transactional
+    public AttaqueResponse receptionnerRetour(Integer attaqueId) {
+        Attaque attaque = trouverEntiteParId(attaqueId);
+
+        rattacherEmplacementSiAbsent(attaque.getAttaquant());
+
+        try {
+            attaque.receptionnerRetour();
+            daoRoyaume.save(attaque.getAttaquant());
             return convertirEnResponse(daoAttaque.save(attaque));
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
@@ -117,4 +165,6 @@ public class AttaqueService {
     private ContingentTroupeResponse convertirContingentEnResponse(ContingentTroupe c) {
         return new ContingentTroupeResponse(c.getType(), c.getQuantite());
     }
+    
+    
 }

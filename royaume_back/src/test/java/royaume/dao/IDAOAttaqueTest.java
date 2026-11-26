@@ -34,7 +34,10 @@ class IDAOAttaqueTest {
             entityManager.persist(peuple);
             entityManager.flush();
         }
-        return daoRoyaume.saveAndFlush(new Royaume(null, nom, peuple));
+        Royaume r = new Royaume(null, nom, peuple);
+        // Stocks remis à zéro (défauts 200/200/500/200) pour des montants prévisibles
+        r.setRessources(List.of(new royaume.model.QuantiteRessource(0, Ressource.PIERRE), new royaume.model.QuantiteRessource(0, Ressource.BOIS), new royaume.model.QuantiteRessource(0, Ressource.OR), new royaume.model.QuantiteRessource(0, Ressource.NOURRITURE)));
+        return daoRoyaume.saveAndFlush(r);
     }
 
     private Attaque creerAttaque(Royaume att, Royaume def) {

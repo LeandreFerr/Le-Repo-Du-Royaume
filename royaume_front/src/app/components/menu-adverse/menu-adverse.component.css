@@ -1,0 +1,666 @@
+
+/* =========================================
+   1. CONTENEUR PRINCIPAL
+========================================= */
+
+:host {
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: "Cinzel", serif;
+}
+
+
+/* =========================================
+   2. POLICES MÉDIÉVALES
+========================================= */
+
+@font-face {
+  font-family: "Cinzel";
+  src: url("/assets/pikachu/fonts/Cinzel-VariableFont_wght.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Medieval Sharp";
+  src: url("/assets/pikachu/fonts/MedievalSharp-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cinzel Decoration";
+  src: url("/assets/pikachu/fonts/EagleLake-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+
+
+/* =========================================
+   3. MENU PRINCIPAL
+========================================= */
+
+.menu-adverse {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.menu-adverse-contenu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 380px;
+  padding: 35px 30px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(53, 39, 25, 0.96),
+    rgba(23, 17, 12, 0.97)
+  );
+
+  border: 2px solid #b89a5a;
+  outline: 1px solid rgba(184, 154, 90, 0.35);
+  outline-offset: 5px;
+
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+
+/* =========================================
+   4. TITRE DU MENU
+========================================= */
+
+.titre-menu {
+  margin: 0 0 15px;
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+
+/* =========================================
+   5. ENLUMINURES
+========================================= */
+
+.enluminure {
+  font-family: "Cinzel Decoration", serif;
+  font-size: 3.5rem;
+  color: #8b1e16;
+  line-height: 1;
+}
+
+
+/* =========================================
+   6. BOUTONS DU MENU
+========================================= */
+
+.bouton-adverse {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 55px;
+  padding: 14px 18px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  background: linear-gradient(
+    145deg,
+    #352719,
+    #17110c
+  );
+
+  border: 2px solid #b89a5a;
+  cursor: pointer;
+
+  transition:
+    color 0.3s ease,
+    background 0.3s ease,
+    border-color 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.bouton-adverse:hover {
+  color: #fff1cc;
+
+  background: linear-gradient(
+    145deg,
+    #594226,
+    #352719
+  );
+
+  border-color: #f5d78b;
+
+  box-shadow: 0 0 18px rgba(201, 166, 91, 0.35);
+
+  transform: translateY(-2px);
+}
+
+.bouton-adverse:active {
+  transform: translateY(0);
+}
+
+
+/* =========================================
+   7. FENÊTRES MODALES
+========================================= */
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(8, 6, 4, 0.85);
+  backdrop-filter: blur(4px);
+}
+
+.modal.ouverte {
+  display: flex;
+}
+
+
+/* =========================================
+   8. CONTENU DES MODALES
+========================================= */
+
+.bulle {
+  position: relative;
+  box-sizing: border-box;
+
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+
+  overflow-y: auto;
+  padding: 35px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  text-align: center;
+
+  background: linear-gradient(
+    145deg,
+    rgba(53, 39, 25, 0.97),
+    rgba(23, 17, 12, 0.98)
+  );
+
+  border: 2px solid #b89a5a;
+  outline: 1px solid rgba(184, 154, 90, 0.35);
+  outline-offset: 5px;
+
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.8);
+}
+
+
+/* =========================================
+   9. TITRES DES MODALES
+========================================= */
+
+.bulle h2 {
+  margin: 0 30px 25px;
+
+  color: #e8c982;
+  font-family: "Medieval Sharp", cursive;
+  font-size: 1.8rem;
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   10. CONTENU INTÉRIEUR
+========================================= */
+
+.contenu-modal {
+  width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+
+/* =========================================
+   11. CROIX DE FERMETURE
+========================================= */
+
+.fermer {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+
+  width: 35px;
+  height: 35px;
+  padding: 0;
+
+  color: #e8c982;
+  font-family: serif;
+  font-size: 1.8rem;
+  line-height: 1;
+
+  background: transparent;
+  border: none;
+
+  cursor: pointer;
+
+  transition:
+    color 0.2s,
+    transform 0.2s;
+}
+
+.fermer:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+
+/* =========================================
+   12. MESSAGES
+========================================= */
+
+.message {
+  margin-top: 18px;
+
+  color: #d8c58c;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+  line-height: 1.6;
+
+  text-align: center;
+}
+
+/* =========================================
+   13. MODALE ÉCHANGE
+========================================= */
+
+/* FORMULAIRE */
+
+#modalEchange .bulle form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+}
+
+/* LIBELLÉS */
+
+#modalEchange .bulle form label {
+  color: #e0bd7a;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+}
+
+/* CHAMPS DE SAISIE ET LISTES DÉROULANTES */
+
+#modalEchange .bulle input:not([type="checkbox"]),
+#modalEchange .bulle select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+
+  background: #21170f;
+  border: 1px solid #8d7141;
+  border-radius: 2px;
+}
+
+/* OPTIONS DES MENUS */
+
+#modalEchange .bulle select option {
+  color: #f5e2b4;
+  background: #21170f;
+}
+
+/* FOCUS */
+
+#modalEchange .bulle input:focus,
+#modalEchange .bulle select:focus {
+  outline: 2px solid #b89a5a;
+  outline-offset: 2px;
+}
+
+/* BOUTON PROPOSER */
+
+#modalEchange .bulle form button {
+  margin-top: 12px;
+  padding: 13px 18px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+
+  background: linear-gradient(
+    145deg,
+    #352719,
+    #17110c
+  );
+
+  border: 2px solid #b89a5a;
+  cursor: pointer;
+
+  transition: all 0.3s ease;
+}
+
+#modalEchange .bulle form button:hover:not(:disabled) {
+  color: #fff1cc;
+  background: #594226;
+  border-color: #f5d78b;
+  box-shadow: 0 0 15px rgba(201, 166, 91, 0.3);
+  transform: translateY(-2px);
+}
+
+#modalEchange .bulle form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* MESSAGE DE RETOUR */
+
+#modalEchange .message {
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   14. MODALE MESSAGERIE
+========================================= */
+
+#modalMessage .fenetre-message {
+  width: 100%;
+  max-width: 600px;
+  padding: 40px;
+}
+
+/* DESTINATAIRE */
+
+.destinataire-message {
+  margin: 0 0 22px;
+
+  color: #d8c58c;
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+
+  text-align: left;
+}
+
+.destinataire-message strong {
+  color: #e8c982;
+  font-weight: bold;
+}
+
+/* FORMULAIRE */
+
+.formulaire-message {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  width: 100%;
+  text-align: left;
+}
+
+.formulaire-message label {
+  color: #e8c982;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* ZONE DE TEXTE */
+
+.champ-message,
+#modalMessage textarea {
+  display: block;
+
+  box-sizing: border-box;
+  width: 100%;
+
+  min-height: 160px;
+  padding: 16px;
+
+  resize: vertical;
+
+  color: #382719;
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+  line-height: 1.7;
+
+  background: linear-gradient(
+    145deg,
+    #b69a6b,
+    #a88a59
+  );
+
+  border: 2px solid #8d7141;
+  border-radius: 4px;
+
+  box-shadow:
+    inset 0 2px 6px rgba(48, 31, 15, 0.2),
+    0 2px 5px rgba(0, 0, 0, 0.2);
+
+  outline: none;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.champ-message::placeholder,
+#modalMessage textarea::placeholder {
+  color: #695234;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+.champ-message:focus,
+#modalMessage textarea:focus {
+  border-color: #e0c17e;
+
+  box-shadow:
+    inset 0 2px 6px rgba(48, 31, 15, 0.15),
+    0 0 0 3px rgba(184, 154, 90, 0.25);
+}
+
+/* COMPTEUR */
+
+.compteur-message {
+  margin-top: 8px;
+
+  color: #b89a5a;
+  font-family: "Cinzel", serif;
+  font-size: 0.8rem;
+
+  text-align: right;
+}
+
+/* BOUTON ENVOYER */
+
+.bouton-envoyer-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 53px;
+
+  margin-top: 12px;
+  padding: 13px 20px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.9rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  background: linear-gradient(
+    145deg,
+    #352719,
+    #17110c
+  );
+
+  border: 2px solid #b89a5a;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.3);
+
+  transition: all 0.3s ease;
+}
+
+.bouton-envoyer-message:hover:not(:disabled) {
+  color: #fff1cc;
+
+  background: linear-gradient(
+    145deg,
+    #594226,
+    #352719
+  );
+
+  border-color: #f5d78b;
+
+  box-shadow:
+    0 0 18px rgba(201, 166, 91, 0.35);
+
+  transform: translateY(-2px);
+}
+
+.bouton-envoyer-message:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.bouton-envoyer-message:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.icone-envoi {
+  font-size: 1.2rem;
+}
+
+/* MESSAGES DE RETOUR */
+
+.message-succes {
+  color: #d8c58c;
+  margin-top: 18px;
+}
+
+#modalMessage .message-succes {
+  overflow-wrap: anywhere;
+}
+
+
+/* =========================================
+   15. RESPONSIVE
+========================================= */
+
+@media (max-width: 600px) {
+
+  .menu-adverse {
+    padding: 20px;
+  }
+
+  .menu-adverse-contenu {
+    max-width: 340px;
+    padding: 30px 20px;
+    gap: 16px;
+  }
+
+  .titre-menu {
+    font-size: 1.4rem;
+  }
+
+  .bouton-adverse {
+    min-height: 50px;
+    padding: 12px;
+    font-size: 0.85rem;
+  }
+
+  .modal {
+    padding: 15px;
+  }
+
+  .bulle {
+    padding: 30px 20px;
+    max-height: 80vh;
+  }
+
+  .bulle h2 {
+    font-size: 1.4rem;
+    margin-bottom: 22px;
+  }
+
+  #modalMessage .fenetre-message {
+    padding: 30px 20px;
+  }
+
+  .champ-message,
+  #modalMessage textarea {
+    min-height: 150px;
+  }
+
+  #modalEchange .bulle form label,
+  #modalEchange .bulle form input,
+  #modalEchange .bulle form select,
+  #modalEchange .bulle form button {
+    font-size: 0.85rem;
+  }
+
+/* =========================================
+   CHAMP QUANTITÉ DEMANDÉE
+   SANS FLÈCHES NI COMPTEUR
+========================================= */
+
+#modalEchange .bulle input[name="quantite"] {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 10px;
+
+  color: #f5e2b4;
+  font-family: "Cinzel", serif;
+  font-size: 0.95rem;
+
+  background: #21170f;
+  border: 1px solid #8d7141;
+  border-radius: 2px;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+}
+
+#modalEchange .bulle input[name="quantite"]:focus {
+  outline: 2px solid #b89a5a;
+  outline-offset: 2px;
+}
+
+}

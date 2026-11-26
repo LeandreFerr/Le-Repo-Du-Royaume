@@ -344,7 +344,7 @@ class BatimentTest {
             );
 
             // On vide les ressources du royaume
-            royaume.setRessources(List.of());
+            royaume.setRessources(List.of(new QuantiteRessource(0, Ressource.PIERRE), new QuantiteRessource(0, Ressource.BOIS), new QuantiteRessource(0, Ressource.OR), new QuantiteRessource(0, Ressource.NOURRITURE)));
 
             List<QuantiteRessource> manquantes =
                     carriere.getRessourceManquanteAmelioration(royaume);

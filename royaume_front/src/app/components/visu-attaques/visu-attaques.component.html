@@ -1,0 +1,180 @@
+<div class="attaques-page">
+  <div class="fenetre-attaques">
+    <header class="entete">
+      <h1><span class="enluminure">A</span>ttaques du Royaume</h1>
+      <p>CAMPAGNES EN COURS ET CHRONIQUES</p>
+      <button
+        type="button"
+        class="actualiser"
+        (click)="chargerAttaques()"
+        [disabled]="chargement()"
+      >
+        Actualiser
+      </button>
+    </header>
+
+    @if (chargement()) {
+      <p class="message">Consultation des registres militaires...</p>
+    } @else if (erreur()) {
+      <p class="message erreur">{{ erreur() }}</p>
+    } @else {
+      <!-- SECTION 1 : ATTAQUES EN COURS -->
+      <section class="section-attaques">
+        <h2>Attaques en cours ({{ attaquesEnCours().length }})</h2>
+
+        @if (attaquesEnCours().length === 0) {
+          <p class="aucune-attaque">Aucune attaque en cours pour le moment.</p>
+        } @else {
+          @for (attaque of attaquesEnCours(); track attaque.id) {
+            <article class="carte-attaque">
+              <div class="carte-entete">
+                <span class="numero">Campagne #{{ attaque.id }}</span>
+                <span
+                  class="statut"
+                  [class.statut-aller]="attaque.statut === 'ALLER'"
+                  [class.statut-retour]="attaque.statut === 'RETOUR'"
+                >
+                  {{ attaque.statut }}
+                </span>
+              </div>
+
+              <div class="belligérants">
+                <div class="royaume-bloc">
+                  <span class="legende">ATTAQUANT</span>
+                  <strong>{{ attaque.attaquantNom }}</strong>
+                </div>
+
+                <span class="fleche">⚔</span>
+
+                <div class="royaume-bloc">
+                  <span class="legende">DÉFENSEUR</span>
+                  <strong>{{ attaque.defenseurNom }}</strong>
+                </div>
+              </div>
+
+              <div class="details-attaque">
+                <div class="bloc-troupes">
+                  <span class="legende">TROUPES ENVOYÉES</span>
+                  @if (attaque.troupesEnvoyees.length === 0) {
+                    <span class="valeur-secondaire">Aucune</span>
+                  } @else {
+                    <ul>
+                      @for (t of attaque.troupesEnvoyees; track t.type) {
+                        <li>{{ t.quantite }} × {{ t.type }}</li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <div class="bloc-dates">
+                  <div>
+                    <span class="legende">DÉPART :</span>
+                    <span class="valeur-date">{{ attaque.dateDepart | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div>
+                    <span class="legende">IMPACT PRÉVU :</span>
+                    <span class="valeur-date">{{ attaque.dateImpact | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  @if (attaque.dateRetourPrevue) {
+                    <div>
+                      <span class="legende">RETOUR PRÉVU :</span>
+                      <span class="valeur-date">{{ attaque.dateRetourPrevue | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+            </article>
+          }
+        }
+      </section>
+
+      <!-- SECTION 2 : ATTAQUES PASSÉES (HISTORIQUE) -->
+      <section class="section-attaques">
+        <h2>Historique des attaques passées ({{ attaquesPassees().length }})</h2>
+
+        @if (attaquesPassees().length === 0) {
+          <p class="aucune-attaque">Aucune attaque terminée dans l'historique.</p>
+        } @else {
+          @for (attaque of attaquesPassees(); track attaque.id) {
+            <article class="carte-attaque attaque-terminee">
+              <div class="carte-entete">
+                <span class="numero">Campagne #{{ attaque.id }}</span>
+                <span class="statut terminee">TERMINEE</span>
+              </div>
+
+              <div class="belligérants">
+                <div class="royaume-bloc">
+                  <span class="legende">ATTAQUANT</span>
+                  <strong>{{ attaque.attaquantNom }}</strong>
+                </div>
+
+                <span class="fleche">⚔</span>
+
+                <div class="royaume-bloc">
+                  <span class="legende">DÉFENSEUR</span>
+                  <strong>{{ attaque.defenseurNom }}</strong>
+                </div>
+              </div>
+
+              <div class="details-attaque">
+                <div class="bloc-troupes">
+                  <span class="legende">TROUPES ENVOYÉES</span>
+                  @if (attaque.troupesEnvoyees.length === 0) {
+                    <span class="valeur-secondaire">Aucune</span>
+                  } @else {
+                    <ul>
+                      @for (t of attaque.troupesEnvoyees; track t.type) {
+                        <li>{{ t.quantite }} × {{ t.type }}</li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <div class="bloc-butin">
+
+                  <div class="butin-titre">
+                   <img
+                      class="icone-sac-or"
+                      src="/assets/imago/SAC_OR.png"
+                      alt="Sac d'or"
+                    >
+                  <span class="legende">BUTIN</span>
+                  </div>
+                  
+                  @if (attaque.butin.length === 0) {
+                    <span class="valeur-secondaire">Aucun</span>
+                  } @else {
+                    <ul>
+                      @for (b of attaque.butin; track b.ressource) {
+                        <li>{{ b.quantite }} {{ b.ressource }}</li>
+                      }
+                    </ul>
+                  }
+                </div>
+
+                <div class="bloc-dates">
+                  <div>
+                    <span class="legende">DÉPART :</span>
+                    <span class="valeur-date">{{ attaque.dateDepart | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                  <div>
+                    <span class="legende">IMPACT :</span>
+                    <span class="valeur-date">{{ attaque.dateImpact | date:'dd/MM/yyyy HH:mm' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="issue-ligne">
+                @if (attaque.victoireAttaquant) {
+                  <span class="issue-victoire">Victoire de l'attaquant</span>
+                } @else {
+                  <span class="issue-defaite">Défaite de l'attaquant</span>
+                }
+              </div>
+            </article>
+          }
+        }
+      </section>
+    }
+  </div>
+</div>
