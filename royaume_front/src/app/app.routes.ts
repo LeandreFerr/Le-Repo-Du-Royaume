@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { CarteRoyaumeSandboxComponent } from './components/carte-royaume/carte-royaume-sandbox.component';
 import { PageLogin} from './pages/page-login/page-login.component';
+import { PartieCreation } from './components/carte-royaume/partie-creation/partie-creation.component';
 
 export const routes: Routes = [
   {
@@ -16,4 +17,14 @@ export const routes: Routes = [
     redirectTo: 'login',
     pathMatch: 'full',
   },
+
+  {
+    path: 'parties/creation',
+    component: PartieCreation
+  },
+  {
+    path: '',
+    redirectTo: 'parties/creation',
+    pathMatch: 'full'
+  }
 ];
