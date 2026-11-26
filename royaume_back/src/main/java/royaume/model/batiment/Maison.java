@@ -17,7 +17,7 @@ public class Maison extends Batiment {
     //private static double bonusCroissance = 0.0;  
 	@PositiveOrZero
 	@Column(name = "bonus_propre_croissance_pop", nullable = false)
-    private double bonusPropre =0.0;
+    private double bonusPropre =0.02;
     
     // Constructeur en privée, dans le package, car on ne doit passer que par Factory !
     

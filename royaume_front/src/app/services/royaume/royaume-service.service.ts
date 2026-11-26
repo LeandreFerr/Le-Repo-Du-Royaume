@@ -11,7 +11,7 @@ import { PalierNiveau } from '../../models/palier-niveau.model';
 import { ModeleBatiment } from '../../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../../models/amelioration-batiment.model';
 import { ReparationBatiment } from '../../models/reparation-batiment.model';
-
+import { ChantierConstructionResponse } from '../../models/chantier.model';
 // ========================================
 // SERVICE
 // ========================================
@@ -110,4 +110,8 @@ export class RoyaumeService {
     return this.nonConnecte<Royaume>('Réparation du bâtiment');
   }
 
-}
+    getChantiersRoyaume(royaumeId: number) : Observable<ChantierConstructionResponse[]>{
+        return this.nonConnecte<ChantierConstructionResponse[]>('Récupération des chantiers du royaume ');}
+    }
+
+

@@ -12,7 +12,7 @@ import { DecimalPipe } from '@angular/common';
 import { Royaume } from '../../../models/royaume.model';
 import { Batiment, TypeBatiment } from '../../../models/batiment.model';
 import { Ressource, QuantiteRessource } from '../../../models/ressource.model';
-import { Chantier } from '../../../models/chantier.model';
+import { ChantierConstructionResponse } from '../../../models/chantier.model';
 import { ModeleBatiment } from '../../../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../../../models/amelioration-batiment.model';
 
@@ -587,7 +587,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // AFFICHAGE DYNAMIQUE DES CHANTIERS
   // ========================================
 
-  getProgressionChantier(chantier: Chantier): number {
+  getProgressionChantier(chantier: ChantierConstructionResponse ): number {
 
     const debut = new Date(chantier.dateDebut).getTime();
 
@@ -609,7 +609,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   }
 
 
-  getTempsRestantChantier(chantier: Chantier): number {
+  getTempsRestantChantier(chantier: ChantierConstructionResponse ): number {
 
     const fin = new Date(chantier.dateFinPrevue).getTime();
 
@@ -1239,7 +1239,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   getTypeChantier(
     batiment: Batiment,
-    chantier: Chantier
+    chantier: ChantierConstructionResponse 
   ): string {
 
     if (chantier.amelioration) {

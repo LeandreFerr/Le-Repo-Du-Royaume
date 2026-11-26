@@ -30,14 +30,14 @@ public class BatimentFactory {
             int ouvriers) {
 
         Maison maison = new Maison(
-            id, nom, 1, 200, 200, true // enConstruction
+            null, nom, 1, 200, 200, true // enConstruction
             
         );
 
         royaume.ajouterBatiment(maison);
 
         new ChantierConstruction(
-            id,
+            null,
             maison,
             royaume,
             1,
@@ -62,7 +62,7 @@ public class BatimentFactory {
 
 
         BatimentProduction batiment = new BatimentProduction(
-            id,
+            null,
             nom,
             1,
             pointsDeVie,

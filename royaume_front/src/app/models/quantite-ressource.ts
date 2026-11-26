@@ -1,5 +1,5 @@
+
 export interface QuantiteRessource {
-
-    //TODO a remplir avec QuantiteRessourceDTO du back
-
+  ressource: string;
+  quantite: number;
 }
