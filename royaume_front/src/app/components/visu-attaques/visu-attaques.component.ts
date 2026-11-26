@@ -15,17 +15,30 @@ import {
 export class VisuAttaques implements OnInit{
   private attaqueService = inject(AttaqueService);
 
+  // Temporaire en attendant l'authenti
+  idUtilisateur = signal<number>(1);
+
   attaques = signal<AttaqueResponse[]>([]);
   chargement = signal<boolean>(true);
   erreur = signal<string | null>(null);
 
-  attaquesEnCours = computed(() =>
-    this.attaques().filter((a) => a.statut === 'ALLER' || a.statut === 'RETOUR')
-  );
+  attaquesEnCours = computed(() => {
+    const userId = this.idUtilisateur();
+    return this.attaques().filter(
+      (a) =>
+        (a.statut === 'ALLER' || a.statut === 'RETOUR') &&
+        a.attaquantId === userId
+    );
+  });
 
-  attaquesPassees = computed(() =>
-    this.attaques().filter((a) => a.statut === 'TERMINEE')
-  );
+  attaquesPassees = computed(() => {
+    const userId = this.idUtilisateur();
+    return this.attaques().filter(
+      (a) =>
+        a.statut === 'TERMINEE' &&
+        (a.attaquantId === userId || a.defenseurId === userId)
+    );
+  });
 
   ngOnInit(): void {
     this.chargerAttaques();
