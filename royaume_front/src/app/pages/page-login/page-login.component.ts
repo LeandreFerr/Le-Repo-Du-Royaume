@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+﻿import { Component } from '@angular/core';
+import { NgIf } from '@angular/common';
 import { Router } from '@angular/router';
 import {
   FormBuilder,
@@ -12,7 +13,7 @@ import { UtilisateurService, UtilisateurResponse }
 @Component({
   selector: 'app-page-login',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, NgIf],
   templateUrl: './page-login.component.html',
   styleUrl: './page-login.component.css'
 })
@@ -45,7 +46,7 @@ export class PageLogin {
     this.utilisateurService.login(pseudo!, password!).subscribe({
 
       next: (utilisateur: UtilisateurResponse) => {
-        console.log('Utilisateur connecté :', utilisateur);
+        console.log('Utilisateur connectÃ© :', utilisateur);
         this.erreur = '';
         this.router.navigate(['/carte-sandbox']);
       },

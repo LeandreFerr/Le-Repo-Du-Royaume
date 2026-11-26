@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+﻿import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CarteRoyaumeSandboxComponent } from './carte-royaume-sandbox.component';
+import { AdminComponent } from './admin.component';
 
 function createStub2DContext(): CanvasRenderingContext2D {
   const gradientStub = { addColorStop: vi.fn() };
@@ -42,9 +42,9 @@ function createStub2DContext(): CanvasRenderingContext2D {
   } as unknown as CanvasRenderingContext2D;
 }
 
-describe('CarteRoyaumeSandboxComponent (Bac à sable Royaume)', () => {
-  let fixture: ComponentFixture<CarteRoyaumeSandboxComponent>;
-  let sandbox: CarteRoyaumeSandboxComponent;
+describe('AdminComponent (Bac Ã  sable Royaume)', () => {
+  let fixture: ComponentFixture<AdminComponent>;
+  let sandbox: AdminComponent;
 
   beforeEach(async () => {
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
@@ -52,10 +52,10 @@ describe('CarteRoyaumeSandboxComponent (Bac à sable Royaume)', () => {
     );
 
     await TestBed.configureTestingModule({
-      imports: [CarteRoyaumeSandboxComponent],
+      imports: [AdminComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CarteRoyaumeSandboxComponent);
+    fixture = TestBed.createComponent(AdminComponent);
     sandbox = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -146,3 +146,4 @@ describe('CarteRoyaumeSandboxComponent (Bac à sable Royaume)', () => {
     expect(sandbox.javaSnippet).toContain('carte.ajouterEmplacement(emp1);');
   });
 });
+

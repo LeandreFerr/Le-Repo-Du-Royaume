@@ -1,0 +1,402 @@
+:host {
+  --parchment: #ece5d4;
+  --surface: #f8f5ec;
+  --forest: #193b30;
+  --gold: #a77b31;
+  --text-muted: #837d6d;
+  --border: #d8cdb5;
+
+  position: absolute;
+  top: 14px;
+  left: calc(var(--sidebar-width) + 14px);
+  bottom: 14px;
+
+  width: 600px;
+  max-width: calc(100% - var(--sidebar-width) - 28px);
+
+  z-index: 20;
+  display: block;
+}
+
+
+/* Structure principale */
+
+.kingdom-panel {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  background: var(--parchment);
+  color: var(--forest);
+
+  border: 1px solid var(--border);
+  border-radius: 6px;
+
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
+
+  overflow: hidden;
+}
+
+
+/* En-tête */
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+  padding: 24px;
+
+  flex-shrink: 0;
+}
+
+.section-label {
+  display: block;
+
+  color: var(--gold);
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.panel-heading h1 {
+  margin: 6px 0;
+
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.panel-heading p {
+  margin: 0;
+
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Contenu défilable */
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+  min-height: 0;
+
+  gap: 20px;
+  padding: 0 24px 24px;
+
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #b5a27d transparent;
+}
+
+
+/* Bandeau du royaume */
+
+.kingdom-banner {
+  position: relative;
+
+  display: flex;
+  align-items: flex-end;
+
+  min-height: 200px;
+  flex-shrink: 0;
+
+  background: linear-gradient(135deg,
+      #345548,
+      #193b30 55%,
+      #0d251e);
+
+  border: 1px solid var(--gold);
+
+  color: var(--parchment);
+}
+
+.kingdom-banner::before {
+  content: '';
+
+  position: absolute;
+  inset: 5px;
+
+  border: 1px solid rgba(189, 138, 45, .5);
+
+  pointer-events: none;
+}
+
+.kingdom-banner-content {
+  position: relative;
+  padding: 24px;
+  width: 100%;
+}
+
+.kingdom-identity .section-label {
+  color: #d7bb7b;
+}
+
+.kingdom-identity h2 {
+  margin: 8px 0;
+
+  font-family: Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+}
+
+.kingdom-identity p {
+  max-width: 360px;
+  margin: 0;
+
+  font-family: Georgia, serif;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+
+/* Informations du royaume */
+
+.kingdom-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-top: 14px;
+}
+
+.kingdom-tags span {
+  padding: 6px 10px;
+
+  border: 1px solid rgba(215, 187, 123, .4);
+
+  font-size: 9px;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+/* ========================================
+   POPULATION DU ROYAUME
+   ======================================== */
+
+.population-card {
+  padding: 20px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  flex-shrink: 0;
+}
+
+.population-info {
+  display: flex;
+  flex-direction: column;
+
+  margin-top: 16px;
+}
+
+.population-value {
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.population-label {
+  margin-top: 4px;
+
+  color: var(--text-muted);
+
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+
+/* Barre de répartition */
+
+.population-bar {
+  display: flex;
+
+  width: 100%;
+  height: 12px;
+
+  margin-top: 20px;
+
+  background: var(--border);
+  border-radius: 2px;
+
+  overflow: hidden;
+}
+
+.population-segment {
+  height: 100%;
+
+  transition: width .3s ease;
+}
+
+
+/* Légende */
+
+.population-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 14px 24px;
+  margin-top: 18px;
+}
+
+.population-category {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+}
+
+.category-color {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.category-name {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.category-value {
+  margin-left: auto;
+
+  color: var(--forest);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* Pied de carte */
+
+.population-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 20px;
+  padding-top: 14px;
+
+  border-top: 1px solid var(--border);
+
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.population-footer strong {
+  color: #53785c;
+  font-weight: 600;
+}
+
+/* ========================================
+   RESSOURCES DU ROYAUME
+   ======================================== */
+
+.resources-section {
+  flex-shrink: 0;
+}
+
+.resources-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+}
+
+.resources-subtitle {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+
+/* Grille des ressources */
+
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 12px;
+}
+
+
+/* Carte de ressource */
+
+.resource-card {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+  padding: 16px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  transition: border-color .2s;
+}
+
+.resource-card:hover {
+  border-color: var(--gold);
+}
+
+
+/* Icône */
+
+.resource-icon {
+  display: grid;
+  place-items: center;
+
+  width: 44px;
+  height: 44px;
+
+  background: var(--parchment);
+  border-radius: 3px;
+
+  flex-shrink: 0;
+}
+
+.resource-icon img {
+  display: block;
+
+  width: 26px;
+  height: 26px;
+
+  object-fit: contain;
+}
+
+
+/* Informations */
+
+.resource-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+.resource-name {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.resource-value {
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+}
