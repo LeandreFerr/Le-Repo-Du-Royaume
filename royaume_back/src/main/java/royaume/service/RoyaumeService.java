@@ -13,11 +13,16 @@ import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
 import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.request.RoyaumeRequest;
+import royaume.dto.response.BatimentResponse;
 import royaume.dto.response.ContingentTroupeResponse;
 import royaume.dto.response.RoyaumeResponse;
 import royaume.model.Partie;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
+import royaume.model.batiment.Batiment;
+import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.Chateau;
+import royaume.model.batiment.Maison;
 import royaume.model.peuple.Population;
 
 @Service 
@@ -107,6 +112,12 @@ public class RoyaumeService {
                 .map(c -> new ContingentTroupeResponse(c.getType(), c.getQuantite()))
                 .toList();
 
+        List<BatimentResponse> batiments = royaume.getBatiments() == null
+            ? List.of()
+            : royaume.getBatiments().stream()
+                .map(b -> convertirBatimentEnResponse(b, royaume.getId()))
+                .toList();
+
         Integer x = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordX();
         Integer y = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordY();
 
@@ -123,9 +134,31 @@ public class RoyaumeService {
             royaume.getBonusCroissance(),
             ressources,
             garnison,
-            List.of(),
+            batiments,
             x,
             y
+        );
+    }
+
+    private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
+        BatimentProduction prod = b instanceof BatimentProduction bp ? bp : null;
+        Maison maison = b instanceof Maison m ? m : null;
+        Chateau chateau = b instanceof Chateau c ? c : null;
+
+        return new BatimentResponse(
+            b.getId(),
+            b.getNom(),
+            b.getNiveau(),
+            b.getPointsDeVie(),
+            b.getPointsDeVieMax(),
+            b.isEnConstruction(),
+            b.getMontantReparationEnCours(),
+            royaumeId,
+            prod == null ? null : prod.getTypeRessource(),
+            prod == null ? null : prod.getProductionBaseHeure(),
+            maison == null ? null : maison.getBonusPropre(),
+            chateau == null ? null : chateau.getNiveauPalierDebloque(),
+            chateau == null ? null : chateau.getBonusDefenseRoyaume()
         );
     }
 
