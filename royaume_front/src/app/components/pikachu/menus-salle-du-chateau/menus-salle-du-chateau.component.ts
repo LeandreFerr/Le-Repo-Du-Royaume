@@ -17,19 +17,13 @@ import {
   Ressource
 } from '../../../services/marche/marche-service.service';
 
-<<<<<<< HEAD
-=======
+
 import { VisuAttaques } from '../../visu-attaques/visu-attaques.component';
->>>>>>> Module_bagarre_front
 
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
-<<<<<<< HEAD
-  imports: [FormsModule, CommonModule],
-=======
-  imports: [FormsModule, VisuAttaques],
->>>>>>> Module_bagarre_front
+  imports: [FormsModule, CommonModule, VisuAttaques],
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
@@ -95,7 +89,6 @@ get spriteActuel(): string {
 
   // Gestion des fenêtres
   modalEchange = false;
-<<<<<<< HEAD
   //modalAmelioration = false;
   modalAttaque = false;
   readonly Math = Math;
@@ -103,15 +96,9 @@ get spriteActuel(): string {
   messageEchange = '';
   //messageAmelioration = '';
   messageAttaque = '';
-=======
-  modalAmelioration = false;
   modalVisuAttaques = false;
 
-  // Messages
-  messageEchange = '';
-  messageAmelioration = '';
   messageVisuAttaques = '';
->>>>>>> Module_bagarre_front
 
   typesRessources: string[] = [
   'PIERRE',
