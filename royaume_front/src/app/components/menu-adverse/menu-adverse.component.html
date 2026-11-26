@@ -38,7 +38,7 @@
       class="bouton-adverse"
       (click)="ouvrirAttaque()"
     >
-      Attaquer
+      ⚔ Attaquer ⚔
     </button>
 
   </div>
@@ -105,39 +105,6 @@
 >
 
   <div
-    class="bulle"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="titreMessage"
-    (click)="$event.stopPropagation()"
-  >
-
-    <button
-      type="button"
-      class="fermer"
-      aria-label="Fermer"
-      (click)="fermerModales()"
-    >
-      X
-    </button>
-
-    <h2 id="titreMessage">
-      <span class="enluminure">E</span>nvoyer un message
-    </h2>
-
-    <div class="contenu-modal">
-
-      <!-- CONTENU DE LA MODALE MESSAGE -->
-
-     
-
-<div
-  id="modalMessage"
-  class="modal"
-  [class.ouverte]="modalMessage"
-  (click)="fermerModales()"
->
-  <div
     class="bulle fenetre-message"
     role="dialog"
     aria-modal="true"
@@ -148,6 +115,7 @@
     <button
       type="button"
       class="fermer"
+      aria-label="Fermer"
       (click)="fermerModales()"
     >
       X
@@ -157,99 +125,44 @@
       <span class="enluminure">E</span>nvoyer un message
     </h2>
 
-     <p class="destinataire-message">
-
-  À :
-
-  <strong>
-    {{ chargementAdverse
-      ? 'Chargement...'
-      : pseudoAdverse || 'Destinataire indisponible'
-    }}
-  </strong>
-
-</p>
-
-    <form (ngSubmit)="envoyerMessage()">
-
-      <textarea
-        [(ngModel)]="contenuMessage"
-        name="contenuMessage"
-        placeholder="Écrire un message..."
-        maxlength="1000"
-        required
-      ></textarea>
-
-      <div class="compteur-message">
-        {{ contenuMessage.length }} / 1000
-      </div>
-
-      <button
-        type="submit"
-        [disabled]="!contenuMessage.trim() || envoiEnCours"
-      >
-        {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer' }}
-      </button>
-
-    </form>
-
-    <p class="message" *ngIf="messageEnvoi">
-      {{ messageEnvoi }}
-    </p>
-
-  </div>
-</div>
-
-
-      <p class="message">
-        Espace réservé à la messagerie.
-      </p>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- =====================================================
-     MODALE ATTAQUE
-====================================================== -->
-
-<div
-  id="modalAttaque"
-  class="modal"
-  [class.ouverte]="modalAttaque"
-  (click)="fermerModales()"
->
-
-  <div
-    class="bulle"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="titreAttaque"
-    (click)="$event.stopPropagation()"
-  >
-
-    <button
-      type="button"
-      class="fermer"
-      aria-label="Fermer"
-      (click)="fermerModales()"
-    >
-      X
-    </button>
-
-    <h2 id="titreAttaque">
-      <span class="enluminure">A</span>ttaquer
-    </h2>
-
     <div class="contenu-modal">
 
-      <!-- FUTUR CONTENU DE LA MODALE ATTAQUE -->
+      <p class="destinataire-message">
+        À :
+        <strong>
+          {{ chargementAdverse
+            ? 'Chargement...'
+            : pseudoAdverse || 'Destinataire indisponible'
+          }}
+        </strong>
+      </p>
 
-      <p class="message">
-        Espace réservé aux informations d'attaque.
+      <form (ngSubmit)="envoyerMessage()">
+
+        <textarea
+          [(ngModel)]="contenuMessage"
+          name="contenuMessage"
+          placeholder="Écrire un message..."
+          maxlength="1000"
+          required
+        ></textarea>
+
+        <div class="compteur-message">
+          {{ contenuMessage.length }} / 1000
+        </div>
+
+        <button
+          type="submit"
+          class="bouton-adverse"
+          [disabled]="!contenuMessage.trim() || envoiEnCours"
+        >
+          {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer' }}
+        </button>
+
+      </form>
+
+      <p class="message" *ngIf="messageSucces">
+        {{ messageSucces }}
       </p>
 
     </div>

@@ -1,12 +1,13 @@
 
-<!-- Conteneur principal du jeu -->
+
+<!-- CONTENEUR PRINCIPAL DU JEU -->
 <div
   class="game-container"
   [class.game-active]="demarre"
   [style.background-image]="'url(' + fondEau + ')'"
 >
 
-  <!-- Écran de démarrage -->
+  <!-- ÉCRAN DE DÉMARRAGE -->
   <div id="formStart" [hidden]="demarre">
 
     <input
@@ -30,19 +31,8 @@
     </button>
 
   </div>
-<div
-  class="game-container"
-  [style.background-image]="'url(' + fondEau + ')'"
->
 
-  <!-- Ton écran de démarrage actuel -->
-  <div id="formStart" [hidden]="demarre">
-
-    <!-- Conserve ici tes inputs et ton bouton -->
-
-  </div>
-
-  <!-- Ton terrain de jeu -->
+  <!-- TERRAIN DE JEU -->
   <div id="grass" [class.visible]="demarre">
 
     <div
@@ -61,6 +51,7 @@
   </div>
 
 </div>
+
 <!-- Écran de démarrage -->
 <!--<div id="formStart" [hidden]="demarre">
 

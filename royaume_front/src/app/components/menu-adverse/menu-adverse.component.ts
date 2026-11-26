@@ -25,7 +25,7 @@ import {
 export class MenuAdverseComponent implements OnInit {
 
   // ID du joueur adverse
-  idAdverse = 3;
+  idAdverse = 2;
   idPartie = 1;
   idExpediteur = 1;
 
@@ -35,6 +35,7 @@ envoiEnCours = false;
 messageSucces = '';
 erreurMessage = '';
 
+messageEnvoi = '';
   // Informations du joueur adverse
   utilisateurAdverse: UtilisateurResponse | null = null;
 
