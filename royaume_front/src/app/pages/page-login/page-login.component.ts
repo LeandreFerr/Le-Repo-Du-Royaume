@@ -1,6 +1,5 @@
 
 import { Component } from '@angular/core';
-import { NgIf } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../services/session/session.service';
 
@@ -18,7 +17,7 @@ import { UtilisateurResponse, UtilisateurService } from '../../services/utilisat
 @Component({
   selector: 'app-page-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './page-login.component.html',
   styleUrl: './page-login.component.css'
 })
