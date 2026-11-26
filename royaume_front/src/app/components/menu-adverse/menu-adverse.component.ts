@@ -1,4 +1,7 @@
-
+import {
+  PropositionEchangeService,
+  Ressource
+} from '../../services/proposition_echange/proposition-echange.service';
 import {
   Component,
   HostListener,
@@ -36,6 +39,13 @@ messageSucces = '';
 erreurMessage = '';
 
 messageEnvoi = '';
+
+
+// Echange
+
+envoiEchangeEnCours = false;
+messageEchange = '';
+
   // Informations du joueur adverse
   utilisateurAdverse: UtilisateurResponse | null = null;
 
@@ -46,7 +56,8 @@ messageEnvoi = '';
   erreurAdverse = '';
 constructor(
   private utilisateurService: UtilisateurService,
-  private messageService: MessageService
+  private messageService: MessageService,
+  private propositionEchangeService: PropositionEchangeService
 ) {}
 
   ngOnInit(): void {
@@ -200,6 +211,86 @@ constructor(
     }
 
   });
+
+}
+
+// =====================================================
+// PROPOSER UN ÉCHANGE AU ROYAUME ADVERSE
+// =====================================================
+
+proposerEchange(
+  event: Event,
+  ressourceDemandee: string,
+  quantiteDemandee: string,
+  ressourceProposee: string,
+  quantiteProposee: string
+): void {
+
+  event.preventDefault();
+
+  if (this.envoiEchangeEnCours) {
+    return;
+  }
+
+  const quantiteD = Number(quantiteDemandee);
+  const quantiteP = Number(quantiteProposee);
+
+  if (
+    !ressourceDemandee ||
+    !ressourceProposee ||
+    quantiteD <= 0 ||
+    quantiteP <= 0
+  ) {
+    this.messageEchange = 'Veuillez remplir correctement tous les champs.';
+    return;
+  }
+
+  this.envoiEchangeEnCours = true;
+  this.messageEchange = '';
+
+  const proposition = {
+    expediteurId: this.idExpediteur,
+
+    offerte: {
+      ressource: ressourceProposee as Ressource,
+      quantite: quantiteP
+    },
+
+    demandee: {
+      ressource: ressourceDemandee as Ressource,
+      quantite: quantiteD
+    }
+  };
+
+  this.propositionEchangeService
+    .creerProposition(proposition)
+    .subscribe({
+
+      next: (response) => {
+
+        console.log('Échange proposé :', response);
+
+        this.messageEchange =
+          'Votre proposition a été envoyée au royaume adverse !';
+
+        this.envoiEchangeEnCours = false;
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur proposition échange :', error);
+
+        this.messageEchange =
+          error.error?.message ||
+          error.error ||
+          'Vous ne possédez pas suffisamment de ressources ou la proposition est impossible.';
+
+        this.envoiEchangeEnCours = false;
+
+      }
+
+    });
 
 }
 

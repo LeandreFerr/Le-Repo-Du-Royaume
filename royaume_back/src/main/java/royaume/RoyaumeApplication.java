@@ -40,7 +40,6 @@ import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
 import royaume.model.batiment.Maison;
-import royaume.model.militaire.Attaque;
 import royaume.model.militaire.SessionEntrainement;
 import royaume.model.militaire.StatutAttaque;
 import royaume.model.militaire.TypeTroupe;
@@ -147,9 +146,12 @@ public class RoyaumeApplication {
 				         
 				         marcheService.publierOffre(2,orVendeur, pierreVendeur);
 				         
-				         PropositionEchange echange = propositionEchangeService.creerProposition(1, 3, boisExpediteur, nourritureDestinataire);
-				         
-				         echange = propositionEchangeService.accepterProposition(echange.getId());
+						PropositionEchange echange =
+							propositionEchangeService.creerProposition(
+								1,
+								boisExpediteur,
+								nourritureDestinataire
+							);				         
 				         
 				         
 				         

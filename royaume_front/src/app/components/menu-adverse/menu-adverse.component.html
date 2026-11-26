@@ -78,15 +78,83 @@
       <span class="enluminure">P</span>roposer un échange
     </h2>
 
-    <div class="contenu-modal">
+    <form
+      (submit)="proposerEchange(
+        $event,
+        ressourceDemandee.value,
+        quantiteDemandee.value,
+        ressourceProposee.value,
+        quantiteProposee.value
+      )"
+    >
 
-      <!-- FUTUR CONTENU DE LA MODALE ÉCHANGE -->
+      <label for="ressourceDemandee">
+        Ressource demandée :
+      </label>
 
-      <p class="message">
-        Espace réservé à la proposition d'échange.
-      </p>
+      <select
+        id="ressourceDemandee"
+        required
+        #ressourceDemandee
+      >
+        <option value="">Choisir</option>
+        <option value="OR">Or</option>
+        <option value="PIERRE">Pierre</option>
+        <option value="BOIS">Bois</option>
+        <option value="NOURRITURE">Nourriture</option>
+      </select>
 
-    </div>
+      <label for="quantiteDemandee">
+        Quantité demandée :
+      </label>
+
+      <input
+        id="quantiteDemandee"
+        type="text"
+        min="1"
+        inputmode="numeric" 
+        required
+        #quantiteDemandee
+      >
+
+      <label for="ressourceProposee">
+        Ressource proposée :
+      </label>
+
+      <select
+        id="ressourceProposee"
+        required
+        #ressourceProposee
+      >
+        <option value="">Choisir</option>
+        <option value="OR">Or</option>
+        <option value="PIERRE">Pierre</option>
+        <option value="BOIS">Bois</option>
+        <option value="NOURRITURE">Nourriture</option>
+      </select>
+
+      <label for="quantiteProposee">
+        Quantité proposée :
+      </label>
+
+      <input
+        id="quantiteProposee"
+        type="text"
+        inputmode="numeric"
+        min="1"
+        required
+        #quantiteProposee
+      >
+
+      <button type="submit" [disabled]="envoiEchangeEnCours">
+        {{ envoiEchangeEnCours ? 'Envoi en cours...' : 'Proposer cet échange' }}
+      </button>
+
+    </form>
+
+    <p class="message" *ngIf="messageEchange">
+      {{ messageEchange }}
+    </p>
 
   </div>
 
