@@ -17,11 +17,19 @@ import {
   Ressource
 } from '../../../services/marche/marche-service.service';
 
+<<<<<<< HEAD
+=======
+import { VisuAttaques } from '../../visu-attaques/visu-attaques.component';
+>>>>>>> Module_bagarre_front
 
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
+<<<<<<< HEAD
   imports: [FormsModule, CommonModule],
+=======
+  imports: [FormsModule, VisuAttaques],
+>>>>>>> Module_bagarre_front
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
@@ -87,6 +95,7 @@ get spriteActuel(): string {
 
   // Gestion des fenêtres
   modalEchange = false;
+<<<<<<< HEAD
   //modalAmelioration = false;
   modalAttaque = false;
   readonly Math = Math;
@@ -94,6 +103,15 @@ get spriteActuel(): string {
   messageEchange = '';
   //messageAmelioration = '';
   messageAttaque = '';
+=======
+  modalAmelioration = false;
+  modalVisuAttaques = false;
+
+  // Messages
+  messageEchange = '';
+  messageAmelioration = '';
+  messageVisuAttaques = '';
+>>>>>>> Module_bagarre_front
 
   typesRessources: string[] = [
   'PIERRE',
@@ -136,7 +154,7 @@ get spriteActuel(): string {
   fermerModales(): void {
     this.modalEchange = false;
     this.modalAmelioration = false;
-    this.modalAttaque = false;
+    this.modalVisuAttaques = false;
   }
 
   // Ouverture des fenêtres
@@ -146,9 +164,9 @@ get spriteActuel(): string {
   }
 
 
-  ouvrirAttaque(): void {
+  ouvrirVisuAttaques(): void {
     this.fermerModales();
-    this.modalAttaque = true;
+    this.modalVisuAttaques = true;
   }
   @HostListener('document:keydown', ['$event'])
 gererClavier(event: KeyboardEvent): void {
@@ -161,7 +179,7 @@ gererClavier(event: KeyboardEvent): void {
   if (
     this.modalEchange ||
     this.modalAmelioration ||
-    this.modalAttaque
+    this.modalVisuAttaques
   ) {
 
     if (event.key === 'Escape') {
@@ -375,7 +393,7 @@ interaction(): void {
   }
 
   else if (presDesArmes) {
-    this.ouvrirAttaque();
+    this.ouvrirVisuAttaques();
   }
 
 }
@@ -658,23 +676,5 @@ chargerProchainPalier(): void {
   }
 
 //________________________________________________________________  🐸
-  // Déclaration d'une attaque
-  attaquerRoyaume(
-    event: Event,
-    royaume: string,
-    confirmation: boolean
-  ): void {
-
-    event.preventDefault();
-
-    if (!confirmation || !royaume) {
-      return;
-    }
-
-    console.log('Royaume ciblé :', royaume);
-
-    this.messageAttaque =
-      'Demande d’attaque préparée !';
-  }
 
 }

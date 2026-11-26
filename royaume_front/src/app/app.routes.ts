@@ -4,6 +4,8 @@ import { PageLogin} from './pages/page-login/page-login.component';
 
 import {PlaceDuMarcheComponent} from './components/place-du-marche/place-du-marche.component';
 
+import { VisuAttaques } from './components/visu-attaques/visu-attaques.component';
+
 export const routes: Routes = [
   {
     path: 'login',
@@ -28,5 +30,9 @@ export const routes: Routes = [
   {
     path: 'place-du-marche',
     component: PlaceDuMarcheComponent
+  },
+  {
+    path: 'attaques',
+    component: VisuAttaques,
   }
 ];
