@@ -137,33 +137,49 @@
         </strong>
       </p>
 
-      <form (ngSubmit)="envoyerMessage()">
+      
+<form
+  class="formulaire-message"
+  (ngSubmit)="envoyerMessage()"
+>
 
-        <textarea
-          [(ngModel)]="contenuMessage"
-          name="contenuMessage"
-          placeholder="Écrire un message..."
-          maxlength="1000"
-          required
-        ></textarea>
+  <label for="contenuMessage">
+    Votre message :
+  </label>
 
-        <div class="compteur-message">
-          {{ contenuMessage.length }} / 1000
-        </div>
+  <textarea
+    id="contenuMessage"
+    class="champ-message"
+    [(ngModel)]="contenuMessage"
+    name="contenuMessage"
+    placeholder="Écrire votre message..."
+    maxlength="1000"
+    required
+  ></textarea>
 
-        <button
-          type="submit"
-          class="bouton-adverse"
-          [disabled]="!contenuMessage.trim() || envoiEnCours"
-        >
-          {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer' }}
-        </button>
+  <div class="compteur-message">
+    {{ contenuMessage.length }} / 1000
+  </div>
 
-      </form>
+  <button
+    type="submit"
+    class="bouton-envoyer-message"
+    [disabled]="!contenuMessage.trim() || envoiEnCours"
+  >
+    <span class="icone-envoi">✉</span>
+    {{ envoiEnCours ? 'Envoi en cours...' : 'Envoyer le message' }}
+  </button>
 
-      <p class="message" *ngIf="messageSucces">
-        {{ messageSucces }}
-      </p>
+</form>
+
+<p class="message message-succes" *ngIf="messageSucces">
+  {{ messageSucces }}
+</p>
+
+<p class="message message-erreur" *ngIf="erreurMessage">
+  {{ erreurMessage }}
+</p>
+
 
     </div>
 
