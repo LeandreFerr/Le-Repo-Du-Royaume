@@ -51,4 +51,26 @@ public class UtilisateurService {
                 royaume != null ? royaume.getNom() : null
         );
     }
+
+    @Transactional
+    public UtilisateurResponse inscrire(InscriptionRequest request) {
+
+        if (utilisateurDAO.existsByPseudo(request.pseudo())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ce pseudo est déjà utilisé.");
+        }
+        if (utilisateurDAO.existsByEmail(request.email())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet email est déjà utilisé.");
+        }
+
+        Utilisateur utilisateur = new Utilisateur(
+                null, request.pseudo(), request.email(), request.password(), false, false, null);
+
+        Utilisateur sauvegarde = utilisateurDAO.save(utilisateur);
+
+        return new UtilisateurResponse(
+                sauvegarde.getId(), sauvegarde.getPseudo(), sauvegarde.getEmail(),
+                sauvegarde.isOnline(), sauvegarde.isAdmin(), null, null);
+    }  
+
+
 }

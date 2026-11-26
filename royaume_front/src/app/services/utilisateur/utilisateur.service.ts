@@ -18,6 +18,15 @@ export interface UtilisateurResponse {
   royaumeNom: string | null;
 }
 
+
+
+export interface InscriptionRequest {
+  pseudo: string;
+  email: string;
+  password: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -34,4 +43,10 @@ export class UtilisateurService {
       { pseudo, password }
     );
   }
+
+  inscrire(request: InscriptionRequest): Observable<UtilisateurResponse> {
+    return this.http.post<UtilisateurResponse>(this.apiUrl, request);
+  }
+
+
 }

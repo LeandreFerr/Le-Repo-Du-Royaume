@@ -31,4 +31,10 @@ public class UtilisateurRestController {
             return ResponseEntity.status(401).body(e.getMessage());
         }
     }
+
+    @PostMapping
+    public ResponseEntity<UtilisateurResponse> inscrire(@Valid @RequestBody InscriptionRequest request) {
+        UtilisateurResponse response = utilisateurService.inscrire(request);
+        return ResponseEntity.created(URI.create("/api/utilisateurs/" + response.id())).body(response);
+    }
 }
