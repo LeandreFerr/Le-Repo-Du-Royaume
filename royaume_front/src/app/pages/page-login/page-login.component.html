@@ -20,11 +20,13 @@
       placeholder="Votre mot de passe"
     >
 
-    <p class="error" *ngIf="erreur">
-      {{ erreur }}
-    </p>
+    @if (erreur) {
+      <p class="error">{{ erreur }}</p>
+    }
 
     <button type="submit">Se connecter</button>
+
+    <p>Pas de compte ? <a routerLink="/inscription">S'inscrire</a></p>
 
   </form>
 

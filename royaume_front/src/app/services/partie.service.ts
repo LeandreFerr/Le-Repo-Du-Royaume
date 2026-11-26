@@ -5,7 +5,6 @@ import { Observable } from 'rxjs';
 import { PartieResponse } from '../models/partie-response';
 import { StatutPartie } from '../models/statut-partie';
 
-
 @Injectable({
   providedIn: 'root'
 })

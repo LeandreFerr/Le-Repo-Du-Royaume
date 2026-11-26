@@ -18,12 +18,23 @@ export interface UtilisateurResponse {
   royaumeNom: string | null;
 }
 
+
+
+export interface InscriptionRequest {
+  pseudo: string;
+  email: string;
+  password: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class UtilisateurService {
 
-  private apiUrl = 'http://localhost:8080/api/utilisateurs';
+  
+  //private apiUrl = 'http://localhost:8080/api/utilisateurs';
+  private apiUrl = 'http://localhost:8090/api/utilisateurs';
 
   constructor(private http: HttpClient) {}
 
@@ -40,4 +51,9 @@ export class UtilisateurService {
     `${this.apiUrl}/${id}`
   );
 }
+  inscrire(request: InscriptionRequest): Observable<UtilisateurResponse> {
+    return this.http.post<UtilisateurResponse>(this.apiUrl, request);
+  }
+
+
 }

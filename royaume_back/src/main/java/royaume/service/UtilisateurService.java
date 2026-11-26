@@ -1,12 +1,16 @@
 package royaume.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.transaction.Transactional;
 import royaume.dao.IDAOUtilisateur;
+import royaume.dto.request.InscriptionRequest;
 import royaume.dto.request.UtilisateurRequest;
 import royaume.dto.response.UtilisateurResponse;
-import royaume.model.Utilisateur;
 import royaume.model.Royaume;
+import royaume.model.Utilisateur;
 
 @Service
 public class UtilisateurService {
@@ -75,4 +79,26 @@ getUtilisateurById(id: number): Observable<UtilisateurResponse> {
     `${this.apiUrl}/${id}`
   );
 }*/
+
+    @Transactional
+    public UtilisateurResponse inscrire(InscriptionRequest request) {
+
+        if (utilisateurDAO.existsByPseudo(request.pseudo())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ce pseudo est déjà utilisé.");
+        }
+        if (utilisateurDAO.existsByEmail(request.email())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cet email est déjà utilisé.");
+        }
+
+        Utilisateur utilisateur = new Utilisateur(
+                null, request.pseudo(), request.email(), request.password(), false, false, null);
+
+        Utilisateur sauvegarde = utilisateurDAO.save(utilisateur);
+
+        return new UtilisateurResponse(
+                sauvegarde.getId(), sauvegarde.getPseudo(), sauvegarde.getEmail(),
+                sauvegarde.isOnline(), sauvegarde.isAdmin(), null, null);
+    }  
+
+
 }

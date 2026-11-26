@@ -14,36 +14,47 @@ import royaume.dto.response.PartieResponse;
 import royaume.model.Partie;
 import royaume.model.StatutPartie;
 
-@Service 
+import royaume.dao.IDAOCarte;
+import royaume.model.Carte;
+
+@Service
 @Transactional(readOnly = true)
 public class PartieService {
 
     private final IDAOPartie daoPartie;
+    private final IDAOCarte daoCarte;
 
-    public PartieService(IDAOPartie daoPartie) {
+    public PartieService(IDAOPartie daoPartie, IDAOCarte daoCarte) {
+
         this.daoPartie = daoPartie;
+        this.daoCarte = daoCarte;
     }
 
-    @Transactional 
+    @Transactional
     public PartieResponse creer(PartieRequest partieRequest) {
-        return convertirEnResponse(
-            daoPartie.save(
-                new Partie(
-                    partieRequest.nom(), 
-                    partieRequest.vitesseJeu(), 
-                    partieRequest.maxJoueurs()
-                )
-            )
-        );
+
+        Partie partie = new Partie(
+                partieRequest.nom(),
+                partieRequest.vitesseJeu(),
+                partieRequest.maxJoueurs());
+
+        partie = daoPartie.save(partie);
+
+        Carte carte = new Carte();
+        carte.setPartie(partie);
+        carte.genererEmplacements(
+                partieRequest.maxJoueurs());
+
+        daoCarte.save(carte);
+
+        return convertirEnResponse(partie);
     }
 
     public PartieResponse trouverParId(Integer id) {
         return convertirEnResponse(
-            daoPartie.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas.")
-                )
-        );
+                daoPartie.findById(id)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas.")));
     }
 
     public List<PartieResponse> trouverToutes() {
@@ -54,30 +65,31 @@ public class PartieService {
         return daoPartie.findByStatut(statut).stream().map(p -> convertirEnResponse(p)).toList();
     }
 
-    @Transactional 
+    @Transactional
     public PartieResponse demarrer(Integer id) {
         Partie partie = daoPartie.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La partie id=" + id + " n'existe pas."));
         partie.setStatut(StatutPartie.EN_COURS);
         partie = daoPartie.save(partie);
         return convertirEnResponse(partie);
     }
 
-    @Transactional 
+    @Transactional
     public PartieResponse terminer(Integer id) {
         Partie partie = daoPartie.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La partie id=" + id + " n'existe pas."));
         partie.setStatut(StatutPartie.TERMINEE);
         partie = daoPartie.save(partie);
         return convertirEnResponse(partie);
     }
 
-    @Transactional 
+    @Transactional
     public void supprimer(Integer id) {
         Partie partie = daoPartie.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas.")
-                );
+                        HttpStatus.NOT_FOUND, "La partie id=" + id + " n'existe pas."));
         daoPartie.delete(partie);
     }
 
@@ -87,17 +99,17 @@ public class PartieService {
             return null;
         }
         return new PartieResponse(
-            partie.getId(),
-            partie.getNom(),
-            partie.getDateCreation(),
-            partie.getVitesseJeu(),
-            partie.getMaxJoueurs(),
-            partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
-            partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
-            partie.getTypeVictoire(),
-            partie.getRoyaumes() == null ? List.of() : partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList(),
-            partie.getStatut()
-        );
+                partie.getId(),
+                partie.getNom(),
+                partie.getDateCreation(),
+                partie.getVitesseJeu(),
+                partie.getMaxJoueurs(),
+                partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
+                partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
+                partie.getTypeVictoire(),
+                partie.getRoyaumes() == null ? List.of()
+                        : partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList(),
+                partie.getStatut());
     }
 
 }

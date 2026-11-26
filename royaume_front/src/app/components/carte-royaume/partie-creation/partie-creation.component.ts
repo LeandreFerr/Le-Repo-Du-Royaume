@@ -8,6 +8,7 @@ import {
 import { PartieResponse } from '../../../models/partie-response';
 import { PartieCreationRequest } from '../../../models/partie-creation-request';
 import { Partie } from '../../../services/partie.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -20,6 +21,7 @@ export class PartieCreation {
 
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly partieService = inject(Partie);
+  private readonly router = inject(Router);
 
   popupOuverte = false;
   chargement = false;
@@ -90,6 +92,8 @@ export class PartieCreation {
           nom: '',
           maxJoueurs: 2
         });
+        
+        this.router.navigate(['/lobby']);
       },
 
       error: (erreur: HttpErrorResponse) => {
