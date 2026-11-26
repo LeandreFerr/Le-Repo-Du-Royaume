@@ -1,0 +1,154 @@
+<section class="page-creation-royaume">
+
+  <header>
+    <h1>Créer ton royaume</h1>
+
+    <p>
+      Choisis un nom et un peuple pour rejoindre la partie
+      numéro {{ partieId }}.
+    </p>
+  </header>
+
+  @if (chargementPopulations()) {
+
+    <p>
+      Chargement des peuples...
+    </p>
+
+  } @else if (
+    populations().length === 0 &&
+    messageErreur()
+  ) {
+
+    <p class="erreur">
+      {{ messageErreur() }}
+    </p>
+
+    <button
+      type="button"
+      (click)="chargerPopulations()"
+    >
+      Réessayer
+    </button>
+
+  } @else {
+
+    <form
+      [formGroup]="creationForm"
+      (ngSubmit)="creerRoyaume()"
+    >
+
+      <div class="champ-formulaire">
+
+        <label for="nom">
+          Nom du royaume
+        </label>
+
+        <input
+          id="nom"
+          type="text"
+          formControlName="nom"
+          placeholder="Nom du royaume"
+        >
+
+        @if (
+          creationForm.controls.nom.touched &&
+          creationForm.controls.nom.hasError('required')
+        ) {
+          <p class="erreur">
+            Le nom du royaume est obligatoire.
+          </p>
+        }
+
+        @if (
+          creationForm.controls.nom.touched &&
+          creationForm.controls.nom.hasError('minlength')
+        ) {
+          <p class="erreur">
+            Le nom doit contenir au moins 2 caractères.
+          </p>
+        }
+
+        @if (
+          creationForm.controls.nom.touched &&
+          creationForm.controls.nom.hasError('maxlength')
+        ) {
+          <p class="erreur">
+            Le nom ne peut pas dépasser 100 caractères.
+          </p>
+        }
+
+      </div>
+
+      <div class="champ-formulaire">
+
+        <label for="peupleId">
+          Peuple
+        </label>
+
+        <select
+          id="peupleId"
+          formControlName="peupleId"
+        >
+
+          <option [ngValue]="0">
+            Sélectionne un peuple
+          </option>
+
+          @for (
+            population of populations();
+            track population.id
+          ) {
+            <option [ngValue]="population.id">
+              {{ population.nom }}
+              - {{ population.titreSouverain }}
+            </option>
+          }
+
+        </select>
+
+        @if (
+          creationForm.controls.peupleId.touched &&
+          creationForm.controls.peupleId.invalid
+        ) {
+          <p class="erreur">
+            Tu dois sélectionner un peuple.
+          </p>
+        }
+
+      </div>
+
+      @if (messageErreur()) {
+        <p class="erreur">
+          {{ messageErreur() }}
+        </p>
+      }
+
+      <div class="actions">
+
+        <a routerLink="/lobby">
+          Annuler
+        </a>
+
+        <button
+          type="submit"
+          [disabled]="
+            creationForm.invalid ||
+            creationEnCours() ||
+            partieId <= 0
+          "
+        >
+          @if (creationEnCours()) {
+            Création en cours...
+          } @else {
+            Créer le royaume
+          }
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</section>

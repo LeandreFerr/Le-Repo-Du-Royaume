@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject} from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 
 // ========================================
@@ -11,6 +12,9 @@ import { PalierNiveau } from '../models/palier-niveau.model';
 import { ModeleBatiment } from '../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../models/amelioration-batiment.model';
 import { ReparationBatiment } from '../models/reparation-batiment.model';
+import { RoyaumeCreationRequest } from '../models/royaume-creation-request';
+import { RoyaumeResponse } from '../models/royaume-response';
+
 
 
 // ========================================
@@ -43,6 +47,22 @@ import {
   providedIn: 'root'
 })
 export class RoyaumeService {
+
+   private readonly http = inject(HttpClient);
+
+  private readonly apiUrl =
+    'http://localhost:8080/api/royaumes';
+
+  creer(
+    request: RoyaumeCreationRequest
+  ): Observable<RoyaumeResponse> {
+
+    return this.http.post<RoyaumeResponse>(
+      this.apiUrl,
+      request
+    );
+  }
+
 
 
   // ========================================
