@@ -146,73 +146,49 @@
   </div>
 </div>
 
-<!-- MODAL AMELIORATION DU ROYAUME -->
+<!-- =====================================================
+     MODALE AMÉLIORATION DU ROYAUME
+====================================================== -->
+
 <div
   id="modalAmelioration"
   class="modal"
   [class.ouverte]="modalAmelioration"
 >
 
-  <div class="bulle">
+  <div class="bulle fenetre-amelioration">
 
-    <button
-      type="button"
-      class="fermer"
-      (click)="fermerModales()"
-    >
-      X
-    </button>
+    <!-- EN-TÊTE -->
 
-    <h2>
-      <span class="enluminure">A</span>mélioration du royaume
-    </h2>
-
-    <!-- CHARGEMENT -->
-    <div *ngIf="chargementAmelioration">
-      <p>Chargement des informations du royaume...</p>
-    </div>
-
-    <!-- INFORMATIONS DU PALIER -->
-    <div *ngIf="!chargementAmelioration && prochainPalier">
-
-      <h3>
-        Passage au niveau {{ prochainPalier.niveau }}
-      </h3>
-
-      <div class="informations-palier">
-
-        <h4>Population requise</h4>
-
-        <p>
-          {{ prochainPalier.populationRequise }} habitants
-        </p>
-
-        <h4>Ressources nécessaires</h4>
-
-        <div
-          *ngFor="let ressource of prochainPalier.prerequis"
-          class="ressource-palier"
-        >
-
-          <span>{{ ressource.ressource }}</span>
-
-          <strong>{{ ressource.quantite }}</strong>
-
-        </div>
-
-      </div>
+    <div class="entete-amelioration">
 
       <button
         type="button"
-        (click)="ameliorerRoyaume()"
-        [disabled]="chargementAmelioration"
+        class="fermer"
+        (click)="fermerModales()"
       >
-        Améliorer mon royaume
+        X
       </button>
+
+      <h2>
+        <span class="enluminure">A</span>mélioration du royaume
+      </h2>
 
     </div>
 
+
+    <!-- CHARGEMENT -->
+<div
+  class="chargement-amelioration"
+  *ngIf="chargementAmelioration && !prochainPalier"
+>
+   
+      <p>Préparation de votre prochain développement...</p>
+    </div>
+
+
     <!-- MESSAGE -->
+
     <p
       class="message"
       *ngIf="messageAmelioration"
@@ -220,9 +196,232 @@
       {{ messageAmelioration }}
     </p>
 
+
+    <!-- CONTENU -->
+
+    <div
+      *ngIf="prochainPalier"
+      class="contenu-amelioration"
+    >
+
+      <!-- NIVEAUX -->
+
+      <div class="niveau-presentation">
+
+        <div class="niveau-bloc niveau-actuel">
+
+          <span class="legende">NIVEAU ACTUEL</span>
+
+          <strong>
+            {{ prochainPalier.niveauActuel }}
+          </strong>
+
+        </div>
+
+        <span class="fleche-niveau">➜</span>
+
+        <div class="niveau-bloc niveau-suivant">
+
+          <span class="legende">PROCHAIN NIVEAU</span>
+
+          <strong>
+            {{ prochainPalier.prochainPalier?.niveau || 'MAX' }}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <!-- NIVEAU MAXIMUM -->
+
+      <div
+        class="niveau-maximal"
+        *ngIf="!prochainPalier.prochainPalier"
+      >
+
+        <h3>Votre royaume a atteint son apogée !</h3>
+
+        <p>
+          Vous avez atteint le niveau maximal.
+          Aucune amélioration supplémentaire n'est disponible.
+        </p>
+
+      </div>
+
+
+      <!-- CONDITIONS -->
+
+      <ng-container *ngIf="prochainPalier.prochainPalier">
+
+        <!-- POPULATION -->
+
+        <div class="condition condition-compacte">
+
+          <div class="condition-entete">
+
+            <strong>Population</strong>
+
+            <span
+              class="statut"
+              [class.suffisant]="prochainPalier.populationSuffisante"
+              [class.insuffisant]="!prochainPalier.populationSuffisante"
+            >
+              {{
+                prochainPalier.populationSuffisante
+                  ? 'ACQUIS'
+                  : 'À OBTENIR'
+              }}
+            </span>
+
+          </div>
+
+          <div class="population-details">
+
+            <strong>
+              {{ prochainPalier.populationDisponible }}
+              / {{ prochainPalier.populationRequise }}
+              habitants
+            </strong>
+
+            <span
+              [class.texte-suffisant]="prochainPalier.populationSuffisante"
+              [class.texte-insuffisant]="!prochainPalier.populationSuffisante"
+            >
+              <ng-container *ngIf="!prochainPalier.populationSuffisante">
+                Manque :
+                {{ prochainPalier.populationManquante }}
+                habitants
+              </ng-container>
+
+              <ng-container *ngIf="prochainPalier.populationSuffisante">
+                Objectif atteint
+              </ng-container>
+            </span>
+
+          </div>
+
+          <div class="barre-progression">
+
+            <div
+              class="barre-progression-interne"
+              [class.progression-ok]="prochainPalier.populationSuffisante"
+              [class.progression-ko]="!prochainPalier.populationSuffisante"
+              [style.width.%]="
+                prochainPalier.populationRequise > 0
+                  ? Math.min(
+                      100,
+                      prochainPalier.populationDisponible /
+                      prochainPalier.populationRequise * 100
+                    )
+                  : 100
+              "
+            ></div>
+
+          </div>
+
+        </div>
+
+
+        <!-- RESSOURCES -->
+
+        <div class="liste-ressources">
+
+          <div
+            class="ressource-palier"
+            *ngFor="let ressource of prochainPalier.ressources"
+          >
+
+            <div class="ressource-identite">
+
+              <img
+                [src]="getImageRessource(ressource.ressource)"
+                [alt]="ressource.ressource"
+                class="icone-ressource"
+              >
+
+              <strong>
+                {{ ressource.ressource }}
+              </strong>
+
+            </div>
+
+            <span
+              class="statut"
+              [class.suffisant]="ressource.suffisante"
+              [class.insuffisant]="!ressource.suffisante"
+            >
+              {{
+                ressource.suffisante
+                  ? 'ACQUIS'
+                  : 'À OBTENIR'
+              }}
+            </span>
+
+            <div class="quantites-ressource">
+
+              <span>
+                Possédé :
+                <strong>{{ ressource.quantitePossedee }}</strong>
+              </span>
+
+              <span>
+                Requis :
+                <strong>{{ ressource.quantiteRequise }}</strong>
+              </span>
+
+              <span
+  *ngIf="ressource.quantiteManquante > 0"
+  class="texte-insuffisant"
+>
+  Manquant :
+  <strong>{{ ressource.quantiteManquante }}</strong>
+</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- BOUTON -->
+
+        <button
+          type="button"
+          class="bouton-ameliorer"
+          (click)="ameliorerRoyaume()"
+          [disabled]="
+            !prochainPalier.ameliorationPossible ||
+            chargementAmelioration
+          "
+        >
+          Améliorer mon royaume
+        </button>
+
+
+        <!-- MESSAGE SOUS LE BOUTON -->
+
+        <p
+          class="message-conditions"
+          [class.message-ok]="prochainPalier.ameliorationPossible"
+          [class.message-ko]="!prochainPalier.ameliorationPossible"
+        >
+          {{
+            prochainPalier.ameliorationPossible
+              ? 'Votre royaume est prêt à évoluer.'
+              : 'Rassemblez les éléments manquants pour poursuivre votre évolution.'
+          }}
+        </p>
+
+      </ng-container>
+
+    </div>
+
   </div>
 
 </div>
+
 
 <!-- Modal attaque -->
 <div id="modalAttaque" class="modal" [class.ouverte]="modalAttaque">

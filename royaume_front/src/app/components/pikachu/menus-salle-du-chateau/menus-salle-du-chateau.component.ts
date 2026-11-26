@@ -9,6 +9,9 @@ import { AmeliorerRoyaumeService } from '../../../services/royaume/ameliorer-roy
 import { CommonModule } from '@angular/common';
 import { PalierNiveau } from '../../../models/palier-niveau.model';
 import {
+  AmeliorerRoyaumeResponse
+} from '../../../models/palier-niveau.model';
+import {
   MarcheService,
   OffreMarcheRequest,
   Ressource
@@ -55,10 +58,18 @@ direction = 'Down';
 positionMaxX = 610;
 positionMaxY = 610;
 
-prochainPalier: PalierNiveau| null = null;
+// =====================================================
+// AMELIORATION DU ROYAUME
+// =====================================================
+
+modalAmelioration = false;
 
 chargementAmelioration = false;
 
+messageAmelioration = '';
+
+prochainPalier: AmeliorerRoyaumeResponse | null = null;
+// =====================================================
 
 // CHEMINS DES IMAGES
 
@@ -76,12 +87,12 @@ get spriteActuel(): string {
 
   // Gestion des fenêtres
   modalEchange = false;
-  modalAmelioration = false;
+  //modalAmelioration = false;
   modalAttaque = false;
-
+  readonly Math = Math;
   // Messages
   messageEchange = '';
-  messageAmelioration = '';
+  //messageAmelioration = '';
   messageAttaque = '';
 
   typesRessources: string[] = [
@@ -491,32 +502,50 @@ private terminerPublication(signature: string): void {
 
 }
 //_______________________________________________________________  🐸
+
+  // =====================================================
+  // OUVERTURE DE LA MODALE
+  // =====================================================
 ouvrirAmelioration(): void {
 
   this.fermerModales();
 
   this.modalAmelioration = true;
 
-  this.chargerProchainPalier();
+  // Charger uniquement si les données ne sont pas encore disponibles
+  if (!this.prochainPalier) {
+    this.chargerProchainPalier();
+  }
 
 }
 
-  // Amélioration d'un Royaume
-  chargerProchainPalier(): void {
+
+  // =====================================================
+  // CHARGEMENT DES INFORMATIONS
+  // =====================================================
+chargerProchainPalier(): void {
+
+  // Éviter les chargements simultanés
+  if (this.chargementAmelioration) {
+    return;
+  }
 
   this.chargementAmelioration = true;
   this.messageAmelioration = '';
-  this.prochainPalier = null;
+
+  // IMPORTANT :
+  // Ne plus effacer prochainPalier ici.
+  // Les anciennes données restent disponibles pendant le chargement.
 
   this.ameliorerRoyaumeService
     .obtenirProchainPalier(this.vendeurId)
     .subscribe({
 
-      next: (palier) => {
+      next: (reponse) => {
 
         this.zone.run(() => {
 
-          this.prochainPalier = palier;
+          this.prochainPalier = reponse;
           this.chargementAmelioration = false;
 
           this.cdr.detectChanges();
@@ -527,14 +556,17 @@ ouvrirAmelioration(): void {
 
       error: (error) => {
 
-        console.error('Erreur chargement palier :', error);
+        console.error(
+          'Erreur chargement amélioration :',
+          error
+        );
 
         this.zone.run(() => {
 
           this.chargementAmelioration = false;
 
           this.messageAmelioration =
-            'Impossible de récupérer le prochain palier.';
+            'Impossible de récupérer les informations du prochain palier.';
 
           this.cdr.detectChanges();
 
@@ -545,58 +577,86 @@ ouvrirAmelioration(): void {
     });
 
 }
-  ameliorerRoyaume(): void {
 
-  if (!this.prochainPalier || this.chargementAmelioration) {
-    return;
+
+  // =====================================================
+  // IMAGE DES RESSOURCES
+  // =====================================================
+
+  getImageRessource(ressource: string): string {
+
+    return `/assets/imago/${ressource.toUpperCase()}.png`;
+
   }
 
-  this.messageAmelioration = '';
-  this.chargementAmelioration = true;
 
-  this.ameliorerRoyaumeService
-    .ameliorerRoyaume(this.vendeurId)
-    .subscribe({
+  // =====================================================
+  // AMELIORATION DU ROYAUME
+  // =====================================================
 
-      next: (message) => {
+  ameliorerRoyaume(): void {
 
-        this.zone.run(() => {
+    if (
+      !this.prochainPalier ||
+      !this.prochainPalier.ameliorationPossible ||
+      this.chargementAmelioration
+    ) {
+      return;
+    }
 
-          this.messageAmelioration = message;
+    this.messageAmelioration = '';
+    this.chargementAmelioration = true;
 
-          this.chargementAmelioration = false;
+    this.ameliorerRoyaumeService
+      .ameliorerRoyaume(this.vendeurId)
+      .subscribe({
 
-          // Actualiser le prochain palier
-          this.chargerProchainPalier();
+        next: (message) => {
 
-          this.cdr.detectChanges();
+          this.zone.run(() => {
 
-        });
+            this.messageAmelioration = message;
 
-      },
+            this.chargementAmelioration = false;
 
-      error: (error) => {
+            // Actualiser les informations du prochain niveau
+            this.chargerProchainPalier();
 
-        console.error('Erreur amélioration :', error);
+            this.cdr.detectChanges();
 
-        this.zone.run(() => {
+          });
 
-          this.chargementAmelioration = false;
+        },
 
-          this.messageAmelioration =
-            typeof error.error === 'string'
-              ? error.error
-              : 'Impossible d’améliorer le royaume.';
+        error: (error) => {
 
-          this.cdr.detectChanges();
+          console.error(
+            'Erreur amélioration :',
+            error
+          );
 
-        });
+          this.zone.run(() => {
 
-      }
+            this.chargementAmelioration = false;
 
-    });
+            this.messageAmelioration =
+              typeof error.error === 'string'
+                ? error.error
+                : 'Impossible d’améliorer le royaume.';
 
-}
+            // Actualiser les conditions après un éventuel échec
+            this.chargerProchainPalier();
+
+            this.cdr.detectChanges();
+
+          });
+
+        }
+
+      });
+
+  }
+
 //________________________________________________________________  🐸
   // Déclaration d'une attaque
   attaquerRoyaume(

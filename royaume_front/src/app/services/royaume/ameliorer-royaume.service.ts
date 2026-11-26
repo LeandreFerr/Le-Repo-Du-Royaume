@@ -1,8 +1,11 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { PalierNiveau } from '../../models/palier-niveau.model';
+import {
+  AmeliorerRoyaumeResponse
+} from '../../models/palier-niveau.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +16,12 @@ export class AmeliorerRoyaumeService {
 
   constructor(private http: HttpClient) {}
 
-  // Récupérer le prochain palier
+  // Récupérer toutes les informations du prochain palier
   obtenirProchainPalier(
     royaumeId: number
-  ): Observable<PalierNiveau> {
+  ): Observable<AmeliorerRoyaumeResponse> {
 
-    return this.http.get<PalierNiveau>(
+    return this.http.get<AmeliorerRoyaumeResponse>(
       `${this.apiUrl}/${royaumeId}/prochain-palier`
     );
   }

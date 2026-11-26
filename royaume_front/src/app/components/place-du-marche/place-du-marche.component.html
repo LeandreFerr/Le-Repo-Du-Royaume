@@ -24,20 +24,17 @@
 
     </div>
 
-
     <!-- MESSAGE -->
 
     <p class="message" *ngIf="message">
       {{ message }}
     </p>
 
-
     <!-- CHARGEMENT -->
 
     <p class="aucune-offre" *ngIf="chargement">
       Chargement des annonces...
     </p>
-
 
     <!-- =====================================
          OFFRES DISPONIBLES
@@ -53,7 +50,6 @@
       >
         Aucune annonce disponible actuellement.
       </p>
-
 
       <div
         class="offre"
@@ -74,7 +70,6 @@
 
         </div>
 
-
         <!-- VENDEUR -->
 
         <div class="vendeur">
@@ -92,15 +87,11 @@
 
         </div>
 
-
         <!-- DATE -->
 
         <div class="date-publication">
-
           Publiée le {{ formaterDate(offre.datePublication) }}
-
         </div>
-
 
         <!-- ECHANGE -->
 
@@ -119,9 +110,7 @@
 
           </div>
 
-
           <span class="fleche">⇄</span>
-
 
           <div class="ressource">
 
@@ -138,7 +127,6 @@
 
         </div>
 
-
         <!-- ACTIONS -->
 
         <div class="actions">
@@ -151,7 +139,6 @@
           >
             Accepter l'offre
           </button>
-
 
           <button
             *ngIf="estMonOffre(offre)"
@@ -168,12 +155,6 @@
 
     </section>
 
-
-    <img
-  [src]="getImageRessource(ressource.ressource)"
-  [alt]="ressource.ressource"
-  class="icone-ressource"
-/>
     <!-- =====================================
          OFFRES CONCLUES
     ====================================== -->
@@ -188,7 +169,6 @@
       >
         Aucune transaction terminée.
       </p>
-
 
       <div
         class="offre offre-conclue"
@@ -207,20 +187,19 @@
 
         </div>
 
+        <!-- VENDEUR -->
 
         <div class="vendeur">
-
           Vendeur : {{ offre.vendeurNom }}
-
         </div>
 
+        <!-- DATE -->
 
         <div class="date-publication">
-
           Publiée le {{ formaterDate(offre.datePublication) }}
-
         </div>
 
+        <!-- ECHANGE -->
 
         <div class="echange">
 
@@ -237,9 +216,7 @@
 
           </div>
 
-
           <span class="fleche">⇄</span>
-
 
           <div class="ressource">
 
@@ -255,7 +232,6 @@
           </div>
 
         </div>
-
 
         <div class="mention-terminee">
           Transaction terminée

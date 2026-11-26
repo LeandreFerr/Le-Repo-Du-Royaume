@@ -1,10 +1,10 @@
-package royaume.restcontroller;
 
+package royaume.restcontroller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import royaume.model.PalierNiveau;
+import royaume.dto.response.AmeliorerRoyaumeResponse;
 import royaume.service.AmeliorerRoyaumeService;
 
 @RestController
@@ -20,15 +20,17 @@ public class AmeliorerRoyaumeRestController {
         this.service = service;
     }
 
+    // Informations nécessaires à l'amélioration
     @GetMapping("/{id}/prochain-palier")
-    public ResponseEntity<PalierNiveau> prochainPalier(
+    public ResponseEntity<AmeliorerRoyaumeResponse> prochainPalier(
         @PathVariable Integer id
     ) {
         return ResponseEntity.ok(
-            service.obtenirProchainPalier(id)
+            service.obtenirInformationsAmelioration(id)
         );
     }
 
+    // Amélioration effective du royaume
     @PostMapping("/{id}/ameliorer")
     public ResponseEntity<?> ameliorer(
         @PathVariable Integer id
