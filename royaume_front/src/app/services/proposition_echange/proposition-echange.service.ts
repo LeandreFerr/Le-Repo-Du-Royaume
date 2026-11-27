@@ -22,6 +22,7 @@ export interface QuantiteRessource {
 
 export interface PropositionEchangeRequest {
   expediteurId: number;
+  destinataireId?: number;
   offerte: QuantiteRessource;
   demandee: QuantiteRessource;
 }

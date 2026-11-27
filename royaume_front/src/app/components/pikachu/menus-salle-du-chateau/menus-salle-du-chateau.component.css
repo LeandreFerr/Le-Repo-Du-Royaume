@@ -1280,3 +1280,54 @@ img.ressource {
 }
 
 }
+
+/* =========================================
+   MODE MODALE SUR CARTE (HUD & SORTIE)
+========================================= */
+
+.game-container.mode-modal {
+  z-index: 950;
+}
+
+.chateau-hud-bar {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 960;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 16px;
+  background: rgba(20, 14, 9, 0.92);
+  border: 1px solid #b89a5a;
+  border-radius: 6px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
+  color: #f5e2b4;
+  font-size: 0.8rem;
+  max-width: calc(100vw - 32px);
+}
+
+.chateau-hud-hint {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-quitter-chateau {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  color: #fff1cc;
+  background: #4b2b1a;
+  border: 1px solid #d4ad61;
+  border-radius: 4px;
+  font-family: "Cinzel", serif;
+  font-size: 0.78rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-quitter-chateau:hover {
+  background: #6b3d24;
+  border-color: #fde68a;
+}

@@ -1,13 +1,18 @@
 import {
   Component,
+  EventEmitter,
   HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
   ChangeDetectorRef,
-  NgZone
+  NgZone,
+  SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AmeliorerRoyaumeService } from '../../../services/royaume/ameliorer-royaume.service';
 import { CommonModule } from '@angular/common';
-import { PalierNiveau } from '../../../models/palier-niveau.model';
 import {
   AmeliorerRoyaumeResponse
 } from '../../../models/palier-niveau.model';
@@ -20,6 +25,29 @@ import {
 
 import { VisuAttaques } from '../../visu-attaques/visu-attaques.component';
 
+export function resoudrePersonnageDepuisPeuple(peupleNom?: string | null): string {
+  if (!peupleNom) {
+    return 'gobelin';
+  }
+  const normalized = peupleNom.trim().toLowerCase();
+  if (normalized.includes('canard')) {
+    return 'canard';
+  }
+  if (normalized.includes('licorne')) {
+    return 'licorne';
+  }
+  if (normalized.includes('princesse')) {
+    return 'princesse';
+  }
+  if (normalized.includes('teuteu')) {
+    return 'teuteu';
+  }
+  if (normalized.includes('gobelin')) {
+    return 'gobelin';
+  }
+  return 'gobelin';
+}
+
 @Component({
   selector: 'app-menus-salle-du-chateau',
   standalone: true,
@@ -27,7 +55,13 @@ import { VisuAttaques } from '../../visu-attaques/visu-attaques.component';
   templateUrl: './menus-salle-du-chateau.component.html',
   styleUrls: ['./menus-salle-du-chateau.component.css']
 })
-export class MenusSalleDuChateauComponent {
+export class MenusSalleDuChateauComponent implements OnInit, OnChanges {
+
+  @Input() royaumeId?: number;
+  @Input() peupleNom?: string;
+  @Input() modeModal = false;
+  @Output() fermer = new EventEmitter<void>();
+  @Output() royaumeModifie = new EventEmitter<void>();
 
   constructor(
     private marcheService: MarcheService,
@@ -48,7 +82,7 @@ private publicationsEnCours = new Map<string, number>();
 // PERSONNAGE
 nomPersonnage = 'gobelin';
 
-personnagesDisponibles = ['gobelin', 'licorne'];
+personnagesDisponibles = ['gobelin', 'licorne', 'canard', 'princesse', 'teuteu'];
 
 posX = 0;
 posY = 0;
@@ -86,6 +120,40 @@ get spriteActuel(): string {
   // État du jeu
   nomGobelin = '';
   demarre = false;
+
+  ngOnInit(): void {
+    this.synchroniserContexteRoyaume();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['royaumeId'] || changes['peupleNom'] || changes['modeModal']) {
+      this.synchroniserContexteRoyaume();
+    }
+  }
+
+  private synchroniserContexteRoyaume(): void {
+    if (this.royaumeId) {
+      this.vendeurId = this.royaumeId;
+      this.prochainPalier = null;
+    }
+
+    if (this.peupleNom || this.modeModal) {
+      this.nomPersonnage = resoudrePersonnageDepuisPeuple(this.peupleNom);
+      this.posX = 0;
+      this.posY = 0;
+      this.direction = 'Down';
+      this.demarre = true;
+    }
+  }
+
+  quitterSalle(): void {
+    this.fermerModales();
+    if (this.modeModal) {
+      this.fermer.emit();
+    } else {
+      this.retourMenu();
+    }
+  }
 
   // Gestion des fenêtres
   modalEchange = false;
@@ -173,6 +241,12 @@ gererClavier(event: KeyboardEvent): void {
       this.fermerModales();
     }
 
+    return;
+  }
+
+  if (event.key === 'Escape' && this.modeModal) {
+    event.preventDefault();
+    this.quitterSalle();
     return;
   }
 
@@ -386,6 +460,12 @@ interaction(): void {
 }
 retourMenu(): void {
 
+  if (this.modeModal) {
+    this.fermerModales();
+    this.fermer.emit();
+    return;
+  }
+
   this.demarre = false;
 
   this.nomGobelin = '';
@@ -464,6 +544,7 @@ posterEchange(
 
         // Actualisation immédiate de l'affichage
         this.cdr.detectChanges();
+        this.royaumeModifie.emit();
 
       });
 
@@ -628,6 +709,7 @@ chargerProchainPalier(): void {
             this.chargerProchainPalier();
 
             this.cdr.detectChanges();
+            this.royaumeModifie.emit();
 
           });
 

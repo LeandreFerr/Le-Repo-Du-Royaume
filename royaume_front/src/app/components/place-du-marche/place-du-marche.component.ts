@@ -2,16 +2,23 @@
 
 import {
   Component,
+  EventEmitter,
+  Input,
+  OnChanges,
   OnInit,
+  Output,
   ChangeDetectorRef,
-  NgZone
-} 
-from '@angular/core';import { CommonModule } from '@angular/common';
+  NgZone,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 import {
   MarcheService,
   OffreMarcheResponse
 } from '../../services/marche/marche-service.service';
+import { SessionService } from '../../services/session/session.service';
 
 @Component({
   selector: 'app-place-du-marche',
@@ -20,14 +27,25 @@ import {
   templateUrl: './place-du-marche.component.html',
   styleUrls: ['./place-du-marche.component.css']
 })
-export class PlaceDuMarcheComponent implements OnInit {
+export class PlaceDuMarcheComponent implements OnInit, OnChanges {
+  private readonly session = inject(SessionService);
+
+  @Input() monRoyaumeId?: number;
+  @Output() offreModifiee = new EventEmitter<void>();
+
 constructor(
   private marcheService: MarcheService,
   private cdr: ChangeDetectorRef,
   private zone: NgZone
 ) {}
-  // IDENTIFICATION DU JOUEUR
+  // IDENTIFICATION DU ROYAUME DU JOUEUR
   idUtilisateurEnCours = 2;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['monRoyaumeId'] && this.monRoyaumeId) {
+      this.idUtilisateurEnCours = this.monRoyaumeId;
+    }
+  }
 
   // DONNEES
   offres: OffreMarcheResponse[] = [];
@@ -40,6 +58,10 @@ constructor(
 
   
 ngOnInit(): void {
+  this.idUtilisateurEnCours =
+    this.monRoyaumeId ??
+    this.session.utilisateur()?.royaumeId ??
+    this.idUtilisateurEnCours;
   console.log('INITIALISATION PLACE DU MARCHE');
   this.chargerOffres();
 }
@@ -251,6 +273,7 @@ get offresConclues(): OffreMarcheResponse[] {
         this.chargerOffres();
 
         this.offresEnCours.delete(offre.id);
+        this.offreModifiee.emit();
 
       },
 
@@ -297,6 +320,7 @@ get offresConclues(): OffreMarcheResponse[] {
         this.chargerOffres();
 
         this.offresEnCours.delete(offre.id);
+        this.offreModifiee.emit();
 
       },
 

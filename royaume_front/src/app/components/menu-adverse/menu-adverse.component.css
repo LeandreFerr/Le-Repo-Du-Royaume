@@ -687,3 +687,22 @@
   overflow-y: auto;
   max-height: 90vh;
 }
+
+.menu-adverse.mode-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 950;
+  background: rgba(8, 6, 4, 0.72);
+  backdrop-filter: blur(3px);
+}
+
+.menu-adverse-contenu {
+  position: relative;
+}
+
+.cible-details {
+  margin: -8px 0 6px;
+  color: #d8c58c;
+  font-size: 0.84rem;
+  text-align: center;
+}

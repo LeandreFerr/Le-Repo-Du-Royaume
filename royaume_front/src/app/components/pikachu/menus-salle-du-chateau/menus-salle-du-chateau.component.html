@@ -4,11 +4,28 @@
 <div
   class="game-container"
   [class.game-active]="demarre"
+  [class.mode-modal]="modeModal"
   [style.background-image]="'url(' + fondEau + ')'"
 >
 
+  @if (modeModal) {
+    <div class="chateau-hud-bar">
+      <span class="chateau-hud-hint">
+        ZQSD / Flèches : Déplacer · Espace : Interagir (Table = Marché · Carte = Niveau · Armes = Attaques)
+      </span>
+      <button
+        type="button"
+        class="btn-quitter-chateau"
+        (click)="quitterSalle()"
+        data-testid="quitter-chateau-btn"
+      >
+        ✕ Retour à la carte
+      </button>
+    </div>
+  }
+
   <!-- ÉCRAN DE DÉMARRAGE -->
-  <div id="formStart" [hidden]="demarre">
+  <div id="formStart" [hidden]="demarre || modeModal">
 
     <input
       id="inputName"
@@ -421,6 +438,6 @@
   <div class="bulle bulle-large">
     <button type="button" class="fermer" (click)="fermerModales()">X</button>
 
-    <app-visu-attaques></app-visu-attaques>
+    <app-visu-attaques [royaumeId]="vendeurId"></app-visu-attaques>
   </div>
 </div>

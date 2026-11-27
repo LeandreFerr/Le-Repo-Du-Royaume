@@ -3,13 +3,37 @@
      MENU PRINCIPAL DU ROYAUME ADVERSE
 ====================================================== -->
 
-<div class="menu-adverse">
+<div class="menu-adverse" [class.mode-modal]="modeModal" (click)="modeModal && fermerMenuPrincipal()">
 
-  <div class="menu-adverse-contenu">
+  <div class="menu-adverse-contenu" (click)="$event.stopPropagation()">
+
+    @if (modeModal) {
+      <button
+        type="button"
+        class="fermer"
+        aria-label="Fermer le menu adverse"
+        (click)="fermerMenuPrincipal()"
+        data-testid="fermer-menu-adverse-btn"
+      >
+        X
+      </button>
+    }
 
     <h2 class="titre-menu">
-      <span class="enluminure">R</span>oyaume adverse
+      <span class="enluminure">R</span>{{ royaumeAdverse ? royaumeAdverse.nom.slice(1) : 'oyaume adverse' }}
     </h2>
+
+    @if (royaumeAdverse) {
+      <p class="cible-details" data-testid="cible-adverse-details">
+        Souverain : <strong>{{ pseudoAdverse || 'Inconnu' }}</strong>
+        @if (royaumeAdverse.peupleNom) {
+          · {{ royaumeAdverse.peupleNom }}
+        }
+        @if (royaumeAdverse.niveau) {
+          · Niv. {{ royaumeAdverse.niveau }}
+        }
+      </p>
+    }
 
     <!-- BOUTON ÉCHANGE -->
 
