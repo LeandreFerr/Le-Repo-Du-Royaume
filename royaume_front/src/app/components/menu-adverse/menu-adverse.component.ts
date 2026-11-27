@@ -17,10 +17,13 @@ import {
   UtilisateurService,
   UtilisateurResponse
 } from '../../services/utilisateur/utilisateur.service';
+
+import { AttaqueAdverse } from '../attaque-adverse/attaque-adverse.component';
+
 @Component({
   selector: 'app-menu-adverse',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AttaqueAdverse],
   templateUrl: './menu-adverse.component.html',
   styleUrls: ['./menu-adverse.component.css']
 })
@@ -31,6 +34,8 @@ export class MenuAdverseComponent implements OnInit {
   idAdverse = 2;
   idPartie = 1;
   idExpediteur = 1;
+  attaquantId = 1;
+  defenseurId = 2;
 
 // Message
 contenuMessage = '';

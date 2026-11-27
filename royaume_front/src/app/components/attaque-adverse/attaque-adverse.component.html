@@ -1,0 +1,140 @@
+
+<div class="modal-attaque">
+
+  <div class="bulle-attaque">
+
+    <h2 class="titre-attaque">
+      <span class="enluminure">L</span>ancer une attaque
+    </h2>
+
+    <div class="separateur"></div>
+
+    @if (chargementTroupes) {
+      <div>Chargement des troupes disponibles...</div>
+    } @else {
+
+      <form (ngSubmit)="envoyerAttaque()">
+
+        <div class="troupes">
+
+          <!-- ARCHERS -->
+          <div class="ligne-troupe">
+            <div class="info-troupe">
+                <img src="assets/imago/archer.png" alt="Archers" class="icone-troupe-img">
+              <div>
+                <label for="archers">Archers</label>
+                <p>Disponibles : {{ stocks['ARCHER'] }}</p>
+              </div>
+            </div>
+
+            <input
+              id="archers"
+              type="number"
+              name="archers"
+              min="0"
+              [max]="stocks['ARCHER']"
+              step="1"
+              [(ngModel)]="troupes.ARCHER"
+              (ngModelChange)="verifierQuantite('ARCHER', $event)"
+              [disabled]="stocks['ARCHER'] === 0"
+            >
+          
+            </div>
+
+          <!-- CAVALIERS -->
+          <div class="ligne-troupe">
+            <div class="info-troupe">
+             <img src="assets/imago/cavalier.png" alt="Cavaliers" class="icone-troupe-img">
+              <div>
+                <label for="cavaliers">Cavaliers</label>
+                <p>Disponibles : {{ stocks['CAVALIER'] }}</p>
+              </div>
+            </div>
+
+            <input
+              id="cavaliers"
+              type="number"
+              name="cavaliers"
+              min="0"
+              [max]="stocks['CAVALIER']"
+              step="1"
+              [(ngModel)]="troupes.CAVALIER"
+              (ngModelChange)="verifierQuantite('CAVALIER', $event)"
+              [disabled]="stocks['CAVALIER'] === 0"
+            >
+          </div>
+
+          <!-- LANCIERS -->
+          <div class="ligne-troupe">
+            <div class="info-troupe">
+              <img src="assets/imago/lancier.png" alt="Lanciers" class="icone-troupe-img">
+              <div>
+                <label for="lanciers">Lanciers</label>
+                <p>Disponibles : {{ stocks['LANCIER'] }}</p>
+              </div>
+            </div>
+
+            <input
+              id="lanciers"
+              type="number"
+              name="lanciers"
+              min="0"
+              [max]="stocks['LANCIER']"
+              step="1"
+              [(ngModel)]="troupes.LANCIER"
+              (ngModelChange)="verifierQuantite('LANCIER', $event)"
+              [disabled]="stocks['LANCIER'] === 0"
+            >
+          </div>
+
+          <!-- TROUPES SPÉCIALES -->
+          <div class="ligne-troupe">
+            <div class="info-troupe">
+              <img src="assets/imago/star.png" alt="special" class="icone-troupe-img">
+              <div>
+                <label for="special">Troupes spéciales</label>
+                <p>Disponibles : {{ stocks['SPECIAL'] }}</p>
+              </div>
+            </div>
+
+            <input
+              id="special"
+              type="number"
+              name="speciales"
+              min="0"
+              [max]="stocks['SPECIAL']"
+              step="1"
+              [(ngModel)]="troupes.SPECIAL"
+              (ngModelChange)="verifierQuantite('SPECIAL', $event)"
+              [disabled]="stocks['SPECIAL'] === 0"
+            >
+          </div>
+
+        </div>
+
+        <button
+          type="submit"
+          class="bouton-attaquer"
+          [disabled]="loading"
+        >
+          ⚔
+          {{ loading ? 'Attaque en cours...' : 'Lancer l\'attaque' }}
+          ⚔
+        </button>
+
+      </form>
+    }
+
+    @if (message) {
+      <p
+        class="message-attaque"
+        [class.message-erreur]="message.includes('Erreur') || message.includes('Ajoute') || message.includes('invalide') || message.includes('Impossible')"
+        [class.message-succes]="message.includes('Attaque lancée')"
+      >
+        {{ message }}
+      </p>
+    }
+
+  </div>
+
+</div>
