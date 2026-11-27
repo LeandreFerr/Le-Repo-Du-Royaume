@@ -40,6 +40,7 @@ public class TickerService {
         }
 
         MoteurJeu moteur = moteurs.computeIfAbsent(partieId, id -> new MoteurJeu(partie, new HorlogeJeu(LocalDateTime.now(), partie.getVitesseJeu())));
+        moteur.setPartie(partie);
         moteur.executerTick(Duration.ofSeconds(secondes));
         daoPartie.save(partie);
         return new TickerResponse(partieId, moteur.getHorloge().getTempsCourant(), moteur.getHorloge().getVitesseSimulation());

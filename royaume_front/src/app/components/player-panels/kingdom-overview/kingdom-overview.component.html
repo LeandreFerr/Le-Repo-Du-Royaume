@@ -138,6 +138,17 @@
 
       </div>
 
+      <div class="population-footer population-growth-row">
+
+        <span>Production de population</span>
+
+        <strong>
+          +{{ productionPopulationHeure | number:'1.0-1' }} hab. / h
+          (+{{ croissancePopulationPct | number:'1.0-1' }} % / h)
+        </strong>
+
+      </div>
+
     </section>
 
     <!-- Ressources du royaume -->
@@ -178,6 +189,10 @@
             <strong class="resource-value">
               {{ stock.quantite | number:'1.0-0' }}
             </strong>
+
+            <span class="resource-production" [class.is-active]="getProductionParHeure(stock.ressource) > 0">
+              +{{ getProductionParHeure(stock.ressource) | number:'1.0-1' }} / h
+            </span>
 
           </div>
 

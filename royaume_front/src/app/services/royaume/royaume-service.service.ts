@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { TypeBatiment } from '../../models/batiment.model';
 // ========================================
 // MODÈLES
@@ -78,7 +78,21 @@ export class RoyaumeService {
   private readonly chantiersUrl =
     '/api/chantiers';
 
+  serverClockOffsetMs = 0;
+
   constructor(private readonly http: HttpClient) {}
+
+  private updateServerClockOffset(dateHeader: string | null): void {
+    if (!dateHeader) {
+      return;
+    }
+    const serverMs = new Date(dateHeader).getTime();
+    if (!Number.isFinite(serverMs)) {
+      return;
+    }
+    const diff = serverMs - Date.now();
+    this.serverClockOffsetMs = Math.abs(diff) > 2000 ? diff : 0;
+  }
 
  // ========================================
   // RÉCUPÉRATION DES ROYAUMES
@@ -205,7 +219,11 @@ export class RoyaumeService {
   ): Observable<ChantierConstructionResponse[]> {
 
     return this.http.get<ChantierConstructionResponse[]>(
-      `${this.chantiersUrl}/royaume/${royaumeId}`
+      `${this.chantiersUrl}/royaume/${royaumeId}`,
+      { observe: 'response' }
+    ).pipe(
+      tap((res) => this.updateServerClockOffset(res.headers.get('Date'))),
+      map((res) => res.body ?? [])
     );
   }
 

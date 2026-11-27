@@ -316,7 +316,8 @@
   @if (!estEnAttente && activePage === 'royaume' && royaume) {
     <app-kingdom-overview
       [royaume]="royaume"
-      [paliers]="paliers">
+      [paliers]="paliers"
+      [vitesseJeu]="partie?.vitesseJeu ?? 1">
     </app-kingdom-overview>
   }
 

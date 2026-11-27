@@ -1,15 +1,24 @@
 package royaume;
 
+import java.util.TimeZone;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableScheduling 
 public class RoyaumeApplication {
 
+    @PostConstruct
+    public void initTimeZone() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
+
     public static void main(String[] args) {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         SpringApplication.run(RoyaumeApplication.class, args);
     }
 }

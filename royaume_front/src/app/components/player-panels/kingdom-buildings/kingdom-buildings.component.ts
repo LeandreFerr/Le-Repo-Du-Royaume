@@ -3,7 +3,9 @@ import {
   Input,
   inject,
   OnInit,
+  OnChanges,
   OnDestroy,
+  SimpleChanges,
   ChangeDetectorRef
 } from '@angular/core';
 
@@ -33,7 +35,7 @@ import {
   templateUrl: './kingdom-buildings.component.html',
   styleUrl: './kingdom-buildings.component.css'
 })
-export class KingdomBuildingsComponent implements OnInit, OnDestroy {
+export class KingdomBuildingsComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input({ required: true }) royaume!: Royaume;
 
@@ -57,6 +59,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   maintenant: number = Date.now();
   private intervalleChantiers?: ReturnType<typeof setInterval>;
+  private rafraichissementEnCours: boolean = false;
 
 
   // ========================================
@@ -136,10 +139,23 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
       this.maintenant = Date.now();
 
+      if (
+        !this.rafraichissementEnCours &&
+        this.chantiers.some((c) => this.getTempsRestantChantier(c) === 0)
+      ) {
+        this.rafraichirRoyaume();
+      }
+
       this.cdr.detectChanges();
 
     }, 1000);
 
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['royaume'] && !changes['royaume'].firstChange && this.royaume?.id) {
+      this.chargerChantiers();
+    }
   }
 
 
@@ -716,11 +732,19 @@ private constructionEchouee(erreur: any): void {
   // AFFICHAGE DYNAMIQUE DES CHANTIERS
   // ========================================
 
+  private parseUtcDateMs(value: string): number {
+    if (!value) {
+      return Number.NaN;
+    }
+    const hasOffset = /(?:[zZ]|[+-]\d{2}:?\d{2})$/.test(value);
+    return new Date(hasOffset ? value : `${value}Z`).getTime();
+  }
+
   getProgressionChantier(chantier: ChantierConstructionResponse ): number {
 
-    const debut = new Date(chantier.dateDebut).getTime();
+    const debut = this.parseUtcDateMs(chantier.dateDebut);
 
-    const fin = new Date(chantier.dateFinPrevue).getTime();
+    const fin = this.parseUtcDateMs(chantier.dateFinPrevue);
 
     if (
       !Number.isFinite(debut) ||
@@ -730,8 +754,11 @@ private constructionEchouee(erreur: any): void {
       return 0;
     }
 
+    const maintenantServeur =
+      this.maintenant + this.royaumeService.serverClockOffsetMs;
+
     const progression =
-      ((this.maintenant - debut) / (fin - debut)) * 100;
+      ((maintenantServeur - debut) / (fin - debut)) * 100;
 
     return Math.max(0, Math.min(progression, 100));
 
@@ -740,20 +767,35 @@ private constructionEchouee(erreur: any): void {
 
   getTempsRestantChantier(chantier: ChantierConstructionResponse ): number {
 
-    const fin = new Date(chantier.dateFinPrevue).getTime();
+    const fin = this.parseUtcDateMs(chantier.dateFinPrevue);
 
     if (!Number.isFinite(fin)) {
       return 0;
     }
 
+    const maintenantServeur =
+      this.maintenant + this.royaumeService.serverClockOffsetMs;
+
     const secondesRestantes = Math.ceil(
-      (fin - this.maintenant) / 1000
+      (fin - maintenantServeur) / 1000
     );
 
     return Math.max(0, secondesRestantes);
 
   }
 
+
+  getProductionBatimentHeure(batiment: Batiment): number {
+    return (batiment.productionBaseHeure ?? 0) * batiment.niveau;
+  }
+
+  getCroissanceMaisonPct(batiment: Batiment): number {
+    return (batiment.bonusPropre ?? 0) * 100;
+  }
+
+  getProductionPopulationMaison(batiment: Batiment): number {
+    return (this.royaume?.populationDisponible ?? 0) * (batiment.bonusPropre ?? 0);
+  }
 
   // ========================================
   // OUVERTURE DE L'AMÉLIORATION
@@ -1441,6 +1483,11 @@ chargerChantiers(): void {
 
 private rafraichirRoyaume(): void {
 
+  if (this.rafraichissementEnCours) {
+    return;
+  }
+  this.rafraichissementEnCours = true;
+
   this.royaumeService.getMonRoyaume(
     this.royaume.id
   ).subscribe({
@@ -1448,6 +1495,7 @@ private rafraichirRoyaume(): void {
     next: royaume => {
 
       this.royaume = royaume;
+      this.rafraichissementEnCours = false;
 
       this.chargerChantiers();
 
@@ -1457,6 +1505,7 @@ private rafraichirRoyaume(): void {
 
     error: erreur => {
 
+      this.rafraichissementEnCours = false;
       console.error(
         'Erreur lors du rafraîchissement du royaume',
         erreur

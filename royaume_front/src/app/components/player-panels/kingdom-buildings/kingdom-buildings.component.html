@@ -442,14 +442,27 @@
 
                   <!-- PRODUCTION -->
 
-                  @if (batiment.productionBaseHeure !== undefined) {
+                  @if (batiment.type === 'PRODUCTION' && batiment.productionBaseHeure != null) {
 
                     <div class="building-production">
 
-                      <span>Production horaire de base</span>
+                      <span>Production horaire</span>
 
                       <strong>
-                        {{ batiment.productionBaseHeure | number:'1.0-0' }} / h
+                        {{ getProductionBatimentHeure(batiment) | number:'1.0-0' }} / h
+                      </strong>
+
+                    </div>
+
+                  } @else if (batiment.type === 'MAISON') {
+
+                    <div class="building-production">
+
+                      <span>Production de population</span>
+
+                      <strong>
+                        +{{ getProductionPopulationMaison(batiment) | number:'1.0-1' }} hab. / h
+                        (+{{ getCroissanceMaisonPct(batiment) | number:'1.0-1' }} % / h)
                       </strong>
 
                     </div>

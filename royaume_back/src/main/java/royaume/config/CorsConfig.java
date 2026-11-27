@@ -36,6 +36,10 @@ public class CorsConfig {
             List.of("*")
         );
 
+        configuration.setExposedHeaders(
+            List.of("Date")
+        );
+
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source =

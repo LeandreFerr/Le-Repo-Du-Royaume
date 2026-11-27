@@ -25,8 +25,8 @@ public class MoteurJeu {
     private Partie partie;
     private HorlogeJeu horloge;
     private List<Attaque> attaques = new ArrayList<>();
-    private final Map<Royaume, Map<Ressource, Double>> restesRessources = new HashMap<>();
-    private final Map<Royaume, Double> restesPopulation = new HashMap<>();
+    private final Map<Object, Map<Ressource, Double>> restesRessources = new HashMap<>();
+    private final Map<Object, Double> restesPopulation = new HashMap<>();
 
 
     // Constructeurs
@@ -71,9 +71,13 @@ public class MoteurJeu {
 
     // Méthode helper
 
+    private Object getRoyaumeKey(Royaume royaume) {
+        return royaume.getId() != null ? royaume.getId() : royaume;
+    }
+
     private void traiterProductions(Royaume royaume, Duration duree) {
         Map<Ressource, Double> restesDuRoyaume = restesRessources.computeIfAbsent(
-            royaume, r -> new EnumMap<>(Ressource.class)
+            getRoyaumeKey(royaume), k -> new EnumMap<>(Ressource.class)
         );
 
         royaume.getBatiments().stream()
@@ -115,9 +119,10 @@ public class MoteurJeu {
             return;
         }
         double gainExact = royaume.getPopulationDisponible() * royaume.getBonusCroissance() * (duree.toSeconds() / 3600.0);
-        double cumul = restesPopulation.getOrDefault(royaume, 0.0) + gainExact;
+        Object key = getRoyaumeKey(royaume);
+        double cumul = restesPopulation.getOrDefault(key, 0.0) + gainExact;
         int gainEntier = (int) Math.floor(cumul + EPSILON);
-        restesPopulation.put(royaume, Math.max(0.0, cumul - gainEntier));
+        restesPopulation.put(key, Math.max(0.0, cumul - gainEntier));
 
         if (gainEntier > 0) {
             royaume.setPopulationDisponible(royaume.getPopulationDisponible() + gainEntier);

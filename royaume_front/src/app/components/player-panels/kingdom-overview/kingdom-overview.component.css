@@ -302,6 +302,11 @@
   font-weight: 600;
 }
 
+.population-growth-row {
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
 /* ========================================
    RESSOURCES DU ROYAUME
    ======================================== */
@@ -399,4 +404,14 @@
   font-family: Georgia, serif;
   font-size: 24px;
   font-weight: 400;
+}
+
+.resource-production {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.resource-production.is-active {
+  color: #53785c;
 }
