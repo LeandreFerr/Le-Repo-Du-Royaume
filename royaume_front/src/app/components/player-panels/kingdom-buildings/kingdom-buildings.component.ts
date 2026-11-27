@@ -11,15 +11,20 @@ import { DecimalPipe } from '@angular/common';
 
 import { Royaume } from '../../../models/royaume.model';
 import { Batiment, TypeBatiment } from '../../../models/batiment.model';
-import { Ressource, QuantiteRessource } from '../../../models/ressource.model';
-import { Chantier } from '../../../models/chantier.model';
+import {
+  Ressource,
+  QuantiteRessource
+} from '../../../models/ressource.model';
+
+import { ChantierConstructionResponse } from '../../../models/chantier.model';
 import { ModeleBatiment } from '../../../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../../../models/amelioration-batiment.model';
-
-import { RoyaumeService } from '../../../services/royaume.service';
-
 import { ReparationBatiment } from '../../../models/reparation-batiment.model';
-
+import { BatimentService } from '../../../services/batiments/batiment.service';
+import {
+  RoyaumeService,
+  
+} from '../../../services/royaume/royaume-service.service';
 
 @Component({
   selector: 'app-kingdom-buildings',
@@ -39,7 +44,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // ========================================
   // PROPRIÉTÉS
   // ========================================
-
+  chantiers: ChantierConstructionResponse[] =[];
   catalogueOuvert: boolean = false;
   catalogueBatiments: ModeleBatiment[] = [];
   batimentSelectionne: ModeleBatiment | null = null;
@@ -126,7 +131,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     this.maintenant = Date.now();
-
+    this.chargerChantiers();
     this.intervalleChantiers = setInterval(() => {
 
       this.maintenant = Date.now();
@@ -162,16 +167,25 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   }
 
+get chantiersActifs(): Batiment[] {
 
+  const batimentIds = new Set(
+    this.chantiers.map(chantier => chantier.batimentId)
+  );
+
+  return this.royaume.batiments.filter(
+    batiment => batimentIds.has(batiment.id)
+  );
+
+}/*
   get chantiersActifs(): Batiment[] {
-
+ 
     return this.royaume.batiments.filter(batiment =>
-      batiment.enConstruction &&
-      batiment.chantier !== null
+      batiment.enConstruction 
     );
 
   }
-
+*/
 
   // ========================================
   // FILTRAGE DES BÂTIMENTS
@@ -204,7 +218,36 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // ========================================
   // AFFICHAGE DES BÂTIMENTS
   // ========================================
+// ========================================
+// ICÔNES DU CATALOGUE DE CONSTRUCTION
+// ========================================
 
+getIconeCatalogue(modele: ModeleBatiment): string {
+
+  switch (modele.id) {
+
+    case 'MAISON':
+      return '/img/buildings/maison.svg';
+
+    case 'MINE':
+      return '/img/buildings/mine.svg';
+
+    case 'TAVERNE':
+      return '/img/buildings/taverne.svg';
+
+    case 'SCIERIE':
+      return '/img/buildings/scierie.svg';
+
+    case 'CARRIERE':
+      return '/img/buildings/carriere.svg';
+
+    case 'CHATEAU':
+      return '/img/buildings/chateau.svg';
+
+    default:
+      return '';
+  }
+}
   getIconeBatiment(batiment: Batiment): string {
 
     switch (batiment.type) {
@@ -286,19 +329,49 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // CATALOGUE DE CONSTRUCTION
   // ========================================
 
-  ouvrirCatalogue(): void {
+ouvrirCatalogue(): void {
 
-    this.fermerAmelioration();
+  this.fermerAmelioration();
+  this.fermerReparation();
 
-    this.fermerReparation();
+  this.catalogueOuvert = true;
 
-    this.catalogueOuvert = true;
-
-    this.royaumeService.getCatalogueBatiments().subscribe({
+  this.royaumeService
+    .getCatalogueBatiments(this.royaume.id)
+    .subscribe({
 
       next: catalogue => {
 
-        this.catalogueBatiments = catalogue;
+        this.catalogueBatiments = catalogue.filter(modele => {
+
+          // Le château ne peut jamais être construit
+          if (modele.type === TypeBatiment.CHATEAU) {
+            return false;
+          }
+
+          // Les maisons sont toujours disponibles
+          if (modele.type === TypeBatiment.MAISON) {
+            return true;
+          }
+
+          // Les bâtiments de production sont filtrés
+          // selon les ressources déjà produites
+          if (modele.type === TypeBatiment.PRODUCTION) {
+
+            return !this.royaume.batiments.some(batiment =>
+              batiment.type === TypeBatiment.PRODUCTION &&
+              batiment.typeRessource === modele.typeRessource
+            );
+
+          }
+
+          return false;
+
+        });
+
+        this.batimentSelectionne = null;
+
+        this.cdr.detectChanges();
 
       },
 
@@ -313,7 +386,9 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
     });
 
-  }
+}
+
+
 
 
   fermerCatalogue(): void {
@@ -352,27 +427,6 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // LIMITES DE CONSTRUCTION
   // ========================================
 
-  getQuantiteBatiment(modele: ModeleBatiment): number {
-
-    return this.royaume.batiments.filter(batiment =>
-
-      batiment.type === modele.type &&
-      batiment.typeRessource === modele.typeRessource
-
-    ).length;
-
-  }
-
-
-  limiteConstructionAtteinte(modele: ModeleBatiment): boolean {
-
-    if (modele.quantiteMax === null) {
-      return false;
-    }
-
-    return this.getQuantiteBatiment(modele) >= modele.quantiteMax;
-
-  }
 
 
   // ========================================
@@ -417,20 +471,17 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   }
 
+peutConstruire(modele: ModeleBatiment): boolean {
 
-  peutConstruire(modele: ModeleBatiment): boolean {
+  return !this.royaume.enRuine
 
-    return !this.royaume.enRuine
+    && this.ressourcesSuffisantes(modele)
 
-      && !this.limiteConstructionAtteinte(modele)
+    && this.niveauSuffisant(modele)
 
-      && this.ressourcesSuffisantes(modele)
+    && this.ouvriersSuffisants(modele);
 
-      && this.niveauSuffisant(modele)
-
-      && this.ouvriersSuffisants(modele);
-
-  }
+}
 
 
   // ========================================
@@ -526,68 +577,146 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // ========================================
   // DEMANDE DE CONSTRUCTION
   // ========================================
+// ========================================
+// DEMANDE DE CONSTRUCTION
+// ========================================
 
-  peutLancerConstruction(modele: ModeleBatiment): boolean {
+peutLancerConstruction(modele: ModeleBatiment): boolean {
 
-    return this.peutConstruire(modele)
+  return modele.type !== TypeBatiment.CHATEAU
 
-      && !this.constructionEnCours
+    && this.peutConstruire(modele)
 
-      && Number.isInteger(this.ouvriersAssignes)
+    && !this.constructionEnCours
 
-      && this.ouvriersAssignes >= modele.ouvriersMinimum
+    && Number.isInteger(this.ouvriersAssignes)
 
-      && this.ouvriersAssignes <= this.ouvriersMaximum;
+    && this.ouvriersAssignes >= modele.ouvriersMinimum
 
+    && this.ouvriersAssignes <= this.ouvriersMaximum;
+
+}
+
+
+lancerConstruction(modele: ModeleBatiment): void {
+
+  if (!this.peutLancerConstruction(modele)) {
+    return;
   }
 
+  this.constructionEnCours = true;
+  this.erreurConstruction = null;
 
-  lancerConstruction(modele: ModeleBatiment): void {
+  // ========================================
+  // CONSTRUCTION D'UNE MAISON
+  // ========================================
 
-    if (!this.peutLancerConstruction(modele)) {
-      return;
-    }
+  if (modele.type === TypeBatiment.MAISON) {
 
-    this.constructionEnCours = true;
-    this.erreurConstruction = null;
+    this.royaumeService.construireMaison({
 
-    this.royaumeService.construireBatiment(
+      royaumeId: this.royaume.id,
 
-      this.royaume,
-      modele,
-      this.ouvriersAssignes
+      nom: modele.nom,
 
-    ).subscribe({
+      ouvriersAssignes: this.ouvriersAssignes
 
-      next: () => {
+    }).subscribe({
 
-        this.constructionEnCours = false;
+      next: () => this.constructionReussie(),
 
-        this.filtreActif = 'TOUS';
-
-        this.fermerCatalogue();
-
-      },
-
-      error: erreur => {
-
-        this.constructionEnCours = false;
-
-        this.erreurConstruction = erreur.message
-          ?? 'Impossible de lancer la construction.';
-
-      }
+      error: erreur => this.constructionEchouee(erreur)
 
     });
 
+    return;
   }
+
+  // ========================================
+  // CONSTRUCTION D'UN BÂTIMENT DE PRODUCTION
+  // ========================================
+
+  if (modele.type === TypeBatiment.PRODUCTION) {
+
+    if (
+      !modele.typeRessource ||
+      modele.pointsDeVie == null ||
+      modele.productionBaseHeure == null
+    ) {
+
+      this.constructionEnCours = false;
+
+      this.erreurConstruction =
+        'Les caractéristiques de ce bâtiment sont incomplètes.';
+
+      return;
+    }
+
+    this.royaumeService.construireBatimentProduction({
+
+      royaumeId: this.royaume.id,
+
+      nom: modele.nom,
+
+      pointsDeVie: modele.pointsDeVie,
+
+      typeRessource: modele.typeRessource,
+
+      productionBaseHeure: modele.productionBaseHeure,
+
+      ouvriersAssignes: this.ouvriersAssignes
+
+    }).subscribe({
+
+      next: () => this.constructionReussie(),
+
+      error: erreur => this.constructionEchouee(erreur)
+
+    });
+
+    return;
+  }
+
+  this.constructionEnCours = false;
+
+  this.erreurConstruction =
+    'Ce type de bâtiment ne peut pas être construit.';
+
+}
+
+// ========================================
+// RÉSULTAT DE LA CONSTRUCTION
+// ========================================
+
+private constructionReussie(): void {
+
+  this.constructionEnCours = false;
+
+  this.filtreActif = 'TOUS';
+
+  this.fermerCatalogue();
+
+  this.rafraichirRoyaume();
+
+}
+
+
+private constructionEchouee(erreur: any): void {
+
+  this.constructionEnCours = false;
+
+  this.erreurConstruction = erreur.error?.message
+    ?? erreur.message
+    ?? 'Impossible de lancer la construction.';
+
+}
 
 
   // ========================================
   // AFFICHAGE DYNAMIQUE DES CHANTIERS
   // ========================================
 
-  getProgressionChantier(chantier: Chantier): number {
+  getProgressionChantier(chantier: ChantierConstructionResponse ): number {
 
     const debut = new Date(chantier.dateDebut).getTime();
 
@@ -609,7 +738,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   }
 
 
-  getTempsRestantChantier(chantier: Chantier): number {
+  getTempsRestantChantier(chantier: ChantierConstructionResponse ): number {
 
     const fin = new Date(chantier.dateFinPrevue).getTime();
 
@@ -696,7 +825,32 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
   // ========================================
   // PRÉREQUIS D'AMÉLIORATION
   // ========================================
+  get niveauChateau(): number {
 
+  const chateau = this.royaume.batiments.find(
+    batiment => batiment.type === TypeBatiment.CHATEAU
+  );
+
+  console.log('OBJET CHATEAU COMPLET :', chateau);
+  console.log('PROPRIETES CHATEAU :', Object.keys(chateau ?? {}));
+
+  return chateau?.niveauPalierDebloque ?? 0;
+}
+/*
+get niveauChateau(): number {
+
+  console.log('Bâtiments du royaume :', this.royaume.batiments);
+
+  const chateau = this.royaume.batiments.find(
+    batiment => batiment.type === TypeBatiment.CHATEAU
+  );
+
+  console.log('Château trouvé :', chateau);
+  console.log('Niveau débloqué :', chateau?.niveauPalierDebloque);
+
+  return chateau?.niveauPalierDebloque ?? 0;
+}*/
+/*
   get niveauChateau(): number {
 
     const chateau = this.royaume.batiments.find(
@@ -706,7 +860,7 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
     return chateau?.niveauPalierDebloque ?? 0;
 
   }
-
+*/
 
   niveauChateauSuffisant(
     amelioration: AmeliorationBatiment
@@ -853,50 +1007,56 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   }
 
+// ========================================
+// DEMANDE D'AMÉLIORATION
+// ========================================
 
-  lancerAmelioration(batiment: Batiment): void {
+lancerAmelioration(batiment: Batiment): void {
 
-    const amelioration = this.ameliorationSelectionnee;
+  const amelioration = this.ameliorationSelectionnee;
 
-    if (
-      !amelioration ||
-      !this.peutLancerAmelioration(batiment, amelioration)
-    ) {
-      return;
+  if (
+    !amelioration ||
+    !this.peutLancerAmelioration(batiment, amelioration)
+  ) {
+    return;
+  }
+
+  this.ameliorationEnCours = true;
+
+  this.erreurAmelioration = null;
+
+  this.royaumeService.ameliorerBatiment(
+
+    batiment.id,
+
+    this.ouvriersAmelioration
+
+  ).subscribe({
+
+    next: () => {
+
+      this.ameliorationEnCours = false;
+
+      this.fermerAmelioration();
+
+      this.rafraichirRoyaume();
+
+    },
+
+    error: erreur => {
+
+      this.ameliorationEnCours = false;
+
+      this.erreurAmelioration = erreur.error?.message
+        ?? erreur.message
+        ?? 'Impossible de lancer cette amélioration.';
+
     }
 
-    this.ameliorationEnCours = true;
+  });
 
-    this.erreurAmelioration = null;
-
-    this.royaumeService.ameliorerBatiment(
-
-      batiment.id,
-
-      this.ouvriersAmelioration
-
-    ).subscribe({
-
-      next: () => {
-
-        this.ameliorationEnCours = false;
-
-        this.fermerAmelioration();
-
-      },
-
-      error: erreur => {
-
-        this.ameliorationEnCours = false;
-
-        this.erreurAmelioration = erreur.message
-          ?? 'Impossible de lancer cette amélioration.';
-
-      }
-
-    });
-
-  }
+}
 
   // ========================================
   // OUVERTURE DE LA RÉPARATION
@@ -1185,72 +1345,225 @@ export class KingdomBuildingsComponent implements OnInit, OnDestroy {
 
   }
 
+// ========================================
+// DEMANDE DE RÉPARATION
+// ========================================
 
-  lancerReparation(batiment: Batiment): void {
+lancerReparation(batiment: Batiment): void {
 
-    const reparation = this.reparationSelectionnee;
+  const reparation = this.reparationSelectionnee;
 
-    if (
-      !reparation ||
-      !this.peutLancerReparation(batiment, reparation)
-    ) {
-      return;
+  if (
+    !reparation ||
+    !this.peutLancerReparation(batiment, reparation)
+  ) {
+    return;
+  }
+
+  this.reparationEnCours = true;
+
+  this.erreurReparation = null;
+
+  this.royaumeService.reparerBatiment(
+
+    batiment.id,
+
+    this.montantReparation,
+
+    this.ouvriersReparation
+
+  ).subscribe({
+
+    next: () => {
+
+      this.reparationEnCours = false;
+
+      this.fermerReparation();
+
+      this.rafraichirRoyaume();
+
+    },
+
+    error: erreur => {
+
+      this.reparationEnCours = false;
+
+      this.erreurReparation = erreur.error?.message
+        ?? erreur.message
+        ?? 'Impossible de lancer cette réparation.';
+
     }
 
-    this.reparationEnCours = true;
+  });
 
-    this.erreurReparation = null;
-
-    this.royaumeService.reparerBatiment(
-
-      batiment.id,
-
-      this.montantReparation,
-
-      this.ouvriersReparation
-
-    ).subscribe({
-
-      next: () => {
-
-        this.reparationEnCours = false;
-
-        this.fermerReparation();
-
-      },
-
-      error: erreur => {
-
-        this.reparationEnCours = false;
-
-        this.erreurReparation = erreur.message
-          ?? 'Impossible de lancer cette réparation.';
-
-      }
-
-    });
-
-  }
+}
 
 
   // ========================================
   // TYPE DE CHANTIER
   // ========================================
 
-  getTypeChantier(
-    batiment: Batiment,
-    chantier: Chantier
-  ): string {
 
-    if (chantier.amelioration) {
-      return 'Amélioration';
+  // ========================================
+// CHARGEMENT DES CHANTIERS
+// ========================================
+
+chargerChantiers(): void {
+
+  this.royaumeService.getChantiersRoyaume(
+    this.royaume.id
+  ).subscribe({
+
+    next: chantiers => {
+
+      this.chantiers = chantiers;
+
+      this.cdr.detectChanges();
+
+    },
+
+    error: erreur => {
+
+      console.error(
+        'Erreur lors du chargement des chantiers',
+        erreur
+      );
+
     }
 
-    if (batiment.montantReparationEnCours > 0) {
-      return 'Réparation';
-    }
+  });
 
-    return 'Construction';
-
-  }
 }
+
+// ========================================
+// RAFRAÎCHISSEMENT DU ROYAUME
+// ========================================
+
+private rafraichirRoyaume(): void {
+
+  this.royaumeService.getMonRoyaume(
+    this.royaume.id
+  ).subscribe({
+
+    next: royaume => {
+
+      this.royaume = royaume;
+
+      this.chargerChantiers();
+
+      this.cdr.detectChanges();
+
+    },
+
+    error: erreur => {
+
+      console.error(
+        'Erreur lors du rafraîchissement du royaume',
+        erreur
+      );
+
+    }
+
+  });
+
+}
+
+ajouterOuvriersChantier(
+  chantier: ChantierConstructionResponse,
+  nombre: number
+): void {
+
+  this.royaumeService.ajouterOuvriers(
+    chantier.id,
+    nombre
+  ).subscribe({
+
+    next: chantierActualise => {
+
+      this.chantiers = this.chantiers.map(c =>
+        c.id === chantierActualise.id
+          ? chantierActualise
+          : c
+      );
+
+      this.rafraichirRoyaume();
+
+    },
+
+    error: erreur => {
+
+      console.error(
+        'Erreur lors de l’ajout des ouvriers',
+        erreur
+      );
+
+    }
+
+  });
+
+}
+
+retirerOuvriersChantier(
+  chantier: ChantierConstructionResponse,
+  nombre: number
+): void {
+
+  this.royaumeService.retirerOuvriers(
+    chantier.id,
+    nombre
+  ).subscribe({
+
+    next: chantierActualise => {
+
+      this.chantiers = this.chantiers.map(c =>
+        c.id === chantierActualise.id
+          ? chantierActualise
+          : c
+      );
+
+      this.rafraichirRoyaume();
+
+    },
+
+    error: erreur => {
+
+      console.error(
+        'Erreur lors du retrait des ouvriers',
+        erreur
+      );
+
+    }
+
+  });
+
+}
+
+getNomBatimentChantier(
+  chantier: ChantierConstructionResponse
+): string {
+
+  const batiment = this.royaume.batiments.find(
+    b => b.id === chantier.batimentId
+  );
+
+  return batiment?.nom ?? `Bâtiment #${chantier.batimentId}`;
+
+}
+getTypeChantier(
+  chantier: ChantierConstructionResponse
+): string {
+
+  if (chantier.amelioration) {
+    return 'Amélioration';
+  }
+
+  const batiment = this.royaume.batiments.find(
+    b => b.id === chantier.batimentId
+  );
+
+  if ((batiment?.montantReparationEnCours ?? 0) > 0) {
+    return 'Réparation';
+  }
+
+  return 'Construction';
+}}

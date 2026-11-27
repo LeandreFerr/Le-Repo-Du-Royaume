@@ -1,5 +1,19 @@
+import { Ressource } from "../models/ressource.model";
 export interface BatimentResponse {
+  id: number;
+  nom: string;
+  niveau: number;
+  pointsDeVie: number;
+  pointsDeVieMax: number;
+  enConstruction: boolean;
+  montantReparationEnCours: number;
+  royaumeId: number;
+  typeRessource: Ressource | null;
+  //typeRessource: string | null;
+  productionBaseHeure: number | null;
 
-    //TODO a remplir avec BatimentResponse du back 
+  bonusPropre: number | null;
 
+  niveauPalierDebloque: number | null;
+  bonusDefenseRoyaume: number | null;
 }

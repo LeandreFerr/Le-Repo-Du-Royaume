@@ -256,43 +256,52 @@ public class DataInitializer {
 				         
 
 
-		            	  // Création d'un utilisateur
-		                System.out.println("========== TEST UTILISATEUR ==========");
+		            	  
+//////////////////// TEST UTILISATEURS ////////////////////
 
-		                Utilisateur utilisateur = new Utilisateur(
-		                    null,
-		                    "Kat",
-		                    "kitkat@test.fr",
-		                    "motdepasse123",
-		                    false,
-		                    true,
-		                    null
-		                );
+System.out.println("========== TEST UTILISATEUR ==========");
 
-						if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
-							utilisateurDAO.save(utilisateur);
-						}
-		                System.out.println("Utilisateur créé : " + utilisateur);
+// Récupération des royaumes
+Royaume royaume1 = royaumeDAO.findById(1)
+    .orElseThrow(() -> new IllegalStateException("Royaume 1 introuvable"));
 
-		                Utilisateur kit = new Utilisateur(
-		                	    null,
-		                	    "Kit",
-		                	    "kit@test.fr",
-		                	    "motdepasse123",
-		                	    false,
-		                	    false,
-		                	    null
-		                	);
+Royaume royaume2 = royaumeDAO.findById(2)
+    .orElseThrow(() -> new IllegalStateException("Royaume 2 introuvable"));
 
-		                	if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
-		                	    utilisateurDAO.save(kit);
-		                	    System.out.println("Utilisateur Kit créé !");
-		                	} else {
-		                	    System.out.println("Utilisateur Kit existe déjà.");
-		                	}
+// Création de Kat -> Royaume 1
+if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
 
-		                
-		    
-		};
-		    }
+    Utilisateur kat = new Utilisateur(
+        null,
+        "Kat",
+        "kitkat@test.fr",
+        "motdepasse123",
+        false,
+        true,
+        royaume1
+    );
+
+    utilisateurDAO.save(kat);
+    System.out.println("Kat affectée au royaume 1 !");
 }
+
+// Création de Kit -> Royaume 2
+if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
+
+    Utilisateur kit = new Utilisateur(
+        null,
+        "Kit",
+        "kit@test.fr",
+        "motdepasse123",
+        false,
+        false,
+        royaume2
+    );
+
+    utilisateurDAO.save(kit);
+    System.out.println("Kit affecté au royaume 2 !");
+}
+
+
+				};}}
+

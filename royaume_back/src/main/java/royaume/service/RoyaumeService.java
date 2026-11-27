@@ -15,7 +15,9 @@ import royaume.dto.QuantiteRessourceDTO;
 import royaume.dto.request.RoyaumeRequest;
 import royaume.dto.response.BatimentResponse;
 import royaume.dto.response.ContingentTroupeResponse;
+import royaume.dto.response.PopulationResponse;
 import royaume.dto.response.RoyaumeResponse;
+import royaume.dto.response.UtilisateurResponse;
 import royaume.model.Partie;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
@@ -150,9 +152,8 @@ public class RoyaumeService {
 
     public List<RoyaumeResponse> trouverParPartie(Integer partieId) {
         Partie partie = daoPartie.findById(partieId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "La partie id=" + partieId + " n'existe pas."));
-        return partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList();
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La partie id=" + partieId + " n'existe pas."));
+        return partie.getRoyaumes().stream().map(this::convertirEnResponse).toList();
     }
 
     @Transactional
@@ -163,7 +164,7 @@ public class RoyaumeService {
         daoRoyaume.delete(royaume);
     }
 
-    public static RoyaumeResponse convertirEnResponse(Royaume royaume) {
+    public RoyaumeResponse convertirEnResponse(Royaume royaume) {
         if (royaume == null) {
             return null;
         }
@@ -188,44 +189,77 @@ public class RoyaumeService {
 
         Integer x = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordX();
         Integer y = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordY();
+        String pseudoJoueur = daoUtilisateur.findAll().stream().filter(u -> u.getRoyaume() != null && u.getRoyaume().getId().equals(royaume.getId())).map(Utilisateur::getPseudo).findFirst().orElse("Inconnu");
 
-        return new RoyaumeResponse(
-                royaume.getId(),
-                royaume.getNom(),
-                royaume.getPeuple() == null ? null : royaume.getPeuple().getNom(),
-                royaume.getNiveau(),
-                royaume.getPopulationDisponible(),
-                royaume.getPopulationOuvriere(),
-                royaume.getPopulationEnEntrainement(),
-                royaume.getPopulationMilitaire(),
-                royaume.isEnRuine(),
-                royaume.getBonusCroissance(),
-                ressources,
-                garnison,
-                batiments,
-                x,
-                y);
+       return new RoyaumeResponse(
+    royaume.getId(),
+    royaume.getNom(),
+    royaume.getPeuple() == null ? null :
+        new PopulationResponse(
+            royaume.getPeuple().getId(),
+            royaume.getPeuple().getNom(),
+            royaume.getPeuple().getTitreSouverain(),
+            royaume.getPeuple().getAttraction(),
+            royaume.getPeuple().getCapaciteSpeciale(),
+            royaume.getPeuple().getDescriptionCapacite()
+        ),
+    pseudoJoueur,
+    royaume.getNiveau(),
+    royaume.getPopulationDisponible(),
+    royaume.getPopulationOuvriere(),
+    royaume.getPopulationEnEntrainement(),
+    royaume.getPopulationMilitaire(),
+    royaume.isEnRuine(),
+    royaume.getBonusCroissance(),
+    ressources,
+    garnison,
+    batiments,
+    x,
+    y
+);}
+
+private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
+
+    BatimentProduction prod =
+        b instanceof BatimentProduction bp ? bp : null;
+
+    Maison maison =
+        b instanceof Maison m ? m : null;
+
+    Chateau chateau =
+        b instanceof Chateau c ? c : null;
+
+    // Détermination du type réel du bâtiment
+    String type;
+
+    if (chateau != null) {
+        type = "CHATEAU";
+    } else if (maison != null) {
+        type = "MAISON";
+    } else if (prod != null) {
+        type = "PRODUCTION";
+    } else {
+        throw new IllegalStateException(
+            "Type de bâtiment inconnu : " + b.getClass().getName()
+        );
     }
 
-    private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
-        BatimentProduction prod = b instanceof BatimentProduction bp ? bp : null;
-        Maison maison = b instanceof Maison m ? m : null;
-        Chateau chateau = b instanceof Chateau c ? c : null;
-
-        return new BatimentResponse(
-                b.getId(),
-                b.getNom(),
-                b.getNiveau(),
-                b.getPointsDeVie(),
-                b.getPointsDeVieMax(),
-                b.isEnConstruction(),
-                b.getMontantReparationEnCours(),
-                royaumeId,
-                prod == null ? null : prod.getTypeRessource(),
-                prod == null ? null : prod.getProductionBaseHeure(),
-                maison == null ? null : maison.getBonusPropre(),
-                chateau == null ? null : chateau.getNiveauPalierDebloque(),
-                chateau == null ? null : chateau.getBonusDefenseRoyaume());
-    }
+    return new BatimentResponse(
+        b.getId(),
+        b.getNom(),
+        type,
+        b.getNiveau(),
+        b.getPointsDeVie(),
+        b.getPointsDeVieMax(),
+        b.isEnConstruction(),
+        b.getMontantReparationEnCours(),
+        royaumeId,
+        prod == null ? null : prod.getTypeRessource(),
+        prod == null ? null : prod.getProductionBaseHeure(),
+        maison == null ? null : maison.getBonusPropre(),
+        chateau == null ? null : chateau.getNiveauPalierDebloque(),
+        chateau == null ? null : chateau.getBonusDefenseRoyaume()
+    );
+}
 
 }

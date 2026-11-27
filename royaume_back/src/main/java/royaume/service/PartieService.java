@@ -23,11 +23,12 @@ public class PartieService {
 
     private final IDAOPartie daoPartie;
     private final IDAOCarte daoCarte;
+    private final RoyaumeService royaumeService;
 
-    public PartieService(IDAOPartie daoPartie, IDAOCarte daoCarte) {
-
+    public PartieService(IDAOPartie daoPartie, IDAOCarte daoCarte, RoyaumeService royaumeService) {
         this.daoPartie = daoPartie;
         this.daoCarte = daoCarte;
+        this.royaumeService = royaumeService;
     }
 
     @Transactional
@@ -99,17 +100,17 @@ public class PartieService {
             return null;
         }
         return new PartieResponse(
-                partie.getId(),
-                partie.getNom(),
-                partie.getDateCreation(),
-                partie.getVitesseJeu(),
-                partie.getMaxJoueurs(),
-                partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
-                partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
-                partie.getTypeVictoire(),
-                partie.getRoyaumes() == null ? List.of()
-                        : partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList(),
-                partie.getStatut());
+            partie.getId(),
+            partie.getNom(),
+            partie.getDateCreation(),
+            partie.getVitesseJeu(),
+            partie.getMaxJoueurs(),
+            partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
+            partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
+            partie.getTypeVictoire(),
+            partie.getRoyaumes() == null ? List.of() : partie.getRoyaumes().stream().map(royaumeService::convertirEnResponse).toList(),
+            partie.getStatut()
+        );
     }
 
 }

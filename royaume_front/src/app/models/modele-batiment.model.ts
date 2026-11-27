@@ -1,6 +1,23 @@
 import { TypeBatiment } from './batiment.model';
 import { Ressource, QuantiteRessource } from './ressource.model';
+export interface ModeleBatiment {
+  id: string;
+  nom: string;
+  description: string;
+  icone: string;
+  type: string;
 
+  niveauRoyaumeRequis: number;
+  ouvriersMinimum: number;
+  tempsConstructionSecondes: number;
+
+  pointsDeVie: number;
+  typeRessource: Ressource | null;
+  productionBaseHeure: number;
+
+  coutConstruction: QuantiteRessource[];
+}
+/*
 export interface ModeleBatiment {
 
   id: number;
@@ -13,7 +30,7 @@ export interface ModeleBatiment {
 
   icone: string;
 
-  quantiteMax: number | null;
+  //quantiteMax: number | null;
 
   niveauRoyaumeRequis: number;
 
@@ -23,4 +40,9 @@ export interface ModeleBatiment {
 
   ouvriersMinimum: number;
 
-}
+  // Paramètres nécessaires à la création
+  pointsDeVie?: number;
+
+  productionBaseHeure?: number;
+
+}*/

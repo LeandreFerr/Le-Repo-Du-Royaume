@@ -33,6 +33,8 @@ class PartieServiceTest {
     private IDAOPartie daoPartie;
     @Mock
     private IDAOCarte daoCarte;
+    @Mock
+    private RoyaumeService royaumeService;
 
     @InjectMocks
     private PartieService partieService;

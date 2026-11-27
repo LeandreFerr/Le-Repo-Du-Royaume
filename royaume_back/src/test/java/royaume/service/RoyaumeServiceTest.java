@@ -88,7 +88,7 @@ class RoyaumeServiceTest {
         assertNotNull(response);
         assertEquals(100, response.id());
         assertEquals("Valoria", response.nom());
-        assertEquals("Canards", response.peuple());
+        assertEquals("Canards", response.peuple().nom());
         assertEquals(1, partie.getRoyaumes().size());
         assertNotNull(utilisateur.getRoyaume());
     }

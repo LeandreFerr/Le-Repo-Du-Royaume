@@ -1,9 +1,34 @@
-import { Component, Input } from '@angular/core';
+
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
+import { EventEmitter, Output } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 
-import { Royaume } from '../../../models/royaume.model';
-import { PalierNiveau } from '../../../models/palier-niveau.model';
 import { Ressource } from '../../../models/ressource.model';
+import { Royaume } from '../../../models/royaume.model';
+
+import {
+  AmeliorerRoyaumeService
+} from '../../../services/royaume/ameliorer-royaume.service';
+
+import {
+  AmeliorerRoyaumeResponse
+} from '../../../models/palier-niveau.model';
+
+
+interface ConditionProgression {
+  nom: string;
+  icone: string;
+  actuelle: number;
+  requise: number;
+}
 
 @Component({
   selector: 'app-kingdom-development',
@@ -12,30 +37,114 @@ import { Ressource } from '../../../models/ressource.model';
   templateUrl: './kingdom-development.component.html',
   styleUrl: './kingdom-development.component.css',
 })
-export class KingdomDevelopmentComponent {
-
+export class KingdomDevelopmentComponent implements OnInit, OnChanges {
+  @Output() royaumeModifie = new EventEmitter<void>();
   @Input({ required: true }) royaume!: Royaume;
 
-  @Input({ required: true }) paliers!: PalierNiveau[];
+  private readonly ameliorerRoyaumeService =
+    inject(AmeliorerRoyaumeService);
 
-  get populationTotale(): number {
+  private readonly cdr = inject(ChangeDetectorRef);
 
-    return this.royaume.populationDisponible
-      + this.royaume.populationOuvriere
-      + this.royaume.populationEnEntrainement
-      + this.royaume.populationMilitaire;
+  prochainPalier: AmeliorerRoyaumeResponse | null = null;
+
+  chargementAmelioration = false;
+  ameliorationEnCours = false;
+
+  messageAmelioration = '';
+  erreurAmelioration = '';
+
+  // ========================================
+  // INITIALISATION
+  // ========================================
+
+  ngOnInit(): void {
+    this.chargerProchainPalier();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+    if (changes['royaume'] && this.royaume?.id) {
+      this.chargerProchainPalier();
+    }
 
   }
 
-  get prochainPalier(): PalierNiveau | undefined {
+  // ========================================
+  // POPULATION
+  // ========================================
 
-    return this.paliers.find(
-      palier => palier.niveau === this.royaume.niveau + 1
+  get populationTotale(): number {
+
+    if (!this.royaume) {
+      return 0;
+    }
+
+    return (
+      (this.royaume.populationDisponible ?? 0) +
+      (this.royaume.populationOuvriere ?? 0) +
+      (this.royaume.populationEnEntrainement ?? 0) +
+      (this.royaume.populationMilitaire ?? 0)
     );
 
   }
 
+  // ========================================
+  // PROCHAIN PALIER
+  // ========================================
+
+  chargerProchainPalier(): void {
+
+    if (!this.royaume?.id || this.royaume.niveau >= 10) {
+      this.prochainPalier = null;
+      this.chargementAmelioration = false;
+      return;
+    }
+
+    this.chargementAmelioration = true;
+    this.erreurAmelioration = '';
+
+    this.ameliorerRoyaumeService
+      .obtenirProchainPalier(this.royaume.id)
+      .subscribe({
+
+        next: (palier) => {
+
+          this.prochainPalier = palier;
+          this.chargementAmelioration = false;
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (erreur) => {
+
+          this.prochainPalier = null;
+          this.chargementAmelioration = false;
+
+          this.erreurAmelioration =
+            erreur.error?.message ||
+            erreur.error ||
+            erreur.message ||
+            'Impossible de récupérer le prochain palier.';
+
+          this.cdr.detectChanges();
+
+        }
+
+      });
+
+  }
+
+  // ========================================
+  // RESSOURCES
+  // ========================================
+
   getQuantiteRessource(ressource: Ressource): number {
+
+    if (!this.royaume?.ressources) {
+      return 0;
+    }
 
     return this.royaume.ressources.find(
       stock => stock.ressource === ressource
@@ -43,62 +152,68 @@ export class KingdomDevelopmentComponent {
 
   }
 
-  // Libellés des ressources
-
   readonly nomsRessources: Record<Ressource, string> = {
+
     [Ressource.BOIS]: 'Bois',
     [Ressource.PIERRE]: 'Pierre',
     [Ressource.NOURRITURE]: 'Nourriture',
     [Ressource.OR]: 'Or'
+
   };
 
-
-  // Icônes des ressources
-
   readonly iconesRessources: Record<Ressource, string> = {
+
     [Ressource.BOIS]: '/img/resources/bois.svg',
     [Ressource.PIERRE]: '/img/resources/pierre.svg',
     [Ressource.NOURRITURE]: '/img/resources/nourriture.svg',
     [Ressource.OR]: '/img/resources/or.svg'
+
   };
 
-  // Conditions nécessaires au prochain niveau
+  // ========================================
+  // CONDITIONS DE PROGRESSION
+  // ========================================
 
-  get conditionsProgression() {
+  get conditionsProgression(): ConditionProgression[] {
 
-    const palier = this.prochainPalier;
+    const palier = this.prochainPalier?.prochainPalier;
 
     if (!palier) {
       return [];
     }
 
-    const conditions = palier.prerequis.map(prerequis => ({
+    const conditions: ConditionProgression[] =
+      palier.prerequis.map(prerequis => {
 
-      nom: this.nomsRessources[prerequis.ressource],
+        const ressource = prerequis.ressource as Ressource;
 
-      icone: this.iconesRessources[prerequis.ressource],
+        return {
 
-      actuelle: this.getQuantiteRessource(prerequis.ressource),
+          nom: this.nomsRessources[ressource],
+          icone: this.iconesRessources[ressource],
+          actuelle: this.getQuantiteRessource(ressource),
+          requise: prerequis.quantite
 
-      requise: prerequis.quantite
+        };
 
-    }));
-
-    // Ajout de la condition de population
+      });
 
     conditions.push({
+
       nom: 'Population',
       icone: '/img/population.svg',
       actuelle: this.populationTotale,
-      requise: palier.populationRequise
+      requise: this.prochainPalier!.populationRequise
+
     });
 
     return conditions;
 
   }
 
-
-  // Pourcentage d'une condition
+  // ========================================
+  // POURCENTAGE
+  // ========================================
 
   getPourcentage(actuelle: number, requise: number): number {
 
@@ -110,8 +225,9 @@ export class KingdomDevelopmentComponent {
 
   }
 
-
-  // Progression globale
+  // ========================================
+  // PROGRESSION GLOBALE
+  // ========================================
 
   get progressionGlobale(): number {
 
@@ -122,38 +238,110 @@ export class KingdomDevelopmentComponent {
     }
 
     const total = conditions.reduce(
-      (somme, condition) => somme + this.getPourcentage(
-        condition.actuelle,
-        condition.requise
-      ),
+
+      (somme, condition) =>
+        somme + this.getPourcentage(
+          condition.actuelle,
+          condition.requise
+        ),
+
       0
+
     );
 
     return total / conditions.length;
 
   }
 
-
-  // Nombre de conditions restantes
+  // ========================================
+  // CONDITIONS RESTANTES
+  // ========================================
 
   get conditionsRestantes(): number {
 
-    return this.conditionsProgression.filter(
-      condition => condition.actuelle < condition.requise
-    ).length;
+    if (!this.prochainPalier) {
+      return 0;
+    }
+
+    const ressourcesInsuffisantes =
+      this.prochainPalier.ressources.filter(
+        ressource => !ressource.suffisante
+      ).length;
+
+    const populationInsuffisante =
+      this.prochainPalier.populationSuffisante ? 0 : 1;
+
+    return ressourcesInsuffisantes + populationInsuffisante;
 
   }
 
-
-  // Disponibilité de l'amélioration
+  // ========================================
+  // AUTORISATION D'AMÉLIORATION
+  // ========================================
 
   get peutAmeliorer(): boolean {
 
-    return !this.royaume.enRuine
-      && this.royaume.niveau < 10
+    return !this.royaume?.enRuine
+      && !this.ameliorationEnCours
+      && !this.chargementAmelioration
+      && this.royaume?.niveau < 10
       && !!this.prochainPalier
+      && this.prochainPalier.ameliorationPossible
       && this.conditionsRestantes === 0;
 
   }
+
+  // ========================================
+  // AMÉLIORATION DU ROYAUME
+  // ========================================
+
+ameliorerRoyaume(): void {
+
+  if (!this.peutAmeliorer) {
+    return;
+  }
+
+  this.ameliorationEnCours = true;
+
+  this.messageAmelioration = '';
+  this.erreurAmelioration = '';
+
+  this.ameliorerRoyaumeService
+    .ameliorerRoyaume(this.royaume.id)
+    .subscribe({
+
+      next: (message: string) => {
+
+        this.ameliorationEnCours = false;
+
+        this.messageAmelioration =
+          message || 'Votre royaume a été amélioré.';
+
+        // Demande au parent de récupérer le royaume actualisé
+        this.royaumeModifie.emit();
+
+        this.cdr.detectChanges();
+
+      },
+
+      error: (erreur) => {
+
+        this.ameliorationEnCours = false;
+
+        this.erreurAmelioration =
+          erreur.error?.message ||
+          erreur.error ||
+          erreur.message ||
+          'Impossible d’améliorer votre royaume.';
+
+        this.cdr.detectChanges();
+
+      }
+
+    });
+
+}
+
+
 
 }

@@ -343,6 +343,8 @@ public class ChantierConstruction {
     public Royaume getRoyaume() {
         return royaume;
     }
-
+public int getTempsBaseSecondes() {
+    return tempsBaseSecondes;
+}
    
 }

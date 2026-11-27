@@ -52,6 +52,7 @@ export const routes: Routes = [
   { path: 'menu-adverse', component: MenuAdverseComponent, canActivate: [authGuard] },
   { path: 'attaques', component: VisuAttaques, canActivate: [authGuard] },
 
+  { path: 'player/:royaumeId', component: PlayerComponent, canActivate: [authGuard] },
   { path: 'carte-sandbox', redirectTo: 'admin', pathMatch: 'full' },
   {
     path: 'pikachu/menus-salle-du-chateau',
