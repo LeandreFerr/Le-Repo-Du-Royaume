@@ -17,123 +17,143 @@
     >
 
       <div
-        class="popup-contenu"
+        class="popup-contenu popup-large"
         (click)="$event.stopPropagation()"
       >
 
         <h2>Créer une nouvelle partie</h2>
 
-        <form
-          [formGroup]="creationForm"
-          (ngSubmit)="creerPartie()"
-        >
+        <div class="creation-grid">
+          <form
+            [formGroup]="creationForm"
+            (ngSubmit)="creerPartie()"
+          >
 
-          <div class="champ-formulaire">
+            <div class="champ-formulaire">
+              <label for="nom">Nom de la partie</label>
+              <input
+                id="nom"
+                type="text"
+                formControlName="nom"
+                placeholder="Ex: Guerre des Couronnes"
+              >
 
-            <label for="nom">
-              Nom de la partie
-            </label>
-
-            <input
-              id="nom"
-              type="text"
-              formControlName="nom"
-              placeholder="Nom de la partie"
-            >
-
-            @if (
-              creationForm.controls.nom.touched &&
-              creationForm.controls.nom.hasError('required')
-            ) {
-              <p class="erreur">
-                Le nom de la partie est obligatoire.
-              </p>
-            }
-
-            @if (
-              creationForm.controls.nom.touched &&
-              creationForm.controls.nom.hasError('minlength')
-            ) {
-              <p class="erreur">
-                Le nom doit contenir au moins 2 caractères.
-              </p>
-            }
-
-            @if (
-              creationForm.controls.nom.touched &&
-              creationForm.controls.nom.hasError('maxlength')
-            ) {
-              <p class="erreur">
-                Le nom ne peut pas dépasser 100 caractères.
-              </p>
-            }
-
-          </div>
-
-          <div class="champ-formulaire">
-
-            <label for="maxJoueurs">
-              Nombre de joueurs
-            </label>
-
-            <input
-              id="maxJoueurs"
-              type="number"
-              min="2"
-              max="10"
-              formControlName="maxJoueurs"
-            >
-
-            @if (
-              creationForm.controls.maxJoueurs.touched &&
-              creationForm.controls.maxJoueurs.hasError('min')
-            ) {
-              <p class="erreur">
-                La partie doit contenir au moins 2 joueurs.
-              </p>
-            }
-
-            @if (
-              creationForm.controls.maxJoueurs.touched &&
-              creationForm.controls.maxJoueurs.hasError('max')
-            ) {
-              <p class="erreur">
-                La partie ne peut pas dépasser 10 joueurs.
-              </p>
-            }
-
-          </div>
-
-          @if (messageErreur) {
-            <p class="erreur">
-              {{ messageErreur }}
-            </p>
-          }
-
-          <div class="actions">
-
-            <button
-              type="button"
-              (click)="fermerPopup()"
-              [disabled]="chargement"
-            >
-              Annuler
-            </button>
-
-            <button
-              type="submit"
-              [disabled]="creationForm.invalid || chargement"
-            >
-              @if (chargement) {
-                Création en cours...
-              } @else {
-                Créer
+              @if (creationForm.controls.nom.touched && creationForm.controls.nom.hasError('required')) {
+                <p class="erreur">Le nom de la partie est obligatoire.</p>
               }
-            </button>
+              @if (creationForm.controls.nom.touched && creationForm.controls.nom.hasError('minlength')) {
+                <p class="erreur">Le nom doit contenir au moins 2 caractères.</p>
+              }
+              @if (creationForm.controls.nom.touched && creationForm.controls.nom.hasError('maxlength')) {
+                <p class="erreur">Le nom ne peut pas dépasser 100 caractères.</p>
+              }
+            </div>
 
-          </div>
+            <div class="champ-formulaire">
+              <label for="maxJoueurs">Nombre de joueurs (2 à 10)</label>
+              <input
+                id="maxJoueurs"
+                type="number"
+                min="2"
+                max="10"
+                formControlName="maxJoueurs"
+              >
 
-        </form>
+              @if (creationForm.controls.maxJoueurs.touched && creationForm.controls.maxJoueurs.hasError('min')) {
+                <p class="erreur">La partie doit contenir au moins 2 joueurs.</p>
+              }
+              @if (creationForm.controls.maxJoueurs.touched && creationForm.controls.maxJoueurs.hasError('max')) {
+                <p class="erreur">La partie ne peut pas dépasser 10 joueurs.</p>
+              }
+            </div>
+
+            <div class="champ-formulaire">
+              <label>Type de carte (Age of Empires)</label>
+              <div class="archetype-choices" role="radiogroup" aria-label="Type de carte">
+                @for (arch of archetypes; track arch.id) {
+                  <button
+                    type="button"
+                    class="archetype-btn"
+                    [class.selected]="selectedArchetype === arch.id"
+                    (click)="selectArchetype(arch.id)"
+                  >
+                    <strong>{{ arch.label }}</strong>
+                    <span>{{ arch.description }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <div class="champ-formulaire">
+              <label for="seed">Seed de la carte (auto ou personnalisée)</label>
+              <div class="seed-input-row">
+                <input
+                  id="seed"
+                  type="text"
+                  formControlName="seed"
+                  (input)="onSeedInput()"
+                  placeholder="Seed générée automatiquement"
+                >
+                <button
+                  type="button"
+                  class="btn-regen-seed"
+                  (click)="regenererSeed()"
+                  title="Régénérer une graine aléatoire horodatée"
+                >
+                  🎲
+                </button>
+              </div>
+            </div>
+
+            @if (messageErreur) {
+              <p class="erreur">{{ messageErreur }}</p>
+            }
+
+            <div class="actions">
+              <button
+                type="button"
+                (click)="fermerPopup()"
+                [disabled]="chargement"
+              >
+                Annuler
+              </button>
+
+              <button
+                type="submit"
+                [disabled]="creationForm.invalid || chargement"
+              >
+                @if (chargement) {
+                  Création en cours...
+                } @else {
+                  Créer et choisir mon royaume
+                }
+              </button>
+            </div>
+
+          </form>
+
+          <aside class="preview-panel" aria-label="Aperçu de la carte">
+            <div class="preview-header">
+              <strong>Aperçu en direct</strong>
+              <span>{{ previewCarte.emplacements.length }} emplacements</span>
+            </div>
+            <div class="preview-canvas-wrap">
+              <app-carte-royaume
+                [carte]="previewCarte"
+                [archetype]="selectedArchetype"
+                [seed]="effectiveSeed"
+                [inclinaison]="38"
+                [autoriserDeplacement]="false"
+                [showLabels]="false"
+                [showBorders]="true"
+                [showRoutes]="true"
+              ></app-carte-royaume>
+            </div>
+            <p class="preview-hint">
+              Seed active : <code>{{ effectiveSeed }}</code>
+            </p>
+          </aside>
+        </div>
 
       </div>
 

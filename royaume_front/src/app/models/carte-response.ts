@@ -9,4 +9,6 @@ export interface CarteResponse {
   partieId: number;
   emplacements: EmplacementCarteResponse[];
   emplacementMarche: EmplacementCarteResponse;
+  archetype?: string;
+  seed?: string;
 }

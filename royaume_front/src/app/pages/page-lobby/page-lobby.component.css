@@ -195,6 +195,10 @@
         font-weight: 400;
     }
 
+    .actions-lobby a.btn-retour-royaume::before {
+        content: none;
+    }
+
 
     /* ========================================
    BOUTON ACTUALISER

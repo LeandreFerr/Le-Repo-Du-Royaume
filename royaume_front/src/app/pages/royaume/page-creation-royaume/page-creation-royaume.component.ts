@@ -222,10 +222,20 @@ export class PageCreationRoyaume implements OnInit {
         next: (royaume) => {
           console.log('Royaume créé :', royaume);
 
-          // 1. On navigue tout de suite, quoi qu'il arrive
-          this.router.navigate(['/lobby']);
+          // 1. Mettre à jour la session immédiatement avec le nouveau royaume
+          const actuel = this.utilisateurConnecte;
+          if (actuel) {
+            this.session.enregistrer({
+              ...actuel,
+              royaumeId: royaume.id,
+              royaumeNom: royaume.nom,
+            });
+          }
 
-          // 2. On rafraîchit la session en tâche de fond
+          // 2. Rediriger directement vers la carte de la partie (/player/:royaumeId)
+          this.router.navigate(['/player', royaume.id]);
+
+          // 3. Rafraîchir la session complète en tâche de fond
           this.utilisateurService
             .getUtilisateurById(this.utilisateurId)
             .subscribe({

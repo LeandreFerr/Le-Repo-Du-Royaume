@@ -76,6 +76,11 @@ export interface RoyaumeResume {
   couleurPrimaire: string; // frontend-only CSS hex color (e.g. '#b91c1c')
   couleurSecondaire: string; // frontend-only CSS hex color (e.g. '#fbbf24')
   niveau?: number; // integer in [1, 10], default 1 (Royaume.checkNiveau)
+  peupleNom?: string;
+  pseudoJoueur?: string;
+  utilisateurId?: number | null;
+  estMonRoyaume?: boolean;
+  enRuine?: boolean;
 }
 
 /**

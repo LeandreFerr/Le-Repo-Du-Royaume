@@ -450,3 +450,125 @@ button:focus-visible {
     flex-direction: column;
   }
 }
+
+/* ========================================
+   APERÇU CARTE & SÉLECTEUR ARCHÉTYPE / SEED
+   ======================================== */
+
+.popup-contenu.popup-large {
+  max-width: 960px;
+}
+
+.creation-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(280px, 0.95fr);
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .creation-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.archetype-choices {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.archetype-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 11px;
+  text-align: left;
+  background: rgba(255, 250, 237, 0.65);
+  border: 1px solid #b9a17c;
+  border-radius: 4px;
+  color: #443522;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.archetype-btn strong {
+  font-size: 13px;
+}
+
+.archetype-btn span {
+  font-size: 11px;
+  color: #6d593e;
+}
+
+.archetype-btn.selected {
+  background: #214b3e;
+  border-color: #bd8a2d;
+  color: #f0d08a;
+}
+
+.archetype-btn.selected span {
+  color: #d8dfd5;
+}
+
+.seed-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+.seed-input-row input {
+  flex: 1;
+}
+
+.btn-regen-seed {
+  padding: 0 14px;
+  min-height: 44px;
+  border-radius: 4px;
+  border: 1px solid #bd8a2d;
+  background: #214b3e;
+  color: #f0d08a;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 6px;
+  background: rgba(26, 20, 13, 0.92);
+  border: 1px solid #bd8a2d;
+  color: #f0d08a;
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.preview-canvas-wrap {
+  width: 100%;
+  height: 310px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(189, 138, 45, 0.45);
+}
+
+.preview-canvas-wrap app-carte-royaume {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-hint {
+  margin: 0;
+  font-size: 12px;
+  color: #d6c7ae;
+}
+
+.preview-hint code {
+  color: #fde68a;
+}

@@ -32,6 +32,12 @@ export class Partie {
     );
   }
 
+  trouverParRoyaumeId(royaumeId: number): Observable<PartieResponse> {
+    return this.http.get<PartieResponse>(
+      `${this.apiUrl}/royaume/${royaumeId}`
+    );
+  }
+
   creer(
     request: PartieCreationRequest
   ): Observable<PartieResponse> {

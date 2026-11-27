@@ -4,6 +4,7 @@ import { finalize } from 'rxjs';
 
 import { PartieResponse } from '../../models/partie-response';
 import { Partie } from '../../services/partie.service';
+import { SessionService } from '../../services/session/session.service';
 import { BoutonDeconnexion } from '../../components/bouton-deconnexion/bouton-deconnexion.component';
 
 @Component({
@@ -16,8 +17,10 @@ import { BoutonDeconnexion } from '../../components/bouton-deconnexion/bouton-de
 export class PageLobby implements OnInit {
 
   private readonly partieService = inject(Partie);
-
+  private readonly session = inject(SessionService);
   private readonly router = inject(Router);
+
+  readonly utilisateur = this.session.utilisateur;
 
   readonly parties = signal<PartieResponse[]>([]);
   readonly chargement = signal(false);

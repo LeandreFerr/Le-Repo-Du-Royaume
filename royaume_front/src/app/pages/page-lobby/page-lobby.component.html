@@ -14,6 +14,12 @@
 
   <div class="actions-lobby">
 
+    @if (utilisateur()?.royaumeId; as royaumeId) {
+      <a [routerLink]="['/player', royaumeId]" class="btn-retour-royaume" data-testid="retour-royaume-btn">
+        🏰 Rejoindre mon royaume ({{ utilisateur()?.royaumeNom || 'En partie' }})
+      </a>
+    }
+
     <a routerLink="/parties/creation">
       Créer une partie
     </a>
