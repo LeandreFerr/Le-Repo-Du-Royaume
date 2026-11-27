@@ -11,7 +11,7 @@ import { Royaume } from '../../models/royaume.model';
 })
 export class AmeliorerRoyaumeService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/royaumes';
+  private readonly apiUrl = '/api/royaumes';
 
   constructor(private readonly http: HttpClient) {}
 

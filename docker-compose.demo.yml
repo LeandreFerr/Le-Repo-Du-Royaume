@@ -1,0 +1,84 @@
+name: royaume-demo
+
+services:
+  db:
+    image: mysql:8.4.13
+    container_name: royaume-demo-db
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: royaume_demo
+
+    volumes:
+      - db-data:/var/lib/mysql
+
+    networks:
+      - royaume-demo
+
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      timeout: 3s
+      retries: 15
+      interval: 5s
+
+  pma:
+    image: phpmyadmin
+    container_name: royaume-demo-pma
+
+    environment:
+      PMA_HOST: db
+
+    ports:
+      - 8083:80
+
+    networks:
+      - royaume-demo
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  java:
+    image: royaume:back
+    build: ./royaume_back
+    container_name: royaume-demo-back
+
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/royaume_demo?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SERVER_PORT: 8080
+
+    ports:
+      - 8092:8080
+
+    networks:
+      - royaume-demo
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  angular:
+    image: royaume:front
+    build: ./royaume_front
+    container_name: royaume-demo-front
+
+    ports:
+      - 83:80
+
+    networks:
+      - royaume-demo
+
+    depends_on:
+      - java
+      - pma
+
+networks:
+  royaume-demo:
+    name: royaume-demo
+
+volumes:
+  db-data:
+    name: royaume-demo-db-data

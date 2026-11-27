@@ -10,7 +10,6 @@ import royaume.service.MessageService;
 
 @RestController
 @RequestMapping("/api/messages")
-@CrossOrigin(origins = "http://localhost:4200")
 public class MessageRestController {
 
     private final MessageService messageService;

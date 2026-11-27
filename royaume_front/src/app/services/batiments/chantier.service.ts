@@ -10,7 +10,7 @@ import { ChantierConstructionResponse } from '../../models/chantier.model';
 })
 export class ChantierService {
 
-  private apiUrl = 'http://localhost:8080/api/chantiers';
+  private apiUrl = '/api/chantiers';
 
   constructor(private http: HttpClient) {}
 

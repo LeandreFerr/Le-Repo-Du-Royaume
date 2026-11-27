@@ -27,7 +27,7 @@ export interface MessageResponse {
 })
 export class MessageService {
 
-  private apiUrl = 'http://localhost:8090/api/messages';
+  private apiUrl = '/api/messages';
 
   constructor(private http: HttpClient) {}
 

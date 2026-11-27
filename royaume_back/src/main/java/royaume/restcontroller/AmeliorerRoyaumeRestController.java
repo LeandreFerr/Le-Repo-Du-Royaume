@@ -9,7 +9,6 @@ import royaume.service.AmeliorerRoyaumeService;
 
 @RestController
 @RequestMapping("/api/royaumes")
-@CrossOrigin(origins = "http://localhost:4200")
 public class AmeliorerRoyaumeRestController {
 
     private final AmeliorerRoyaumeService service;

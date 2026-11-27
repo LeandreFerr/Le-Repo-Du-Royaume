@@ -70,13 +70,13 @@ export interface ReparationBatimentRequest {
 export class RoyaumeService {
 
   private readonly apiUrl =
-    'http://localhost:8080/api/royaumes';
+    '/api/royaumes';
 
   private readonly batimentsUrl =
-    'http://localhost:8080/api/batiments';
+    '/api/batiments';
 
   private readonly chantiersUrl =
-    'http://localhost:8080/api/chantiers';
+    '/api/chantiers';
 
   constructor(private readonly http: HttpClient) {}
 
@@ -280,7 +280,7 @@ getCatalogueBatiments(
 ): Observable<ModeleBatiment[]> {
 
   return this.http.get<ModeleBatiment[]>(
-    `http://localhost:8080/api/batiments/catalogue/${royaumeId}`
+    `/api/batiments/catalogue/${royaumeId}`
   );
 }
 

@@ -10,7 +10,7 @@ import { BatimentResponse } from '../../models/batiment-response';
 })
 export class BatimentService {
 
-  private apiUrl = 'http://localhost:8080/api/batiments';
+  private apiUrl = '/api/batiments';
 
   constructor(private http: HttpClient) {}
 

@@ -3,6 +3,7 @@ package royaume.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import royaume.dao.IDAOPopulation;
 import royaume.model.peuple.Canards;
@@ -16,6 +17,7 @@ import royaume.model.peuple.Teuteus;
 public class PopulationDataInitializer {
 
     @Bean
+    @Order(1)
     CommandLineRunner initialiserPopulations(
             IDAOPopulation daoPopulation) {
 

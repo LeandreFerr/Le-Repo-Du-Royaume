@@ -10,7 +10,7 @@ import { RoyaumeResponse } from '../models/royaume-response';
 })
 export class RoyaumeService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = 'http://localhost:8090/api/royaumes';
+  private readonly apiUrl = '/api/royaumes';
 
   creer(request: RoyaumeCreationRequest): Observable<RoyaumeResponse> {
     return this.http.post<RoyaumeResponse>(this.apiUrl, request);
