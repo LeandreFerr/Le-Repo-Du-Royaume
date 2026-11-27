@@ -270,66 +270,15 @@ export class RoyaumeService {
   }
 
   // ========================================
-  // FONCTIONNALITÉS EN ATTENTE
+  // CATALOGUE DES BÂTIMENTS
   // ========================================
 
   getCatalogueBatiments(): Observable<ModeleBatiment[]> {
-    return throwError(() =>
-      new Error('Catalogue des bâtiments : endpoint backend non configuré.')
+
+    return this.http.get<ModeleBatiment[]>(
+      `${this.batimentsUrl}/catalogue`
     );
-  }
 
-  getAmeliorationBatiment(
-    batimentId: number
-  ): Observable<AmeliorationBatiment> {
-
-    return throwError(() =>
-      new Error(
-        `Prévisualisation de l'amélioration du bâtiment ${batimentId} : endpoint backend non configuré.`
-      )
-    );
-  }
-
-  getReparationBatiment(
-    batimentId: number
-  ): Observable<ReparationBatiment> {
-
-    return throwError(() =>
-      new Error(
-        `Prévisualisation de la réparation du bâtiment ${batimentId} : endpoint backend non configuré.`
-      )
-    );
-  }
-
-}
-/*
-
-  // ========================================
-  // PALIERS DE DÉVELOPPEMENT
-  // ========================================
-
-  getPaliers(): Observable<PalierNiveau[]> {
-    return this.nonConnecte<PalierNiveau[]>('Récupération des paliers');
-  }
-
-  // ========================================
-  // CATALOGUE DE CONSTRUCTION
-  // ========================================
-
-  getCatalogueBatiments(): Observable<ModeleBatiment[]> {
-    return this.nonConnecte<ModeleBatiment[]>('Catalogue des bâtiments');
-  }
-
-  // ========================================
-  // DEMANDE DE CONSTRUCTION
-  // ========================================
-
-  construireBatiment(
-    royaume: Royaume,
-    modele: ModeleBatiment,
-    ouvriersAssignes: number
-  ): Observable<Royaume> {
-    return this.nonConnecte<Royaume>('Construction du bâtiment');
   }
 
   // ========================================
@@ -339,20 +288,11 @@ export class RoyaumeService {
   getAmeliorationBatiment(
     batimentId: number
   ): Observable<AmeliorationBatiment> {
-    return this.nonConnecte<AmeliorationBatiment>(
-      'Récupération de l’amélioration'
+
+    return this.http.get<AmeliorationBatiment>(
+      `${this.batimentsUrl}/${batimentId}/amelioration`
     );
-  }
 
-  // ========================================
-  // DEMANDE D'AMÉLIORATION
-  // ========================================
-
-  ameliorerBatiment(
-    batimentId: number,
-    ouvriersAssignes: number
-  ): Observable<Royaume> {
-    return this.nonConnecte<Royaume>('Amélioration du bâtiment');
   }
 
   // ========================================
@@ -362,26 +302,12 @@ export class RoyaumeService {
   getReparationBatiment(
     batimentId: number
   ): Observable<ReparationBatiment> {
-    return this.nonConnecte<ReparationBatiment>(
-      'Récupération de la réparation'
+
+    return this.http.get<ReparationBatiment>(
+      `${this.batimentsUrl}/${batimentId}/reparation`
     );
+
   }
 
-  // ========================================
-  // DEMANDE DE RÉPARATION
-  // ========================================
 
-  reparerBatiment(
-    batimentId: number,
-    montant: number,
-    ouvriersAssignes: number
-  ): Observable<Royaume> {
-    return this.nonConnecte<Royaume>('Réparation du bâtiment');
-  }
-
-    getChantiersRoyaume(royaumeId: number) : Observable<ChantierConstructionResponse[]>{
-        return this.nonConnecte<ChantierConstructionResponse[]>('Récupération des chantiers du royaume ');}
-    }
-
-
-*/
+}

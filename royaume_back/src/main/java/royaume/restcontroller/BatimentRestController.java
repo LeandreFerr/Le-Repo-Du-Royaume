@@ -169,6 +169,39 @@ private BatimentResponse convertirEnResponse(Batiment b) {
     );
 }
 
+// =========================================
+// CATALOGUE DES BÂTIMENTS
+// =========================================
 
-    
+@GetMapping("/catalogue")
+public ResponseEntity<List<BatimentResponse>> getCatalogue() {
+
+    return ResponseEntity.ok(
+        batimentService.getCatalogueBatiments()
+    );
+}
+    // =========================================
+// PRÉVISUALISATION AMÉLIORATION
+// =========================================
+
+@GetMapping("/{id}/amelioration")
+public ResponseEntity<BatimentResponse> getAmelioration(
+        @PathVariable @Positive Integer id) {
+
+    return ResponseEntity.ok(
+        batimentService.getAmeliorationBatiment(id)
+    );
+}
+// =========================================
+// PRÉVISUALISATION RÉPARATION
+// =========================================
+
+@GetMapping("/{id}/reparation")
+public ResponseEntity<BatimentResponse> getReparation(
+        @PathVariable @Positive Integer id) {
+
+    return ResponseEntity.ok(
+        batimentService.getReparationBatiment(id)
+    );
+}
 }

@@ -1509,8 +1509,8 @@ getTypeChantierParId(
     b => b.id === chantier.batimentId
   );
 
-  if (batiment?.montantReparationEnCours > 0) {
-    return 'Réparation';
+if ((batiment?.montantReparationEnCours ?? 0) > 0) {
+      return 'Réparation';
   }
 
   return 'Construction';
