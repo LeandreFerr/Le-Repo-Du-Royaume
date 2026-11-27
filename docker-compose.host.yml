@@ -1,0 +1,39 @@
+name: royaume-multi
+
+services:
+  java:
+    image: royaume:back-multi
+    build:
+      context: ./royaume_back
+      dockerfile: Dockerfile.multi
+    container_name: royaume-multi-back
+    environment:
+      SPRING_PROFILES_ACTIVE: remote,host
+      REMOTE_DB_HOST: ${REMOTE_DB_HOST:-20.84.69.4}
+      REMOTE_DB_PORT: ${REMOTE_DB_PORT:-3326}
+      REMOTE_DB_NAME: ${REMOTE_DB_NAME:-royaume_multi}
+      REMOTE_DB_USER: ${REMOTE_DB_USER:-root}
+      REMOTE_DB_PASSWORD: ${REMOTE_DB_PASSWORD:?Renseignez REMOTE_DB_PASSWORD dans .env.multi}
+      HOST_DDL_AUTO: ${HOST_DDL_AUTO:-update}
+      SERVER_PORT: 8080
+    ports:
+      - "${MULTI_BACK_PORT:-8094}:8080"
+    networks:
+      - royaume-multi
+
+  angular:
+    image: royaume:front-multi
+    build:
+      context: ./royaume_front
+      dockerfile: Dockerfile.multi
+    container_name: royaume-multi-front
+    ports:
+      - "${MULTI_FRONT_PORT:-84}:80"
+    networks:
+      - royaume-multi
+    depends_on:
+      - java
+
+networks:
+  royaume-multi:
+    name: royaume-multi

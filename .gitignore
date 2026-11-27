@@ -9,3 +9,6 @@ Servers/
 
 # Configuration locale individuelle (évite les conflits Git sur les ports et MDP)
 *application-local.properties
+
+# Configuration locale multijoueur (contient le mot de passe de la BDD distante)
+.env.multi
