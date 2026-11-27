@@ -75,7 +75,11 @@
           <div class="catalogue-list">
 
             @for (modele of catalogueBatiments; track modele.id) {
-
+<img
+  [src]="getIconeCatalogue(modele)"
+  [alt]="modele.nom"
+  class="catalogue-building-icon"
+/>
               <article
                 class="catalogue-item"
                 [class.selected]="batimentSelectionne?.id === modele.id">

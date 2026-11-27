@@ -8,7 +8,7 @@ export interface Royaume {
   nom: string;
   peuple: Population;
   niveau: number;
-
+  pseudoJoueur: string;
   populationDisponible: number;
   populationOuvriere: number;
   populationEnEntrainement: number;

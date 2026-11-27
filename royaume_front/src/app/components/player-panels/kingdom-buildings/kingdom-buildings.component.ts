@@ -20,10 +20,10 @@ import { ChantierConstructionResponse } from '../../../models/chantier.model';
 import { ModeleBatiment } from '../../../models/modele-batiment.model';
 import { AmeliorationBatiment } from '../../../models/amelioration-batiment.model';
 import { ReparationBatiment } from '../../../models/reparation-batiment.model';
-
+import { BatimentService } from '../../../services/batiments/batiment.service';
 import {
   RoyaumeService,
-  BatimentResponse
+  
 } from '../../../services/royaume/royaume-service.service';
 
 @Component({
@@ -218,7 +218,36 @@ get chantiersActifs(): Batiment[] {
   // ========================================
   // AFFICHAGE DES BÂTIMENTS
   // ========================================
+// ========================================
+// ICÔNES DU CATALOGUE DE CONSTRUCTION
+// ========================================
 
+getIconeCatalogue(modele: ModeleBatiment): string {
+
+  switch (modele.id) {
+
+    case 'MAISON':
+      return '/img/buildings/maison.svg';
+
+    case 'MINE':
+      return '/img/buildings/mine.svg';
+
+    case 'TAVERNE':
+      return '/img/buildings/taverne.svg';
+
+    case 'SCIERIE':
+      return '/img/buildings/scierie.svg';
+
+    case 'CARRIERE':
+      return '/img/buildings/carriere.svg';
+
+    case 'CHATEAU':
+      return '/img/buildings/chateau.svg';
+
+    default:
+      return '';
+  }
+}
   getIconeBatiment(batiment: Batiment): string {
 
     switch (batiment.type) {

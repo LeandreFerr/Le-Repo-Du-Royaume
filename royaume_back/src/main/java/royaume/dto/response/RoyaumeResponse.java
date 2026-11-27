@@ -7,7 +7,8 @@ import royaume.dto.QuantiteRessourceDTO;
 public record RoyaumeResponse(
     Integer id,
     String nom,
-    String peuple,
+    PopulationResponse peuple,
+    String pseudoJoueur,
     int niveau,
     int populationDisponible,
     int populationOuvriere,

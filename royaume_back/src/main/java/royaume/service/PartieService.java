@@ -19,10 +19,11 @@ import royaume.model.StatutPartie;
 public class PartieService {
 
     private final IDAOPartie daoPartie;
-
-    public PartieService(IDAOPartie daoPartie) {
-        this.daoPartie = daoPartie;
-    }
+private final RoyaumeService royaumeService;
+    public PartieService(IDAOPartie daoPartie, RoyaumeService royaumeService) {
+    this.daoPartie = daoPartie;
+    this.royaumeService = royaumeService;
+}
 
     @Transactional 
     public PartieResponse creer(PartieRequest partieRequest) {
@@ -95,7 +96,7 @@ public class PartieService {
             partie.getVainqueur() == null ? null : partie.getVainqueur().getId(),
             partie.getVainqueur() == null ? null : partie.getVainqueur().getPseudo(),
             partie.getTypeVictoire(),
-            partie.getRoyaumes() == null ? List.of() : partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList(),
+            partie.getRoyaumes() == null ? List.of() : partie.getRoyaumes().stream().map(royaumeService::convertirEnResponse).toList(),
             partie.getStatut()
         );
     }
