@@ -18,6 +18,16 @@ public class MessageRestController {
         this.messageService = messageService;
     }
 
+    @GetMapping("/recus/{destinataireId}")
+public ResponseEntity<?> getMessagesRecus(
+        @PathVariable Integer destinataireId) {
+
+    return ResponseEntity.ok(
+        messageService.getMessagesRecus(destinataireId)
+    );
+}
+
+
     @PostMapping("/envoyer")
     public ResponseEntity<?> envoyerMessage(
             @RequestBody MessageRequest request) {
@@ -37,4 +47,16 @@ public class MessageRestController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @PatchMapping("/{messageId}/lu")
+public ResponseEntity<?> marquerCommeLu(
+        @PathVariable Integer messageId) {
+
+    try {
+        messageService.marquerCommeLu(messageId);
+        return ResponseEntity.noContent().build();
+
+    } catch (RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+}
 }

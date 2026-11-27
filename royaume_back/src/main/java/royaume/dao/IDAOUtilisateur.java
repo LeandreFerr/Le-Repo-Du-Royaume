@@ -12,8 +12,5 @@ public interface IDAOUtilisateur extends JpaRepository<Utilisateur, Integer> {
     
     boolean existsByEmail(String email);
     Optional<Utilisateur> findByEmail(String email);
-
-    
-   
-
+    Optional<Utilisateur> findByRoyaumeId(Integer royaumeId);
 }

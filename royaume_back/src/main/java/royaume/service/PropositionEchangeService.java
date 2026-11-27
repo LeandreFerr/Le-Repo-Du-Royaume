@@ -20,6 +20,7 @@ import royaume.model.StatutEchange;
 @Transactional
 public class PropositionEchangeService {
 
+
     private static final Integer ID_ROYAUME_ADVERSE = 2;
 
     private final IDAORoyaume royaumeDAO;
@@ -43,7 +44,6 @@ public class PropositionEchangeService {
     // =========================================
     // CREER UNE PROPOSITION
     // =========================================
-
     public PropositionEchange creerProposition(
             Integer expediteurId,
             QuantiteRessource offerte,
@@ -79,7 +79,6 @@ public class PropositionEchangeService {
         if (!expediteur.aAssezDeRessources(
                 offerte.getRessource(),
                 offerte.getQuantite())) {
-
             throw new RuntimeException(
                 "Tu ne possèdes pas suffisamment de ressources pour cette proposition."
             );
@@ -97,7 +96,6 @@ public class PropositionEchangeService {
 
         return propositionEchangeDAO.save(echange);
     }
-
     private void verifierQuantite(
             QuantiteRessource quantite,
             String nom) {
@@ -164,6 +162,56 @@ public class PropositionEchangeService {
             quantite.getQuantite()
         );
     }
+// =========================================
+// ACCEPTER UNE PROPOSITION
+// =========================================
+
+public PropositionEchange accepterProposition(Integer id) {
+
+    PropositionEchange proposition = propositionEchangeDAO.findById(id)
+        .orElseThrow(() ->
+            new RuntimeException("Proposition introuvable : " + id)
+        );
+
+    if (proposition.getStatut() != StatutEchange.EN_ATTENTE) {
+        throw new RuntimeException(
+            "Cette proposition n'est plus en attente."
+        );
+    }
+
+    proposition.accepter();
+
+    if (proposition.getStatut() != StatutEchange.ACCEPTE) {
+        throw new RuntimeException(
+            "Impossible d'effectuer cet échange. Vérifiez les ressources disponibles."
+        );
+    }
+
+    return propositionEchangeDAO.save(proposition);
+}
+
+
+// =========================================
+// REFUSER UNE PROPOSITION
+// =========================================
+
+public PropositionEchange refuserProposition(Integer id) {
+
+    PropositionEchange proposition = propositionEchangeDAO.findById(id)
+        .orElseThrow(() ->
+            new RuntimeException("Proposition introuvable : " + id)
+        );
+
+    if (proposition.getStatut() != StatutEchange.EN_ATTENTE) {
+        throw new RuntimeException(
+            "Cette proposition n'est plus en attente."
+        );
+    }
+
+    proposition.refuser();
+
+    return propositionEchangeDAO.save(proposition);
+}
 
 }
 

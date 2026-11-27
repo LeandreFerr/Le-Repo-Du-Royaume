@@ -20,6 +20,7 @@ import { MenusSalleDuChateauComponent } from '../../components/pikachu/menus-sal
 import { PlaceDuMarcheComponent } from '../../components/place-du-marche/place-du-marche.component';
 import { KingdomBuildingsComponent } from '../../components/player-panels/kingdom-buildings/kingdom-buildings.component';
 import { KingdomDevelopmentComponent } from '../../components/player-panels/kingdom-development/kingdom-development.component';
+import { EvenementsReception } from '../../components/player-panels/evenements-reception/evenements-reception.component';
 import { KingdomOverviewComponent } from '../../components/player-panels/kingdom-overview/kingdom-overview.component';
 import { ReglesDuJeuManuscriptComponent } from '../../components/regles-du-jeu-manuscript/regles-du-jeu-manuscript.component';
 import { VisuAttaques } from '../../components/visu-attaques/visu-attaques.component';
@@ -62,6 +63,7 @@ import { SessionService } from '../../services/session/session.service';
     VisuAttaques,
     ReglesDuJeuManuscriptComponent,
     SessionEntrainement,
+    EvenementsReception,
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css',
@@ -76,6 +78,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   private readonly cdr = inject(ChangeDetectorRef);
 
   royaumeId!: number;
+  destinataireId!: number;
   seed: string = 'royaume-1';
   archetype: ArchetypeCarte = 'VALLEE_ROYALE';
   carte: CarteDto = createDefaultCarte();
@@ -127,6 +130,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
 
     this.royaumeId = id;
+    this.destinataireId = id;
     this.chargerDonneesRoyaume();
   }
 

@@ -1,6 +1,6 @@
 
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface MessageRequest {
@@ -31,11 +31,35 @@ export class MessageService {
 
   constructor(private http: HttpClient) {}
 
-  envoyerMessage(request: MessageRequest): Observable<MessageResponse> {
+  // ENVOYER UN MESSAGE
+  envoyerMessage(
+    request: MessageRequest
+  ): Observable<MessageResponse> {
 
     return this.http.post<MessageResponse>(
       `${this.apiUrl}/envoyer`,
       request
+    );
+  }
+
+  // RÉCUPÉRER LES MESSAGES D'UN JOUEUR
+recevoirMessages(
+  destinataireId: number
+): Observable<MessageResponse[]> {
+
+  return this.http.get<MessageResponse[]>(
+    `${this.apiUrl}/recus/${destinataireId}`
+  );
+}
+
+  // MARQUER UN MESSAGE COMME LU
+  marquerCommeLu(
+    messageId: number
+  ): Observable<void> {
+
+    return this.http.patch<void>(
+      `${this.apiUrl}/${messageId}/lu`,
+      {}
     );
   }
 }

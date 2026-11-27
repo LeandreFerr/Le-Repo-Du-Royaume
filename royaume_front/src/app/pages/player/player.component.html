@@ -148,6 +148,19 @@
 
       <a
         class="nav-link"
+        data-page="diplomatie"
+        [class.is-active]="activePage === 'diplomatie'"
+        [class.is-locked]="estEnAttente"
+        (click)="togglePage('diplomatie')"
+        title="Propositions d'échange et messages reçus">
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 2v.2l8 5 8-5V7H4Zm0 2.6V17h16V9.6l-7.47 4.67a1 1 0 0 1-1.06 0L4 9.6Z" />
+        </svg>
+        Diplomatie
+      </a>
+
+      <a
+        class="nav-link"
         data-page="evenements"
         [class.is-active]="evenementsOuvert"
         [class.is-locked]="estEnAttente"
@@ -353,6 +366,13 @@
     <app-session-entrainement
       [royaume]="royaume">
     </app-session-entrainement>
+  }
+
+  @if (!estEnAttente && activePage === 'diplomatie' && royaume) {
+    <app-evenements-reception
+      class="player-evenements-panel"
+      [destinataireId]="royaumeId">
+    </app-evenements-reception>
   }
 
   <!-- SURIMPRESSION : SALLE DU CHÂTEAU (TP PIKACHU) -->

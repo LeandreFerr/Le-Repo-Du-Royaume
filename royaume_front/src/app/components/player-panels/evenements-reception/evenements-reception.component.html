@@ -1,0 +1,376 @@
+
+<section class="reception-panel">
+
+  <!-- EN-TÊTE -->
+
+  <header class="panel-header">
+    <div class="panel-heading">
+      <span class="section-label">
+        Conseil du royaume
+      </span>
+
+      <h1>Événements reçus</h1>
+
+      <p>
+        Propositions diplomatiques et correspondances de votre royaume.
+      </p>
+    </div>
+  </header>
+
+  <!-- CONTENU -->
+
+  <div class="panel-content">
+
+    <!-- PROPOSITIONS D'ÉCHANGE -->
+
+    <section class="exchange-section">
+
+      <div class="section-header">
+
+        <div>
+          <span class="section-label">
+            Diplomatie
+          </span>
+
+          <h2>Propositions d'échange</h2>
+        </div>
+
+        <div class="section-header-actions">
+          <button
+            type="button"
+            class="messages-shortcut"
+            (click)="allerAuxMessages()">
+
+            <span>✉</span>
+            Consulter vos messages
+
+          </button>
+        </div>
+
+      </div>
+
+      @if (chargementPropositions) {
+        <div class="empty-state">
+          Chargement des propositions...
+        </div>
+      }
+
+      @if (erreurPropositions) {
+        <div class="empty-state">
+          {{ erreurPropositions }}
+        </div>
+      }
+
+      <div class="exchange-list">
+
+        @for (proposition of propositions; track proposition.id) {
+
+          <article class="exchange-card">
+
+            <!-- EXPÉDITEUR -->
+
+            <div class="exchange-header">
+
+              <div class="exchange-identity">
+
+                <span class="exchange-symbol">
+                  ⚜
+                </span>
+
+                <div>
+                  <h3>{{ proposition.expediteur }}</h3>
+
+                  <span class="exchange-date">
+                    Reçu le {{ proposition.dateReception }}
+                  </span>
+                </div>
+
+              </div>
+
+              @if (proposition.statut === 'EN_ATTENTE') {
+                <span class="exchange-status pending">
+                  En attente
+                </span>
+              }
+
+              @if (proposition.statut === 'ACCEPTE') {
+                <span class="exchange-status accepted">
+                  Acceptée
+                </span>
+              }
+
+              @if (proposition.statut === 'REFUSE') {
+                <span class="exchange-status refused">
+                  Refusée
+                </span>
+              }
+
+            </div>
+
+            <!-- DÉTAIL DE L'ÉCHANGE -->
+
+            <div class="exchange-details">
+
+              <!-- RESSOURCES REÇUES -->
+
+              <div class="trade-column">
+
+                <span class="trade-label offered-label">
+                  Vous recevez
+                </span>
+
+                <div class="trade-resources">
+
+                  @for (
+                    ressource of proposition.ressourcesOffertes;
+                    track ressource.nom
+                  ) {
+
+                    <div class="trade-resource">
+
+                      <div class="trade-resource-icon">
+
+                        <img
+                          [src]="iconesRessources[ressource.nom]"
+                          [alt]="nomsRessources[ressource.nom]"
+                          class="resource-image">
+
+                      </div>
+
+                      <div class="trade-resource-info">
+
+                        <span>
+                          {{ nomsRessources[ressource.nom] }}
+                        </span>
+
+                        <strong>
+                          {{ ressource.quantite | number }}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+              <!-- SÉPARATEUR -->
+
+              <div class="trade-separator">
+                ⇄
+              </div>
+
+              <!-- RESSOURCES DONNÉES -->
+
+              <div class="trade-column">
+
+                <span class="trade-label requested-label">
+                  Vous donnez
+                </span>
+
+                <div class="trade-resources">
+
+                  @for (
+                    ressource of proposition.ressourcesDemandees;
+                    track ressource.nom
+                  ) {
+
+                    <div class="trade-resource">
+
+                      <div class="trade-resource-icon">
+
+                        <img
+                          [src]="iconesRessources[ressource.nom]"
+                          [alt]="nomsRessources[ressource.nom]"
+                          class="resource-image">
+
+                      </div>
+
+                      <div class="trade-resource-info">
+
+                        <span>
+                          {{ nomsRessources[ressource.nom] }}
+                        </span>
+
+                        <strong>
+                          {{ ressource.quantite | number }}
+                        </strong>
+
+                      </div>
+
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- ACTIONS -->
+
+            @if (proposition.statut === 'EN_ATTENTE') {
+
+              <div class="exchange-actions">
+
+                <button
+                  type="button"
+                  class="accept-button"
+                  (click)="accepterProposition(proposition.id)">
+
+                  <span>✓</span>
+                  Accepter
+
+                </button>
+
+                <button
+                  type="button"
+                  class="refuse-button"
+                  (click)="refuserProposition(proposition.id)">
+
+                  <span>✕</span>
+                  Refuser
+
+                </button>
+
+              </div>
+
+            }
+
+          </article>
+
+        } @empty {
+
+          @if (!chargementPropositions) {
+            <div class="empty-state">
+              Aucune proposition d'échange reçue.
+            </div>
+          }
+
+        }
+
+      </div>
+
+    </section>
+
+    <!-- MESSAGES REÇUS -->
+
+    <section class="messages-section" #messagesSection>
+
+      <div class="section-header">
+
+        <div>
+          <span class="section-label">
+            Correspondance
+          </span>
+
+          <h2>Messages reçus</h2>
+        </div>
+
+        <span class="section-counter">
+          {{ messagesNonLus }} non lu(s)
+        </span>
+
+      </div>
+
+      @if (chargementMessages) {
+
+        <div class="empty-state">
+          Chargement des messages...
+        </div>
+
+      } @else if (erreurMessages) {
+
+        <div class="empty-state">
+          {{ erreurMessages }}
+        </div>
+
+      }
+
+      <!-- LISTE DES MESSAGES -->
+
+      <div class="messages-list">
+
+        @for (message of messages; track message.id) {
+
+          <article
+            class="message-card"
+            [class.message-unread]="!message.lu"
+            [class.message-read]="message.lu"
+            (click)="marquerCommeLu(message.id)"
+            [attr.aria-label]="'Message de ' + message.expediteur + ', ' + (message.lu ? 'lu' : 'non lu')"
+            role="button"
+            tabindex="0"
+            (keydown.enter)="marquerCommeLu(message.id)"
+            (keydown.space)="marquerCommeLu(message.id); $event.preventDefault()">
+
+            <!-- EN-TÊTE DU MESSAGE -->
+
+            <div class="message-header">
+
+              <div class="message-sender">
+
+                <span class="sender-symbol">
+                  ✉
+                </span>
+
+                <strong>
+                  {{ message.expediteur }}
+                </strong>
+
+              </div>
+
+              @if (!message.lu) {
+                <span class="unread-indicator">
+                  Nouveau
+                </span>
+              }
+
+            </div>
+
+            <!-- CONTENU -->
+
+            <p class="message-content">
+              {{ message.contenu }}
+            </p>
+
+            <!-- INFORMATIONS DE RÉCEPTION -->
+
+            <div class="message-footer">
+
+              <span class="message-date">
+                De : {{ message.expediteur }}
+                · Reçu le {{ message.dateReception }}
+              </span>
+
+              @if (message.lu) {
+                <span class="message-seen">
+                  ✓ Vu
+                </span>
+              }
+
+            </div>
+
+          </article>
+
+        } @empty {
+
+          @if (!chargementMessages && !erreurMessages) {
+            <div class="empty-state">
+              Aucun message reçu pour le moment.
+            </div>
+          }
+
+        }
+
+      </div>
+
+    </section>
+
+  </div>
+
+</section>

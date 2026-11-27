@@ -2,7 +2,7 @@
 package royaume.restcontroller;
 
 import java.util.List;
-
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,4 +75,37 @@ public ResponseEntity<PropositionEchangeResponse> creerProposition(
             propositionService.recupererPropositionsDestinataire(id)
         );
     }
+
+    // =========================================
+// ACCEPTER UNE PROPOSITION
+// =========================================
+
+@PatchMapping("/{id}/accepter")
+public ResponseEntity<PropositionEchangeResponse> accepter(
+        @PathVariable Integer id) {
+
+    PropositionEchange proposition =
+        propositionService.accepterProposition(id);
+
+    return ResponseEntity.ok(
+        propositionService.convertirEnResponse(proposition)
+    );
+}
+
+
+// =========================================
+// REFUSER UNE PROPOSITION
+// =========================================
+
+@PatchMapping("/{id}/refuser")
+public ResponseEntity<PropositionEchangeResponse> refuser(
+        @PathVariable Integer id) {
+
+    PropositionEchange proposition =
+        propositionService.refuserProposition(id);
+
+    return ResponseEntity.ok(
+        propositionService.convertirEnResponse(proposition)
+    );
+}
 }
