@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import royaume.dao.IDAOCarte;
 import royaume.dao.IDAOPartie;
 import royaume.dto.request.PartieRequest;
 import royaume.dto.response.PartieResponse;
@@ -30,6 +31,8 @@ class PartieServiceTest {
 
     @Mock
     private IDAOPartie daoPartie;
+    @Mock
+    private IDAOCarte daoCarte;
 
     @InjectMocks
     private PartieService partieService;

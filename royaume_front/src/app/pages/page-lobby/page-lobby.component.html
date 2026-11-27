@@ -1,0 +1,110 @@
+<section class="page-lobby">
+
+  <header>
+    <h1>Lobby des parties</h1>
+
+    <p>
+      Choisis une partie en attente ou crée une nouvelle partie.
+    </p>
+  </header>
+
+  <div class="actions-lobby">
+
+    <a routerLink="/parties/creation">
+      Créer une partie
+    </a>
+
+    <button
+      type="button"
+      (click)="chargerPartiesEnAttente()"
+      [disabled]="chargement()"
+    >
+      Actualiser
+    </button>
+
+  </div>
+
+  @if (chargement()) {
+
+    <p>
+      Chargement des parties...
+    </p>
+
+  } @else if (messageErreur()) {
+
+    <p class="erreur">
+      {{ messageErreur() }}
+    </p>
+
+  } @else if (parties().length === 0) {
+
+    <p>
+      Aucune partie n'est actuellement en attente.
+    </p>
+
+  } @else {
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Joueurs</th>
+          <th>Places disponibles</th>
+          <th>Vitesse</th>
+          <th>Statut</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        @for (partie of parties(); track partie.id) {
+
+          <tr>
+
+            <td>
+              {{ partie.nom }}
+            </td>
+
+            <td>
+              {{ partie.royaumes.length }}
+              /
+              {{ partie.maxJoueurs }}
+            </td>
+
+            <td>
+              {{ partie.maxJoueurs - partie.royaumes.length }}
+            </td>
+
+            <td>
+              {{ partie.vitesseJeu }}
+            </td>
+
+            <td>
+              En attente
+            </td>
+
+            <td>
+              <button
+                type="button"
+                (click)="rejoindre(partie)"
+                [disabled]="
+                  partie.royaumes.length >= partie.maxJoueurs
+                "
+              >
+                Rejoindre
+              </button>
+            </td>
+
+          </tr>
+
+        }
+
+      </tbody>
+
+    </table>
+
+  }
+
+</section>
