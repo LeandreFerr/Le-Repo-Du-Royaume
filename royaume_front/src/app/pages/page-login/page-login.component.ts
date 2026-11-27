@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { SessionService } from '../../services/session/session.service';
 
+import { HttpErrorResponse } from '@angular/common/http';
 
 import {
   FormBuilder,
@@ -56,7 +57,8 @@ export class PageLogin {
         this.router.navigate(['/']);
       },
 
-      error: () => {
+      error: (err: HttpErrorResponse) => {
+        console.error('Échec du login :', err.status, err.error);
         this.erreur = 'Pseudo ou mot de passe incorrect';
       }
 
