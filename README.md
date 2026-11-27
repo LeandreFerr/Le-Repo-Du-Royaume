@@ -49,6 +49,14 @@ Côté Angular en dev (`npm start`), `proxy.conf.json` redirige automatiquement 
 
 ---
 
+## Jouer en multijoueur (BDD distante, mode Host / Invité)
+
+Sur la branche dédiée `multi-host-guest`, chaque joueur peut lancer son propre Spring Boot + Angular en local tout en partageant la base MySQL distante (un seul joueur en mode **Host** avec moteur de jeu actif, les autres en mode **Invité** sans scheduler).
+
+Consultez le guide complet [MULTIJOUEUR.md](./MULTIJOUEUR.md) (procédure Docker Windows/macOS/Linux, Plan B sans Docker et Plan C SSH).
+
+---
+
 ## Pipeline CI/CD (Jenkins & SonarQube)
 
 - **Jenkins** : http://20.84.69.4:8080/job/royaume-g2/
