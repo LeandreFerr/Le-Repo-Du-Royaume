@@ -675,7 +675,7 @@
 
 #modalAttaque .fenetre-attaque {
   max-width: 600px;
-  padding: 35px;
+  padding: 0px;
 }
 
 #modalAttaque app-attaque-adverse {

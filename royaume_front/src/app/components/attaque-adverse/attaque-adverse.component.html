@@ -20,7 +20,7 @@
           <!-- ARCHERS -->
           <div class="ligne-troupe">
             <div class="info-troupe">
-              <span class="icone-troupe">🏹</span>
+                <img src="assets/imago/archer.png" alt="Archers" class="icone-troupe-img">
               <div>
                 <label for="archers">Archers</label>
                 <p>Disponibles : {{ stocks['ARCHER'] }}</p>
@@ -38,12 +38,13 @@
               (ngModelChange)="verifierQuantite('ARCHER', $event)"
               [disabled]="stocks['ARCHER'] === 0"
             >
-          </div>
+          
+            </div>
 
           <!-- CAVALIERS -->
           <div class="ligne-troupe">
             <div class="info-troupe">
-              <span class="icone-troupe">🐎</span>
+             <img src="assets/imago/cavalier.png" alt="Cavaliers" class="icone-troupe-img">
               <div>
                 <label for="cavaliers">Cavaliers</label>
                 <p>Disponibles : {{ stocks['CAVALIER'] }}</p>
@@ -66,7 +67,7 @@
           <!-- LANCIERS -->
           <div class="ligne-troupe">
             <div class="info-troupe">
-              <span class="icone-troupe">⚔</span>
+              <img src="assets/imago/lancier.png" alt="Lanciers" class="icone-troupe-img">
               <div>
                 <label for="lanciers">Lanciers</label>
                 <p>Disponibles : {{ stocks['LANCIER'] }}</p>
@@ -89,7 +90,7 @@
           <!-- TROUPES SPÉCIALES -->
           <div class="ligne-troupe">
             <div class="info-troupe">
-              <span class="icone-troupe">👑</span>
+              <img src="assets/imago/star.png" alt="special" class="icone-troupe-img">
               <div>
                 <label for="special">Troupes spéciales</label>
                 <p>Disponibles : {{ stocks['SPECIAL'] }}</p>

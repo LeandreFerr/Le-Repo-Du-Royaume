@@ -6,7 +6,6 @@
 :host {
   display: block;
   width: 100%;
-  min-height: 100vh;
   box-sizing: border-box;
   font-family: "Cinzel", serif;
 }
@@ -40,10 +39,9 @@
 .modal-attaque {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
   width: 100%;
-  min-height: 100vh;
-  padding: 25px;
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -55,8 +53,8 @@
   position: relative;
   box-sizing: border-box;
   width: 100%;
-  max-width: 520px;
-  padding: 35px;
+  max-width: 100%;
+  padding: 28px 30px;
 
   color: #f5e2b4;
   text-align: center;
@@ -184,6 +182,15 @@
 
   background: rgba(184, 154, 90, 0.12);
   border: 1px solid rgba(184, 154, 90, 0.4);
+}
+
+.icone-troupe-img {
+  width: 70px ;
+  height: 70px ;
+  max-width: 70px;
+  max-height: 70px ;
+  object-fit: contain;
+  display: block;
 }
 
 .info-troupe label {
@@ -353,4 +360,9 @@
   .bouton-attaquer {
     font-size: 0.85rem;
   }
+
+
+  
 }
+
+
