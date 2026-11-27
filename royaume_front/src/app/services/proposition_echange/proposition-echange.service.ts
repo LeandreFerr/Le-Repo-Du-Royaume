@@ -44,7 +44,7 @@ export interface PropositionEchangeResponse {
 export class PropositionEchangeService {
 
   private apiUrl =
-    'http://localhost:8080/api/propositions-echange';
+    'http://localhost:8090/api/propositions-echange';
 
   constructor(private http: HttpClient) {}
 

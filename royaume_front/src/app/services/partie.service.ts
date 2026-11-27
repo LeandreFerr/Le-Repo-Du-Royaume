@@ -12,7 +12,7 @@ export class Partie {
 
   private readonly http = inject(HttpClient);
 
-  private readonly apiUrl = 'http://localhost:8080/api/parties';
+  private readonly apiUrl = 'http://localhost:8090/api/parties';
 
   trouverToutes(): Observable<PartieResponse[]> {
     return this.http.get<PartieResponse[]>(this.apiUrl);

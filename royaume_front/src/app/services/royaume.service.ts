@@ -51,7 +51,7 @@ export class RoyaumeService {
    private readonly http = inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/royaumes';
+    'http://localhost:8090/api/royaumes';
 
   creer(
     request: RoyaumeCreationRequest

@@ -38,6 +38,7 @@ export const routes: Routes = [
   { path: 'login', component: PageLogin, canActivate: [playerGuard] },
   { path: 'inscription', component: PageInscription, canActivate: [playerGuard] },
 
+  // Admin
   { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
 
 

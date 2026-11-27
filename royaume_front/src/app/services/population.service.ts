@@ -12,7 +12,7 @@ export class PopulationService {
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl =
-    'http://localhost:8080/api/populations';
+    'http://localhost:8090/api/populations';
 
   trouverToutes(): Observable<PopulationResponse[]> {
     return this.http.get<PopulationResponse[]>(

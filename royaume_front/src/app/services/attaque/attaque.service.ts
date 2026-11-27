@@ -32,7 +32,7 @@ export interface AttaqueResponse {
   providedIn: 'root',
 })
 export class AttaqueService {
-  private apiUrl = 'http://localhost:8080/api/attaques';
+  private apiUrl = 'http://localhost:8090/api/attaques';
 
   constructor(private http: HttpClient) {}
   
