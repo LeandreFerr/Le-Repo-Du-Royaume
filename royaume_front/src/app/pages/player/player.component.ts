@@ -24,6 +24,8 @@ import { KingdomOverviewComponent } from '../../components/player-panels/kingdom
 import { ReglesDuJeuManuscriptComponent } from '../../components/regles-du-jeu-manuscript/regles-du-jeu-manuscript.component';
 import { VisuAttaques } from '../../components/visu-attaques/visu-attaques.component';
 
+import { SessionEntrainement } from '../../components/session-entrainement/session-entrainement.component';
+
 import {
   ARCHETYPES_CARTE,
   ArchetypeCarte,
@@ -59,6 +61,7 @@ import { SessionService } from '../../services/session/session.service';
     PlaceDuMarcheComponent,
     VisuAttaques,
     ReglesDuJeuManuscriptComponent,
+    SessionEntrainement,
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css',

@@ -48,18 +48,26 @@ public class SessionEntrainementService {
         return convertirEnResponse(sessions.get(sessions.size() - 1));
     }
 
+    @Transactional
     public List<SessionEntrainementResponse> sessions(Integer royaumeId, boolean finalisee) {
 
         Royaume royaume = trouverRoyaume(royaumeId);
+        royaume.traiterFormations(LocalDateTime.now());
+        daoRoyaume.saveAndFlush(royaume);
 
         return daoSession.findByRoyaumeAndFinalisee(royaume, finalisee).stream()
                 .map(this::convertirEnResponse)
                 .toList();
     }
 
+    @Transactional
     public List<ContingentTroupeResponse> garnison(Integer royaumeId) {
 
-        return trouverRoyaume(royaumeId).getGarnison().stream()
+        Royaume royaume = trouverRoyaume(royaumeId);
+        royaume.traiterFormations(LocalDateTime.now());
+        daoRoyaume.saveAndFlush(royaume);
+
+        return royaume.getGarnison().stream()
                 .map(this::convertirContingentEnResponse)
                 .toList();
     }

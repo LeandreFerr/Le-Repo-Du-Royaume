@@ -1,0 +1,166 @@
+<div class="development-panel">
+
+  <!-- EN-TÊTE -->
+  <header class="panel-header">
+    <div class="panel-heading">
+      <span class="section-label">Affaires militaires</span>
+      <h1>Entraînement des troupes</h1>
+      <p>Convertissez vos citoyens disponibles en recrues puis intégrez-les à la garnison du royaume.</p>
+    </div>
+  </header>
+
+  <!-- CONTENU -->
+  <div class="panel-content">
+
+    <!-- BANDEAU DU ROYAUME -->
+    <section class="development-banner">
+      <div class="kingdom-identity">
+        <span class="section-label">Royaume</span>
+        <h2>{{ royaume.nom || 'Votre Royaume' }}</h2>
+        <p>Effectifs civils, recrues en formation et garnison active.</p>
+      </div>
+
+      <div class="kingdom-level">
+        <span class="level-label">Civils disponibles</span>
+        <span class="level-value">{{ populationDisponible }}</span>
+      </div>
+
+      <div class="kingdom-progression">
+        
+        <div class="global-progress-bar">
+          <div
+            class="progress-segment-entrainement"
+            [style.width.%]="populationTotale > 0 ? (populationEnEntrainement / populationTotale) * 100 : 0"
+          ></div>
+          <div
+            class="progress-segment-militaire"
+            [style.width.%]="populationTotale > 0 ? (populationMilitaire / populationTotale) * 100 : 0"
+          ></div>
+        </div>
+        <div class="population-legend">
+
+  <div class="population-category">
+    <span class="category-color" style="background: #d7bb7b;"></span>
+    <span class="category-name">En entraînement</span>
+    <strong class="category-value">{{ populationEnEntrainement }}</strong>
+  </div>
+
+  <div class="population-category">
+    <span class="category-color" style="background: #6fa382;"></span>
+    <span class="category-name">Militaires</span>
+    <strong class="category-value">{{ populationMilitaire }}</strong>
+  </div>
+
+</div>
+      </div>
+    </section>
+
+
+    <!-- GRILLE PRINCIPALE -->
+    <div class="development-grid">
+
+      <!-- COLONNE GAUCHE : RECRUTEMENT PAR TYPE DE TROUPE -->
+      <section class="progression-card">
+        <div class="card-heading">
+          <div>
+            <span class="section-label">Recrutement</span>
+            <h2>Envoyer à l'entraînement</h2>
+            <p>Choisissez le nombre d'unités à former selon votre population disponible.</p>
+          </div>
+        </div>
+
+        <div class="conditions-list">
+          @for (troupe of typesTroupes; track troupe.code) {
+            <div class="condition-card">
+              <div class="condition-icon">
+                <img [src]="troupe.image" [alt]="troupe.label">
+              </div>
+
+              <div class="condition-content">
+                <div class="condition-heading">
+                  <span class="condition-name">{{ troupe.label }}</span>
+                  <span class="condition-quantity">
+                    Garnison : <strong>{{ getGarnisonParType(troupe.code) }}</strong>
+                  </span>
+                </div>
+
+                <div class="slider-row">
+                  <input
+                    [id]="'qte-' + troupe.code"
+                    type="range"
+                    class="troop-slider"
+                    min="0"
+                    [max]="getMaxPourType(troupe.code)"
+                    step="1"
+                    [value]="quantitesAEntrainer[troupe.code]"
+                    [disabled]="actionEnCours || getMaxPourType(troupe.code) === 0"
+                    (input)="verifierQuantite(troupe.code, $any($event.target).value)"
+                  >
+                  <span class="slider-value">
+                    Sélection : <strong>{{ quantitesAEntrainer[troupe.code] }}</strong>
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="condition-status"
+                (click)="lancerEntrainement(troupe.code)"
+                [disabled]="!quantitesAEntrainer[troupe.code] || quantitesAEntrainer[troupe.code] <= 0 || actionEnCours"
+              >
+                Entraîner
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- COLONNE DROITE : SESSIONS EN COURS & FINALISÉES -->
+      <aside class="history-card">
+        <span class="section-label">Suivi des formations</span>
+        <h2>Sessions</h2>
+
+        @if (chargement) {
+          <div class="history-placeholder">
+            <p>Chargement des sessions...</p>
+          </div>
+        } @else {
+          <div class="history-placeholder">
+            <strong>En cours</strong>
+            @for (session of sessionsEnCours; track session.id) {
+              <div>
+                <p>
+                  <strong>{{ session.quantite }} × {{ session.typeTroupe }}</strong><br>
+                  Début : {{ session.dateDebut | date:'dd/MM/yyyy HH:mm' }}<br>
+                  Fin prévue : {{ session.dateFinPrevue | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            } @empty {
+              <p>Aucune session en cours.</p>
+            }
+          </div>
+
+          <div class="history-placeholder">
+            <strong>Finalisées</strong>
+            @for (session of sessionsFinalisees; track session.id) {
+              <div>
+                <p>
+                  <strong>{{ session.quantite }} × {{ session.typeTroupe }}</strong><br>
+                  Début : {{ session.dateDebut | date:'dd/MM/yyyy HH:mm' }}<br>
+                  Fin prévue : {{ session.dateFinPrevue | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+            } @empty {
+              <p>Aucune session finalisée.</p>
+            }
+          </div>
+        }
+      </aside>
+
+    </div>
+@if (message) {
+      <p class="message-retour toast-fixe" [class.erreur]="erreur">{{ message }}</p>
+    }
+  </div>
+
+</div>
