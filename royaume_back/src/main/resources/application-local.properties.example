@@ -45,3 +45,9 @@ spring.datasource.password=root
 # spring.datasource.url=jdbc:mysql://localhost:3307/royaume?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
 # spring.datasource.username=root
 # spring.datasource.password=root
+
+# Option E : Base de données MySQL distante du groupe (20.84.69.4:3326)
+# (Ne jamais commiter le vrai mot de passe dans un fichier suivi par Git)
+# spring.datasource.url=jdbc:mysql://20.84.69.4:3326/royaume?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+# spring.datasource.username=root
+# spring.datasource.password=<MOT_DE_PASSE_DISTANT>

@@ -43,7 +43,7 @@ export interface OffreMarcheResponse {
 })
 export class MarcheService {
 
-  private apiUrl = 'http://localhost:8080/api/marche';
+  private apiUrl = '/api/marche';
 
   constructor(private http: HttpClient) {}
 

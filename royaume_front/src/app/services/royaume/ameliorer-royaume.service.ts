@@ -12,7 +12,7 @@ import {
 })
 export class AmeliorerRoyaumeService {
 
-  private apiUrl = 'http://localhost:8080/api/royaumes';
+  private apiUrl = '/api/royaumes';
 
   constructor(private http: HttpClient) {}
 

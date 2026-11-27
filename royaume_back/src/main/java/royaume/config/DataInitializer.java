@@ -1,6 +1,6 @@
 package royaume.config;
 
-import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,6 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 
 import royaume.dao.IDAOAttaque;
 import royaume.dao.IDAOCarte;
@@ -27,7 +28,6 @@ import royaume.dto.response.SessionEntrainementResponse;
 import royaume.model.Carte;
 import royaume.model.EmplacementCarte;
 import royaume.model.Partie;
-import royaume.model.PropositionEchange;
 import royaume.model.QuantiteRessource;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
@@ -49,250 +49,214 @@ import royaume.service.PropositionEchangeService;
 import royaume.service.SessionEntrainementService;
 
 @Configuration
-@Profile("dev")
+@Profile({"dev", "demo"})
 public class DataInitializer {
 
+	@Bean
+	@Order(3)
+	CommandLineRunner donneesDeTest(
+			IDAOPopulation populationDAO,
+			IDAORoyaume royaumeDAO,
+			IDAOOffreMarche offreMarcheDAO,
+			IDAOUtilisateur utilisateurDAO,
+			IDAOMarche marcheDAO,
+			IDAOPropositionEchange propositionEchangeDAO,
+			IDAOAttaque attaqueDAO,
+			IDAOSessionEntrainement sessionEntrainementDAO,
+			IDAOPartie partieDAO,
+			IDAOCarte carteDAO,
+			IDAOEmplacementCarte emplacementCarteDAO,
+			MarcheService marcheService,
+			BatimentService batimentService,
+			PropositionEchangeService propositionEchangeService,
+			AttaqueService attaqueService,
+			SessionEntrainementService sessionEntrainementService) {
 
-		    @Bean
-		    CommandLineRunner donneesDeTest(
-		            IDAOPopulation populationDAO,
-		            IDAORoyaume royaumeDAO,
-		            IDAOOffreMarche offreMarcheDAO,
-		            IDAOUtilisateur utilisateurDAO,
-		            IDAOMarche marcheDAO,
-		            IDAOPropositionEchange propositionEchangeDAO,
-		            IDAOAttaque attaqueDAO,
-		            IDAOSessionEntrainement sessionEntrainementDAO,
-		            IDAOPartie partieDAO,
-		            IDAOCarte carteDAO,
-		            IDAOEmplacementCarte emplacementCarteDAO,
-		            MarcheService marcheService,
-		            BatimentService batimentService,
-		            PropositionEchangeService propositionEchangeService,
-		            AttaqueService attaqueService,
-		            SessionEntrainementService sessionEntrainementService) {
+		return args -> {
 
-		        return args -> {
+			if (royaumeDAO.count() > 0) {
+				System.out.println("========== DONNEES DEMO DEJA PRESENTES (SKIP) ==========");
+				return;
+			}
 
-		            System.out.println("========== TEST JPA ==========");
-		            
-		            List<Population> populations = List.of(
-		            	    new Canards(null, "Canards", "Roi Coin-Coin", 1.5),
-		            	    new Teuteus(null, "Teuteus", "Roi Teuteu", 0.4),
-		            	    new Gobelins(null, "Gobelins", "Roi Gobelin", 1.9),
-		            	    new Princesses(null, "Princesses", "Reine des Princesses", 15.0),
-		            	    new Licornes(null, "Licornes", "Reine des Licornes", 1.0)
-		            	);
+			System.out.println("========== INITIALISATION DONNEES DEMO ==========");
 
-		            	for (Population population : populations) {
+			Map<String, Population> popsParNom = new HashMap<>();
+			for (Population p : populationDAO.findAll()) {
+				popsParNom.put(p.getNom(), p);
+			}
 
-		            	    population = populationDAO.save(population);
-		            	    
-		            	          String nomRoyaume = "Le Royaume des " + population.getNom();
-		            	        Royaume royaume;
+			List<Population> populationsParDefaut = List.of(
+					new Canards(null, "Canards", "Roi Coin-Coin", 1.5),
+					new Teuteus(null, "Teuteus", "Roi Teuteu", 0.4),
+					new Gobelins(null, "Gobelins", "Roi Gobelin", 1.9),
+					new Princesses(null, "Princesses", "Reine des Princesses", 15.0),
+					new Licornes(null, "Licornes", "Reine des Licornes", 1.0)
+			);
 
-		            	        if (!royaumeDAO.existsByNom(nomRoyaume)) {
-		            	            royaume = new Royaume(
-		            	                null,
-		            	                nomRoyaume,
-		            	                population
-		            	            );
-		            	            royaume = royaumeDAO.save(royaume);
-		            	            System.out.println("Royaume créé : " + royaume);
-		            	        } else {
-		            	        	royaume = royaumeDAO.findByNom(nomRoyaume).stream().findFirst().orElse(null);
-		            	            System.out.println("Royaume existe déjà : " + nomRoyaume);
-		            	        }
+			for (Population candidate : populationsParDefaut) {
+				popsParNom.computeIfAbsent(candidate.getNom(), nom -> populationDAO.save(candidate));
+			}
 
-		            	        System.out.println("Population : " + population);
-		            	        System.out.println("Royaume : " + royaume);
-		            	    }
-		            	
-		          
-		            	 Maison maison = batimentService.creerMaison(
-		            	            5,
-		            	            null,
-		            	            "Maison des licornes",
-		            	            2
-		            	        );
+			Map<String, Royaume> royaumesParPeuple = new HashMap<>();
+			for (String nomPeuple : List.of("Canards", "Teuteus", "Gobelins", "Princesses", "Licornes")) {
+				Population population = popsParNom.get(nomPeuple);
+				String nomRoyaume = "Le Royaume des " + population.getNom();
+				Royaume royaume = royaumeDAO.save(new Royaume(null, nomRoyaume, population));
+				royaumesParPeuple.put(nomPeuple, royaume);
+				System.out.println("Royaume créé : " + royaume.getNom() + " (id=" + royaume.getId() + ")");
+			}
 
-		            	        System.out.println("Maison créée : " + maison.getNom());
-		            	  
-		            	  batimentService.creerBatimentProduction(2,null, "Mine des teuteus",500,Ressource.OR,1,1);
-				            	 
-				          batimentService.creerBatimentProduction(1,null, "Taverne des canards",500,Ressource.NOURRITURE,1,1);
-				            	
-		        
-				         ///////////// MARCHE ////////////////////
-				       
-				        
-				         QuantiteRessource orVendeur = new QuantiteRessource(4, Ressource.OR);
-				         QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
-				         QuantiteRessource boisExpediteur = new QuantiteRessource(4, Ressource.BOIS);
-				         QuantiteRessource nourritureDestinataire= new QuantiteRessource(5, Ressource.NOURRITURE);
-				         
-				         marcheService.publierOffre(2,orVendeur, pierreVendeur);
-				         
-						PropositionEchange echange =
-							propositionEchangeService.creerProposition(
-								1,
-								boisExpediteur,
-								nourritureDestinataire
-							);				         
-				         
-				         
-				         
-				         ////////////////// CARTE & EMPLACEMENTS (RAPIDE POUR BAGARRE) ////////////////////
-				         
-				         List<Royaume> tousRoyaumes = royaumeDAO.findAll();
-				         boolean auMoinsUnRoyaumePlace = tousRoyaumes.stream()
-				                 .anyMatch(r -> emplacementCarteDAO.findByRoyaumeId(r.getId()).isPresent());
+			Royaume rCanards = royaumesParPeuple.get("Canards");
+			Royaume rTeuteus = royaumesParPeuple.get("Teuteus");
+			Royaume rGobelins = royaumesParPeuple.get("Gobelins");
+			Royaume rPrincesses = royaumesParPeuple.get("Princesses");
+			Royaume rLicornes = royaumesParPeuple.get("Licornes");
 
-				         if (!auMoinsUnRoyaumePlace) {
-				             Partie partie = new Partie();
-				             partie.setNom("Partie test");
-				             partie.setDateCreation(LocalDateTime.now());
-				             partie = partieDAO.save(partie);
+			Integer idCanards = rCanards.getId();
+			Integer idTeuteus = rTeuteus.getId();
+			Integer idGobelins = rGobelins.getId();
+			Integer idPrincesses = rPrincesses.getId();
+			Integer idLicornes = rLicornes.getId();
 
-				             Carte carte = new Carte();
-				             carte.setPartie(partie);
-				             carte.genererEmplacements(10);
-				             carte = carteDAO.saveAndFlush(carte);
+			Maison maison = batimentService.creerMaison(
+					idLicornes,
+					null,
+					"Maison des licornes",
+					2
+			);
+			System.out.println("Maison créée : " + maison.getNom());
 
-				             List<EmplacementCarte> emplacements =
-				                     emplacementCarteDAO.findByCarteIdAndOccupeFalse(carte.getId());
+			batimentService.creerBatimentProduction(idTeuteus, null, "Mine des teuteus", 500, Ressource.OR, 1, 1);
+			batimentService.creerBatimentProduction(idCanards, null, "Taverne des canards", 500, Ressource.NOURRITURE, 1, 1);
 
-				             int indexLibre = 0;
-				             for (Royaume r : tousRoyaumes) {
-				                 if (indexLibre < emplacements.size()) {
-				                     EmplacementCarte emp = emplacements.get(indexLibre++);
-				                     emp.assignerRoyaume(r);
-				                     emplacementCarteDAO.saveAndFlush(emp);
-				                 }
-				             }
-				         }
+			///////////// MARCHE ////////////////////
 
-				         ////////////////// ENTRAINEMENT ////////////////////
+			QuantiteRessource orVendeur = new QuantiteRessource(4, Ressource.OR);
+			QuantiteRessource pierreVendeur = new QuantiteRessource(10, Ressource.PIERRE);
+			QuantiteRessource boisExpediteur = new QuantiteRessource(4, Ressource.BOIS);
+			QuantiteRessource nourritureDestinataire = new QuantiteRessource(5, Ressource.NOURRITURE);
 
-				         EntrainerTroupeRequest premierGroupe = new EntrainerTroupeRequest(1, TypeTroupe.ARCHER,4);
-				         EntrainerTroupeRequest secondGroupe = new EntrainerTroupeRequest(2, TypeTroupe.CAVALIER,3);
-				         EntrainerTroupeRequest troisiemeGroupe = new EntrainerTroupeRequest(1, TypeTroupe.CAVALIER,2);
-				         EntrainerTroupeRequest quatriemeGroupe = new EntrainerTroupeRequest(1, TypeTroupe.LANCIER,4);
-				         EntrainerTroupeRequest cinquiemeGroupe = new EntrainerTroupeRequest(4, TypeTroupe.LANCIER,3);
+			marcheService.publierOffre(idTeuteus, orVendeur, pierreVendeur);
+			propositionEchangeService.creerProposition(idCanards, boisExpediteur, nourritureDestinataire);
 
-				         SessionEntrainementResponse session = sessionEntrainementService.entrainer(premierGroupe);
-				         SessionEntrainementResponse sessionbis = sessionEntrainementService.entrainer(secondGroupe);
-				         SessionEntrainementResponse sessionter = sessionEntrainementService.entrainer(troisiemeGroupe);
-				         SessionEntrainementResponse sessionquatre = sessionEntrainementService.entrainer(quatriemeGroupe);
-				         SessionEntrainementResponse sessioncinq = sessionEntrainementService.entrainer(cinquiemeGroupe);
+			////////////////// PARTIES & CARTES ////////////////////
 
-				         // FINALISER ENTRAINEMENT 
+			List<Royaume> tousRoyaumes = List.of(rCanards, rTeuteus, rGobelins, rPrincesses, rLicornes);
 
-				         SessionEntrainement sessionEntity = sessionEntrainementDAO.findById(session.id()).orElseThrow();
-				         Royaume royaumeEntrainement = royaumeDAO.findById(session.royaumeId()).orElseThrow();
+			Partie partieEnCours = new Partie("Partie Démo - En cours", 1.0, 10);
+			for (Royaume r : tousRoyaumes) {
+				partieEnCours.inscrireRoyaume(r);
+			}
+			partieEnCours.demarrer();
+			partieEnCours = partieDAO.save(partieEnCours);
 
-				         sessionEntity.finaliserFormation(royaumeEntrainement);
-				         royaumeDAO.saveAndFlush(royaumeEntrainement);
-				         sessionEntrainementDAO.save(sessionEntity);
-				         
-				         SessionEntrainement sessionEntityTer = sessionEntrainementDAO.findById(sessionter.id()).orElseThrow();
-				         Royaume royaumeEntrainementTer = royaumeDAO.findById(sessionter.royaumeId()).orElseThrow();
-				         sessionEntityTer.finaliserFormation(royaumeEntrainementTer);
-				         royaumeDAO.saveAndFlush(royaumeEntrainementTer);
-				         sessionEntrainementDAO.save(sessionEntityTer);
+			Carte carteEnCours = new Carte();
+			carteEnCours.setPartie(partieEnCours);
+			carteEnCours.genererEmplacements(10);
+			carteEnCours = carteDAO.saveAndFlush(carteEnCours);
 
-				         SessionEntrainement sessionEntityQuatre = sessionEntrainementDAO.findById(sessionquatre.id()).orElseThrow();
-				         Royaume royaumeEntrainementQuatre = royaumeDAO.findById(sessionquatre.royaumeId()).orElseThrow();
-				         sessionEntityQuatre.finaliserFormation(royaumeEntrainementQuatre);
-				         royaumeDAO.saveAndFlush(royaumeEntrainementQuatre);
-				         sessionEntrainementDAO.save(sessionEntityQuatre);
+			List<EmplacementCarte> emplacements =
+					emplacementCarteDAO.findByCarteIdAndOccupeFalse(carteEnCours.getId());
 
-				         SessionEntrainement sessionEntityCinq = sessionEntrainementDAO.findById(sessioncinq.id()).orElseThrow();
-				         Royaume royaumeEntrainementCinq = royaumeDAO.findById(sessioncinq.royaumeId()).orElseThrow();
-				         sessionEntityCinq.finaliserFormation(royaumeEntrainementCinq);
-				         royaumeDAO.saveAndFlush(royaumeEntrainementCinq);
-				         sessionEntrainementDAO.save(sessionEntityCinq);
+			int indexLibre = 0;
+			for (Royaume r : tousRoyaumes) {
+				if (indexLibre < emplacements.size()) {
+					EmplacementCarte emp = emplacements.get(indexLibre++);
+					emp.assignerRoyaume(r);
+					emplacementCarteDAO.saveAndFlush(emp);
+				}
+			}
 
+			Partie partieOuverte = new Partie("Salon Démo - Ouvert", 1.0, 10);
+			partieOuverte = partieDAO.save(partieOuverte);
 
-				         ////////////////// BAGARRE  ALLER ////////////////////
+			Carte carteOuverte = new Carte();
+			carteOuverte.setPartie(partieOuverte);
+			carteOuverte.genererEmplacements(10);
+			carteDAO.saveAndFlush(carteOuverte);
 
+			////////////////// ENTRAINEMENT ////////////////////
 
-				         Map<TypeTroupe, Integer> troupesCavaliers = Map.of(TypeTroupe.CAVALIER, 2);
-				         Map<TypeTroupe, Integer> troupesLanciers = Map.of(TypeTroupe.LANCIER, 3);
+			EntrainerTroupeRequest premierGroupe = new EntrainerTroupeRequest(idCanards, TypeTroupe.ARCHER, 4);
+			EntrainerTroupeRequest secondGroupe = new EntrainerTroupeRequest(idTeuteus, TypeTroupe.CAVALIER, 3);
+			EntrainerTroupeRequest troisiemeGroupe = new EntrainerTroupeRequest(idCanards, TypeTroupe.CAVALIER, 2);
+			EntrainerTroupeRequest quatriemeGroupe = new EntrainerTroupeRequest(idCanards, TypeTroupe.LANCIER, 4);
+			EntrainerTroupeRequest cinquiemeGroupe = new EntrainerTroupeRequest(idPrincesses, TypeTroupe.LANCIER, 3);
 
-				         emplacementCarteDAO.findByRoyaumeId(1).ifPresent(emp ->
-				         System.out.println("Royaume 1 -> emplacement id=" + emp.getId()
-				                 + ", numero=" + emp.getNumero()
-				                 + ", occupe=" + emp.isOccupe()));
+			SessionEntrainementResponse session = sessionEntrainementService.entrainer(premierGroupe);
+			sessionEntrainementService.entrainer(secondGroupe);
+			SessionEntrainementResponse sessionter = sessionEntrainementService.entrainer(troisiemeGroupe);
+			SessionEntrainementResponse sessionquatre = sessionEntrainementService.entrainer(quatriemeGroupe);
+			SessionEntrainementResponse sessioncinq = sessionEntrainementService.entrainer(cinquiemeGroupe);
 
-				         emplacementCarteDAO.findByRoyaumeId(3).ifPresent(emp ->
-				         System.out.println("Royaume 3 -> emplacement id=" + emp.getId()
-				                 + ", numero=" + emp.getNumero()
-				                 + ", occupe=" + emp.isOccupe()));
-				         
-				         List<Royaume> tous = royaumeDAO.findAll();
-				         System.out.println("IDs royaumes en base : " + tous.stream().map(Royaume::getId).toList());
-				         System.out.println("Emp trouvé pour royaume 1 ? " + emplacementCarteDAO.findByRoyaumeId(1).isPresent());
-				         System.out.println("Emp trouvé pour royaume 3 ? " + emplacementCarteDAO.findByRoyaumeId(3).isPresent());
-				         
-				         AttaqueResponse attaque1 = attaqueService.lancer(new LancerAttaqueRequest(1, 3, troupesCavaliers));
-				         AttaqueResponse attaque2 = attaqueService.lancer(new LancerAttaqueRequest(4, 2, troupesLanciers));
-				         AttaqueResponse attaque3 = attaqueService.lancer(new LancerAttaqueRequest(1, 2, troupesLanciers));
-				         
-				        
-				         ////////////////// BAGARRE  IMPACT  ////////////////////
-				        
-				         AttaqueResponse apresCombat1 = attaqueService.resoudreCombat(attaque1.id());
-				         AttaqueResponse apresCombat2 = attaqueService.resoudreCombat(attaque2.id());
-				         
-				         ////////////////// BAGARRE  RETOUR ////////////////////
-				         
-				         if (apresCombat1.statut() == StatutAttaque.RETOUR) {
-				        	    AttaqueResponse apresRetour = attaqueService.receptionnerRetour(attaque1.id());
-				        	    System.out.println("Après retour -> statut=" + apresRetour.statut());
-				        	} else {
-				        	    System.out.println("Attaque terminée sans retour (statut=" + apresCombat1.statut() + ")");
-				        	}
-				         
+			for (SessionEntrainementResponse s : List.of(session, sessionter, sessionquatre, sessioncinq)) {
+				SessionEntrainement sessionEntity = sessionEntrainementDAO.findById(s.id()).orElseThrow();
+				Royaume royaumeEntrainement = royaumeDAO.findById(s.royaumeId()).orElseThrow();
+				sessionEntity.finaliserFormation(royaumeEntrainement);
+				royaumeDAO.saveAndFlush(royaumeEntrainement);
+				sessionEntrainementDAO.save(sessionEntity);
+			}
 
+			////////////////// BAGARRE ////////////////////
 
-		            	  // Création d'un utilisateur
-		                System.out.println("========== TEST UTILISATEUR ==========");
+			Map<TypeTroupe, Integer> troupesCavaliers = Map.of(TypeTroupe.CAVALIER, 2);
+			Map<TypeTroupe, Integer> troupesLanciers = Map.of(TypeTroupe.LANCIER, 3);
 
-		                Utilisateur utilisateur = new Utilisateur(
-		                    null,
-		                    "Kat",
-		                    "kitkat@test.fr",
-		                    "motdepasse123",
-		                    false,
-		                    true,
-		                    null
-		                );
+			AttaqueResponse attaque1 = attaqueService.lancer(new LancerAttaqueRequest(idCanards, idGobelins, troupesCavaliers));
+			AttaqueResponse attaque2 = attaqueService.lancer(new LancerAttaqueRequest(idPrincesses, idTeuteus, troupesLanciers));
+			attaqueService.lancer(new LancerAttaqueRequest(idCanards, idTeuteus, troupesLanciers));
 
-						if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
-							utilisateurDAO.save(utilisateur);
-						}
-		                System.out.println("Utilisateur créé : " + utilisateur);
+			AttaqueResponse apresCombat1 = attaqueService.resoudreCombat(attaque1.id());
+			attaqueService.resoudreCombat(attaque2.id());
 
-		                Utilisateur kit = new Utilisateur(
-		                	    null,
-		                	    "Kit",
-		                	    "kit@test.fr",
-		                	    "motdepasse123",
-		                	    false,
-		                	    false,
-		                	    null
-		                	);
+			if (apresCombat1.statut() == StatutAttaque.RETOUR) {
+				AttaqueResponse apresRetour = attaqueService.receptionnerRetour(attaque1.id());
+				System.out.println("Après retour -> statut=" + apresRetour.statut());
+			} else {
+				System.out.println("Attaque terminée sans retour (statut=" + apresCombat1.statut() + ")");
+			}
 
-		                	if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
-		                	    utilisateurDAO.save(kit);
-		                	    System.out.println("Utilisateur Kit créé !");
-		                	} else {
-		                	    System.out.println("Utilisateur Kit existe déjà.");
-		                	}
+			////////////////// UTILISATEURS DEMO ////////////////////
 
-		                
-		    
+			Utilisateur kat = new Utilisateur(
+					null,
+					"Kat",
+					"kitkat@test.fr",
+					"motdepasse123",
+					false,
+					true,
+					rCanards
+			);
+			if (utilisateurDAO.findByEmail("kitkat@test.fr").isEmpty()) {
+				utilisateurDAO.save(kat);
+			}
+
+			Utilisateur kit = new Utilisateur(
+					null,
+					"Kit",
+					"kit@test.fr",
+					"motdepasse123",
+					false,
+					false,
+					rTeuteus
+			);
+			if (utilisateurDAO.findByEmail("kit@test.fr").isEmpty()) {
+				utilisateurDAO.save(kit);
+			}
+
+			Utilisateur demo = new Utilisateur(
+					null,
+					"Demo",
+					"demo@test.fr",
+					"motdepasse123",
+					false,
+					false,
+					null
+			);
+			if (utilisateurDAO.findByEmail("demo@test.fr").isEmpty()) {
+				utilisateurDAO.save(demo);
+			}
 		};
-		    }
+	}
 }

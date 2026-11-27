@@ -17,10 +17,12 @@ public class CorsConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(
+        configuration.setAllowedOriginPatterns(
             List.of(
-                "http://localhost:4200",
-                "http://localhost:8090"
+                "http://localhost:*",
+                "http://localhost",
+                "http://127.0.0.1:*",
+                "http://20.84.69.4:*"
             )
         );
 
