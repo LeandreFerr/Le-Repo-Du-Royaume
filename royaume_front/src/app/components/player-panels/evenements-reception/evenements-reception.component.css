@@ -7,17 +7,19 @@
   --border: #d8cdb5;
 
   position: absolute;
-  top: 14px;
-  left: calc(var(--sidebar-width) + 14px);
-  bottom: 14px;
 
-  width: 600px;
+  top: 14px;
+  bottom: 14px;
+  left: calc(var(--sidebar-width) + 14px);
+
+  width: 700px;
   max-width: calc(100% - var(--sidebar-width) - 28px);
 
-  z-index: 20;
   display: block;
-}
+  box-sizing: border-box;
 
+  z-index: 20;
+}
 
 /* ========================================
    STRUCTURE PRINCIPALE
@@ -151,12 +153,12 @@
 /* ========================================
    PROPOSITIONS D'ECHANGE
 ======================================== */
-
+/*
 .exchange-section,
 .messages-section {
   flex-shrink: 0;
 }
-
+*/
 .exchange-list {
   display: flex;
   flex-direction: column;
@@ -445,34 +447,71 @@
 /* ========================================
    MESSAGES RECUS
 ======================================== */
+/* ========================================
+   MESSAGES REÇUS
+======================================== */
+
+.messages-section {
+  display: block;
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+
+  flex: 0 0 auto;
+  overflow: visible;
+
+  scroll-margin-top: 12px;
+}
 
 .messages-list {
   display: flex;
   flex-direction: column;
 
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+
   gap: 12px;
+
+  overflow: visible;
 }
 
-
-/* Bloc de message */
+/* Carte de message */
 
 .message-card {
   display: flex;
   flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 100px;
+  box-sizing: border-box;
 
   gap: 12px;
   padding: 17px 18px;
 
   background: var(--surface);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+
+  color: var(--forest);
 
   cursor: pointer;
 
-  transition: border-color .2s, background .2s;
+  transition:
+    border-color .2s,
+    background .2s,
+    box-shadow .2s,
+    transform .2s;
 }
 
 .message-card:hover {
+  background: #fffdf6;
   border-color: var(--gold);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .07);
+  transform: translateY(-1px);
 }
 
 .message-card:focus-visible {
@@ -480,30 +519,30 @@
   outline-offset: 2px;
 }
 
-
 /* Message non lu */
 
 .message-unread {
   border-left: 3px solid var(--gold);
+  background: #fffdf6;
 }
 
 .message-unread .message-content {
   color: var(--forest);
+  font-weight: 500;
 }
-
 
 /* Message lu */
 
 .message-read {
   border-left: 3px solid #a9b49d;
+  background: var(--surface);
 }
 
 .message-read .message-content {
   color: #77796f;
 }
 
-
-/* En-tête du message */
+/* En-tête */
 
 .message-header {
   display: flex;
@@ -534,8 +573,7 @@
   font-weight: 400;
 }
 
-
-/* Indicateur nouveau */
+/* Nouveau */
 
 .unread-indicator {
   padding: 5px 8px;
@@ -549,23 +587,26 @@
   font-weight: 600;
   letter-spacing: .5px;
   text-transform: uppercase;
+
+  white-space: nowrap;
 }
 
-
-/* Texte du message */
+/* Contenu */
 
 .message-content {
   margin: 0;
+
+  color: var(--forest);
 
   font-family: Georgia, serif;
   font-size: 13px;
   line-height: 1.7;
 
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
-
-/* Pied du message */
+/* Pied de carte */
 
 .message-footer {
   display: flex;
@@ -585,8 +626,7 @@
   line-height: 1.5;
 }
 
-
-/* Indicateur Vu */
+/* Message vu */
 
 .message-seen {
   flex-shrink: 0;
@@ -595,9 +635,9 @@
 
   font-size: 10px;
   font-weight: 600;
+
   white-space: nowrap;
 }
-
 
 /* ========================================
    ETAT VIDE
@@ -673,9 +713,50 @@
   }
 
 }
-:host {
-  width: 700px !important;
-  max-width: calc(100% - var(--sidebar-width) - 28px) !important;
-  flex: none !important;
-  right: auto !important;
+/* En-tête des propositions diplomatiques */
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Bouton d'accès rapide aux messages */
+
+.messages-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 9px 12px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 11px;
+
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.messages-shortcut:hover {
+  background: var(--forest);
+  color: var(--parchment);
+  border-color: var(--gold);
+}
+
+.messages-shortcut span {
+  color: var(--gold);
+  font-size: 15px;
+}
+
+/* Évite que le titre soit masqué après le défilement */
+
+.messages-section {
+  scroll-margin-top: 12px;
 }

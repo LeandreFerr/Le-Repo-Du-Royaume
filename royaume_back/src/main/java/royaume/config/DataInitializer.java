@@ -134,13 +134,12 @@ public class DataInitializer {
 				         marcheService.publierOffre(2,orVendeur, pierreVendeur);
 				         
 						PropositionEchange echange =
-							propositionEchangeService.creerProposition(
-								1,
-								boisExpediteur,
-								nourritureDestinataire
-							);				         
-				         
-				         
+    propositionEchangeService.creerProposition(
+        1, // ID expéditeur
+        2, // ID destinataire
+        boisExpediteur,
+        nourritureDestinataire
+    );
 				         
 				         ////////////////// CARTE & EMPLACEMENTS (RAPIDE POUR BAGARRE) ////////////////////
 				         

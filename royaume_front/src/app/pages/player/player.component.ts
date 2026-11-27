@@ -51,6 +51,7 @@ export class PlayerComponent implements OnInit {
 
   // Identifiant récupéré depuis l'URL
   royaumeId!: number;
+destinataireId!: number;
 
   seed = 'royaume-1';
 
@@ -82,7 +83,7 @@ activePage: string | null = 'royaume';
 }
 
     this.royaumeId = id;
-
+this.destinataireId = id;
     this.chargerDonneesRoyaume();
   }
 

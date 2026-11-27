@@ -1,19 +1,42 @@
-import { Component } from '@angular/core';
+
 import { DecimalPipe } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  ViewChild,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import { Ressource } from '../../../models/ressource.model';
+import { MessageResponse } from '../../../models/message.model';
+
+import {
+  PropositionEchangeService
+} from '../../../services/proposition_echange/proposition-echange.service';
+
+import {
+  MessageService
+} from '../../../services/message/message.service';
+
+// ========================================
+// INTERFACES
+// ========================================
 
 interface RessourceEchange {
-  nom: string;
+  nom: Ressource;
   quantite: number;
-  icone: string;
 }
-
 interface PropositionEchange {
   id: number;
   expediteur: string;
   dateReception: string;
   ressourcesOffertes: RessourceEchange[];
   ressourcesDemandees: RessourceEchange[];
-  statut: 'EN_ATTENTE' | 'ACCEPTEE' | 'REFUSEE';
+  statut: 'EN_ATTENTE' | 'ACCEPTE' | 'REFUSE' | 'ANNULE';
 }
 
 interface MessageReception {
@@ -23,6 +46,11 @@ interface MessageReception {
   dateReception: string;
   lu: boolean;
 }
+
+// ========================================
+// COMPOSANT
+// ========================================
+
 @Component({
   selector: 'app-evenements-reception',
   standalone: true,
@@ -30,110 +58,193 @@ interface MessageReception {
   templateUrl: './evenements-reception.component.html',
   styleUrl: './evenements-reception.component.css',
 })
-export class EvenementsReception {
+export class EvenementsReception implements OnChanges {
+
+  @Input({ required: true })
+  destinataireId!: number;
+
+  private readonly messageService = inject(MessageService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private readonly propositionService = inject(PropositionEchangeService);
+
+  @ViewChild('messagesSection')
+  messagesSection!: ElementRef<HTMLElement>;
 
   // ========================================
-  // PROPOSITIONS D'ECHANGE FICTIVES
+  // DONNÉES
   // ========================================
 
-  propositions: PropositionEchange[] = [
+  messages: MessageReception[] = [];
+  propositions: PropositionEchange[] = [];
 
-    {
-      id: 1,
-      expediteur: 'Royaume de Valoria',
-      dateReception: '27/11/2026 à 13h45',
+  chargementMessages = false;
+  erreurMessages: string | null = null;
 
-      ressourcesOffertes: [
-        {
-          nom: 'Bois',
-          quantite: 250,
-          icone: 'img/resources/bois.svg'
-        },
-        {
-          nom: 'Or',
-          quantite: 50,
-          icone: 'img/resources/or.svg'
-        }
-      ],
+  chargementPropositions = false;
+  erreurPropositions: string | null = null;
 
-      ressourcesDemandees: [
-        {
-          nom: 'Pierre',
-          quantite: 150,
-          icone: 'img/resources/pierre.svg'
-        }
-      ],
+  // ========================================
+  // RESSOURCES ET ICÔNES
+  // ========================================
 
-      statut: 'EN_ATTENTE'
-    },
+  readonly nomsRessources: Record<Ressource, string> = {
+    [Ressource.BOIS]: 'Bois',
+    [Ressource.PIERRE]: 'Pierre',
+    [Ressource.NOURRITURE]: 'Nourriture',
+    [Ressource.OR]: 'Or'
+  };
 
-    {
-      id: 2,
-      expediteur: 'Royaume d’Astoria',
-      dateReception: '27/11/2026 à 14h20',
+  readonly iconesRessources: Record<Ressource, string> = {
+    [Ressource.BOIS]: 'img/resources/bois.svg',
+    [Ressource.PIERRE]: 'img/resources/pierre.svg',
+    [Ressource.NOURRITURE]: 'img/resources/nourriture.svg',
+    [Ressource.OR]: 'img/resources/or.svg'
+  };
 
-      ressourcesOffertes: [
-        {
-          nom: 'Nourriture',
-          quantite: 400,
-          icone: 'img/resources/nourriture.svg'
-        }
-      ],
+  // ========================================
+  // INITIALISATION
+  // ========================================
 
-      ressourcesDemandees: [
-        {
-          nom: 'Bois',
-          quantite: 200,
-          icone: 'img/resources/bois.svg'
-        },
-        {
-          nom: 'Or',
-          quantite: 30,
-          icone: 'img/resources/or.svg'
-        }
-      ],
+  ngOnChanges(changes: SimpleChanges): void {
 
-      statut: 'EN_ATTENTE'
+    if (changes['destinataireId'] && this.destinataireId > 0) {
+      this.chargerMessages();
+      this.chargerPropositions();
     }
 
-  ];
-
+  }
 
   // ========================================
-  // MESSAGES RECUS FICTIFS
+  // FORMATAGE DATE
   // ========================================
 
-  messages: MessageReception[] = [
+  private formaterDate(date: string): string {
 
-    {
-      id: 1,
-      expediteur: 'Seigneur d’Astoria',
-      contenu:
-        'Salutations, Votre Majesté. Notre royaume souhaiterait établir des relations commerciales durables avec votre domaine. Nous espérons pouvoir collaborer prochainement.',
-      dateReception: '27/11/2026 à 14h30',
-      lu: false
-    },
+    return new Date(date).toLocaleString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
 
-    {
-      id: 2,
-      expediteur: 'Seigneur de Valoria',
-      contenu:
-        'Votre royaume semble prospérer. Nous vous adressons nos félicitations et espérons que nos deux peuples pourront entretenir des relations amicales.',
-      dateReception: '27/11/2026 à 12h15',
-      lu: true
-    },
+  }
 
-    {
-      id: 3,
-      expediteur: 'Conseiller du royaume de Norhaven',
-      contenu:
-        'Nous avons entendu parler de votre développement territorial. Ce serait un honneur de pouvoir échanger avec votre cour.',
-      dateReception: '26/11/2026 à 18h45',
-      lu: false
+  // ========================================
+  // CHARGER LES MESSAGES
+  // ========================================
+
+  chargerMessages(): void {
+
+    if (!this.destinataireId || this.destinataireId <= 0) {
+      console.error('Identifiant du destinataire invalide');
+      return;
     }
 
-  ];
+    this.chargementMessages = true;
+    this.erreurMessages = null;
 
+    this.messageService.recevoirMessages(this.destinataireId)
+      .subscribe({
+
+        next: (response: MessageResponse[]) => {
+
+          console.log('Messages reçus depuis Spring Boot :', response);
+
+          this.messages = response.map(message => ({
+            id: message.id,
+            expediteur: message.expediteurPseudo,
+            contenu: message.contenu,
+            dateReception: this.formaterDate(message.dateEnvoi),
+            lu: message.lu
+          }));
+
+          this.chargementMessages = false;
+
+          console.log('Messages affichés :', this.messages);
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (error) => {
+
+          console.error('Erreur chargement messages :', error);
+
+          this.erreurMessages =
+            'Impossible de récupérer les messages.';
+
+          this.chargementMessages = false;
+
+        }
+
+      });
+
+  }
+
+  // ========================================
+  // CHARGER LES PROPOSITIONS
+  // ========================================
+chargerPropositions(): void {
+
+  if (!this.destinataireId || this.destinataireId <= 0) {
+    return;
+  }
+
+  this.chargementPropositions = true;
+  this.erreurPropositions = null;
+
+  this.propositionService
+    .recupererPropositionsDestinataire(this.destinataireId)
+    .subscribe({
+
+      next: (response) => {
+        console.log('Propositions reçues :', response);
+
+response.forEach(p => {
+  console.log('Ressource offerte :', p.offerte.ressource);
+  console.log('Ressource demandée :', p.demandee.ressource);
+});
+
+console.log('Icônes disponibles :', this.iconesRessources);
+        this.propositions = response.map(p => ({
+
+          id: p.id,
+          expediteur: p.expediteurNom,
+          dateReception: this.formaterDate(p.dateCreation),
+
+          ressourcesOffertes: [{
+            nom: p.offerte.ressource as Ressource,
+            quantite: p.offerte.quantite
+          }],
+
+          ressourcesDemandees: [{
+            nom: p.demandee.ressource as Ressource,
+            quantite: p.demandee.quantite
+          }],
+
+          statut: p.statut
+
+        }));
+
+        this.chargementPropositions = false;
+        this.cdr.detectChanges();
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur chargement propositions :', error);
+
+        this.erreurPropositions =
+          'Impossible de récupérer les propositions d’échange.';
+
+        this.chargementPropositions = false;
+
+      }
+
+    });
+}
 
   // ========================================
   // STATISTIQUES
@@ -155,7 +266,6 @@ export class EvenementsReception {
 
   }
 
-
   // ========================================
   // ACCEPTER UNE PROPOSITION
   // ========================================
@@ -170,12 +280,30 @@ export class EvenementsReception {
       return;
     }
 
-    proposition.statut = 'ACCEPTEE';
+    this.propositionService.accepterProposition(id).subscribe({
 
-    console.log('Proposition acceptée :', proposition);
+      next: (response) => {
+
+        proposition.statut = response.statut;
+
+        this.cdr.detectChanges();
+
+        console.log('Proposition acceptée en BDD :', response);
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur acceptation proposition :', error);
+
+        this.erreurPropositions =
+          error.error?.message ?? 'Impossible d’accepter cet échange.';
+
+      }
+
+    });
 
   }
-
 
   // ========================================
   // REFUSER UNE PROPOSITION
@@ -191,12 +319,30 @@ export class EvenementsReception {
       return;
     }
 
-    proposition.statut = 'REFUSEE';
+    this.propositionService.refuserProposition(id).subscribe({
 
-    console.log('Proposition refusée :', proposition);
+      next: (response) => {
+
+        proposition.statut = response.statut;
+
+        this.cdr.detectChanges();
+
+        console.log('Proposition refusée en BDD :', response);
+
+      },
+
+      error: (error) => {
+
+        console.error('Erreur refus proposition :', error);
+
+        this.erreurPropositions =
+          error.error?.message ?? 'Impossible de refuser cet échange.';
+
+      }
+
+    });
 
   }
-
 
   // ========================================
   // MARQUER UN MESSAGE COMME LU
@@ -204,17 +350,48 @@ export class EvenementsReception {
 
   marquerCommeLu(id: number): void {
 
-    const message = this.messages.find(
-      m => m.id === id
-    );
+    const message = this.messages.find(m => m.id === id);
 
     if (!message || message.lu) {
       return;
     }
 
-    message.lu = true;
+    this.messageService.marquerCommeLu(id)
+      .subscribe({
 
-    console.log('Message marqué comme lu :', message);
+        next: () => {
+
+          message.lu = true;
+
+          console.log('Message marqué comme lu en BDD :', id);
+
+          this.cdr.detectChanges();
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Erreur lors du marquage comme lu :',
+            error
+          );
+
+        }
+
+      });
+
+  }
+
+  // ========================================
+  // NAVIGATION VERS LES MESSAGES
+  // ========================================
+
+  allerAuxMessages(): void {
+
+    this.messagesSection?.nativeElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
 
   }
 

@@ -249,18 +249,19 @@ proposerEchange(
   this.messageEchange = '';
 
   const proposition = {
-    expediteurId: this.idExpediteur,
+  expediteurId: this.idExpediteur,
+destinataireId: this.idAdverse,
+  offerte: {
+    ressource: ressourceProposee as Ressource,
+    quantite: quantiteP
+  },
 
-    offerte: {
-      ressource: ressourceProposee as Ressource,
-      quantite: quantiteP
-    },
+  demandee: {
+    ressource: ressourceDemandee as Ressource,
+    quantite: quantiteD
+  }
+};
 
-    demandee: {
-      ressource: ressourceDemandee as Ressource,
-      quantite: quantiteD
-    }
-  };
 
   this.propositionEchangeService
     .creerProposition(proposition)

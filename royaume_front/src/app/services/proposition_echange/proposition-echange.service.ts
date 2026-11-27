@@ -14,7 +14,6 @@ export type StatutEchange =
   | 'ACCEPTE'
   | 'REFUSE'
   | 'ANNULE';
-
 export interface QuantiteRessource {
   ressource: Ressource;
   quantite: number;
@@ -22,10 +21,10 @@ export interface QuantiteRessource {
 
 export interface PropositionEchangeRequest {
   expediteurId: number;
+  destinataireId: number;
   offerte: QuantiteRessource;
   demandee: QuantiteRessource;
 }
-
 export interface PropositionEchangeResponse {
   id: number;
   dateCreation: string;
@@ -80,4 +79,20 @@ export class PropositionEchangeService {
       `${this.apiUrl}/destinataire/${destinataireId}`
     );
   }
+
+  // Accepter une proposition
+accepterProposition(id: number): Observable<PropositionEchangeResponse> {
+  return this.http.patch<PropositionEchangeResponse>(
+    `${this.apiUrl}/${id}/accepter`,
+    {}
+  );
+}
+
+// Refuser une proposition
+refuserProposition(id: number): Observable<PropositionEchangeResponse> {
+  return this.http.patch<PropositionEchangeResponse>(
+    `${this.apiUrl}/${id}/refuser`,
+    {}
+  );
+}
 }
