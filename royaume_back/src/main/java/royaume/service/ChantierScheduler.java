@@ -4,6 +4,7 @@ package royaume.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +13,11 @@ import royaume.dao.IDAOChantierConstruction;
 import royaume.model.batiment.ChantierConstruction;
 
 @Component
+@ConditionalOnProperty(
+    name = "royaume.scheduling.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class ChantierScheduler {
 
     private final IDAOChantierConstruction chantierDAO;

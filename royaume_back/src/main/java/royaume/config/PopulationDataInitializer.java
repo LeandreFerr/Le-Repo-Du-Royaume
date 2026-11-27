@@ -1,6 +1,7 @@
 package royaume.config;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,6 +15,11 @@ import royaume.model.peuple.Princesses;
 import royaume.model.peuple.Teuteus;
 
 @Configuration
+@ConditionalOnProperty(
+    name = "royaume.init.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class PopulationDataInitializer {
 
     @Bean
