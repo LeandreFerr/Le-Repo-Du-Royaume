@@ -1,5 +1,6 @@
 
 package royaume.restcontroller;
+import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -9,16 +10,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.List;
-import royaume.dto.response.AmeliorationBatimentResponse;
-import royaume.dto.response.ReparationBatimentResponse;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import royaume.dto.request.AmeliorationBatimentRequest;
 import royaume.dto.request.BatimentProductionRequest;
 import royaume.dto.request.MaisonRequest;
 import royaume.dto.request.ReparationBatimentRequest;
+import royaume.dto.response.AmeliorationBatimentResponse;
 import royaume.dto.response.BatimentResponse;
+import royaume.dto.response.ModeleBatimentResponse;
+import royaume.dto.response.ReparationBatimentResponse;
 import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
@@ -139,7 +141,7 @@ private BatimentResponse convertirEnResponse(Batiment b) {
     Chateau chateau =
         b instanceof Chateau c ? c : null;
 
-    // Détermination du type réel
+    // Déterminer le type du bâtiment
     String type;
 
     if (chateau != null) {
@@ -157,31 +159,35 @@ private BatimentResponse convertirEnResponse(Batiment b) {
     return new BatimentResponse(
         b.getId(),
         b.getNom(),
+        type,
         b.getNiveau(),
         b.getPointsDeVie(),
         b.getPointsDeVieMax(),
         b.isEnConstruction(),
         b.getMontantReparationEnCours(),
         b.getRoyaume().getId(),
-        prod == null ? null : prod.getTypeRessource(),
-        prod == null ? null : prod.getProductionBaseHeure(),
-        maison == null ? null : maison.getBonusPropre(),
-        chateau == null ? null : chateau.getNiveauPalierDebloque(),
-        chateau == null ? null : chateau.getBonusDefenseRoyaume()
+
+        prod != null ? prod.getTypeRessource() : null,
+        prod != null ? prod.getProductionBaseHeure() : null,
+
+        maison != null ? maison.getBonusPropre() : null,
+
+        chateau != null ? chateau.getNiveauPalierDebloque() : null,
+        chateau != null ? chateau.getBonusDefenseRoyaume() : null
     );
 }
+
     // =========================================
     // CATALOGUE DES BATIMENTS
     // =========================================
+@GetMapping("/catalogue/{royaumeId}")
+public ResponseEntity<List<ModeleBatimentResponse>> getCatalogue(
+        @PathVariable @Positive Integer royaumeId) {
 
-    @GetMapping("/catalogue")
-    public ResponseEntity<List<BatimentResponse>> getCatalogue() {
-
-        return ResponseEntity.ok(
-            batimentService.getCatalogueBatiments()
-        );
-    }
-
+    return ResponseEntity.ok(
+        batimentService.getCatalogueBatiments(royaumeId)
+    );
+}
     // =========================================
     // PREVISUALISATION AMELIORATION
     // =========================================

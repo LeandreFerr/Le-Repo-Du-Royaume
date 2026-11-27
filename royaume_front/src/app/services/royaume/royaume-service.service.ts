@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { TypeBatiment } from '../../models/batiment.model';
 // ========================================
 // MODÈLES
@@ -273,13 +273,16 @@ export class RoyaumeService {
   // CATALOGUE DES BÂTIMENTS
   // ========================================
 
-  getCatalogueBatiments(): Observable<ModeleBatiment[]> {
 
-    return this.http.get<ModeleBatiment[]>(
-      `${this.batimentsUrl}/catalogue`
-    );
 
-  }
+getCatalogueBatiments(
+  royaumeId: number
+): Observable<ModeleBatiment[]> {
+
+  return this.http.get<ModeleBatiment[]>(
+    `http://localhost:8080/api/batiments/catalogue/${royaumeId}`
+  );
+}
 
   // ========================================
   // RÉCUPÉRATION D'UNE AMÉLIORATION

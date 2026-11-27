@@ -300,19 +300,49 @@ get chantiersActifs(): Batiment[] {
   // CATALOGUE DE CONSTRUCTION
   // ========================================
 
-  ouvrirCatalogue(): void {
+ouvrirCatalogue(): void {
 
-    this.fermerAmelioration();
+  this.fermerAmelioration();
+  this.fermerReparation();
 
-    this.fermerReparation();
+  this.catalogueOuvert = true;
 
-    this.catalogueOuvert = true;
-
-    this.royaumeService.getCatalogueBatiments().subscribe({
+  this.royaumeService
+    .getCatalogueBatiments(this.royaume.id)
+    .subscribe({
 
       next: catalogue => {
 
-        this.catalogueBatiments = catalogue;
+        this.catalogueBatiments = catalogue.filter(modele => {
+
+          // Le château ne peut jamais être construit
+          if (modele.type === TypeBatiment.CHATEAU) {
+            return false;
+          }
+
+          // Les maisons sont toujours disponibles
+          if (modele.type === TypeBatiment.MAISON) {
+            return true;
+          }
+
+          // Les bâtiments de production sont filtrés
+          // selon les ressources déjà produites
+          if (modele.type === TypeBatiment.PRODUCTION) {
+
+            return !this.royaume.batiments.some(batiment =>
+              batiment.type === TypeBatiment.PRODUCTION &&
+              batiment.typeRessource === modele.typeRessource
+            );
+
+          }
+
+          return false;
+
+        });
+
+        this.batimentSelectionne = null;
+
+        this.cdr.detectChanges();
 
       },
 
@@ -327,7 +357,9 @@ get chantiersActifs(): Batiment[] {
 
     });
 
-  }
+}
+
+
 
 
   fermerCatalogue(): void {
@@ -366,27 +398,6 @@ get chantiersActifs(): Batiment[] {
   // LIMITES DE CONSTRUCTION
   // ========================================
 
-  getQuantiteBatiment(modele: ModeleBatiment): number {
-
-    return this.royaume.batiments.filter(batiment =>
-
-      batiment.type === modele.type &&
-      batiment.typeRessource === modele.typeRessource
-
-    ).length;
-
-  }
-
-
-  limiteConstructionAtteinte(modele: ModeleBatiment): boolean {
-
-    if (modele.quantiteMax === null) {
-      return false;
-    }
-
-    return this.getQuantiteBatiment(modele) >= modele.quantiteMax;
-
-  }
 
 
   // ========================================
@@ -431,20 +442,17 @@ get chantiersActifs(): Batiment[] {
 
   }
 
+peutConstruire(modele: ModeleBatiment): boolean {
 
-  peutConstruire(modele: ModeleBatiment): boolean {
+  return !this.royaume.enRuine
 
-    return !this.royaume.enRuine
+    && this.ressourcesSuffisantes(modele)
 
-      && !this.limiteConstructionAtteinte(modele)
+    && this.niveauSuffisant(modele)
 
-      && this.ressourcesSuffisantes(modele)
+    && this.ouvriersSuffisants(modele);
 
-      && this.niveauSuffisant(modele)
-
-      && this.ouvriersSuffisants(modele);
-
-  }
+}
 
 
   // ========================================
@@ -546,7 +554,9 @@ get chantiersActifs(): Batiment[] {
 
 peutLancerConstruction(modele: ModeleBatiment): boolean {
 
-  return this.peutConstruire(modele)
+  return modele.type !== TypeBatiment.CHATEAU
+
+    && this.peutConstruire(modele)
 
     && !this.constructionEnCours
 
@@ -557,6 +567,7 @@ peutLancerConstruction(modele: ModeleBatiment): boolean {
     && this.ouvriersAssignes <= this.ouvriersMaximum;
 
 }
+
 
 lancerConstruction(modele: ModeleBatiment): void {
 
@@ -785,7 +796,32 @@ private constructionEchouee(erreur: any): void {
   // ========================================
   // PRÉREQUIS D'AMÉLIORATION
   // ========================================
+  get niveauChateau(): number {
 
+  const chateau = this.royaume.batiments.find(
+    batiment => batiment.type === TypeBatiment.CHATEAU
+  );
+
+  console.log('OBJET CHATEAU COMPLET :', chateau);
+  console.log('PROPRIETES CHATEAU :', Object.keys(chateau ?? {}));
+
+  return chateau?.niveauPalierDebloque ?? 0;
+}
+/*
+get niveauChateau(): number {
+
+  console.log('Bâtiments du royaume :', this.royaume.batiments);
+
+  const chateau = this.royaume.batiments.find(
+    batiment => batiment.type === TypeBatiment.CHATEAU
+  );
+
+  console.log('Château trouvé :', chateau);
+  console.log('Niveau débloqué :', chateau?.niveauPalierDebloque);
+
+  return chateau?.niveauPalierDebloque ?? 0;
+}*/
+/*
   get niveauChateau(): number {
 
     const chateau = this.royaume.batiments.find(
@@ -795,7 +831,7 @@ private constructionEchouee(erreur: any): void {
     return chateau?.niveauPalierDebloque ?? 0;
 
   }
-
+*/
 
   niveauChateauSuffisant(
     amelioration: AmeliorationBatiment

@@ -140,26 +140,49 @@ public class RoyaumeService {
         );
     }
 
-    private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
-        BatimentProduction prod = b instanceof BatimentProduction bp ? bp : null;
-        Maison maison = b instanceof Maison m ? m : null;
-        Chateau chateau = b instanceof Chateau c ? c : null;
+private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
 
-        return new BatimentResponse(
-            b.getId(),
-            b.getNom(),
-            b.getNiveau(),
-            b.getPointsDeVie(),
-            b.getPointsDeVieMax(),
-            b.isEnConstruction(),
-            b.getMontantReparationEnCours(),
-            royaumeId,
-            prod == null ? null : prod.getTypeRessource(),
-            prod == null ? null : prod.getProductionBaseHeure(),
-            maison == null ? null : maison.getBonusPropre(),
-            chateau == null ? null : chateau.getNiveauPalierDebloque(),
-            chateau == null ? null : chateau.getBonusDefenseRoyaume()
+    BatimentProduction prod =
+        b instanceof BatimentProduction bp ? bp : null;
+
+    Maison maison =
+        b instanceof Maison m ? m : null;
+
+    Chateau chateau =
+        b instanceof Chateau c ? c : null;
+
+    // Détermination du type réel du bâtiment
+    String type;
+
+    if (chateau != null) {
+        type = "CHATEAU";
+    } else if (maison != null) {
+        type = "MAISON";
+    } else if (prod != null) {
+        type = "PRODUCTION";
+    } else {
+        throw new IllegalStateException(
+            "Type de bâtiment inconnu : " + b.getClass().getName()
         );
     }
+
+    return new BatimentResponse(
+        b.getId(),
+        b.getNom(),
+        type,
+        b.getNiveau(),
+        b.getPointsDeVie(),
+        b.getPointsDeVieMax(),
+        b.isEnConstruction(),
+        b.getMontantReparationEnCours(),
+        royaumeId,
+        prod == null ? null : prod.getTypeRessource(),
+        prod == null ? null : prod.getProductionBaseHeure(),
+        maison == null ? null : maison.getBonusPropre(),
+        chateau == null ? null : chateau.getNiveauPalierDebloque(),
+        chateau == null ? null : chateau.getBonusDefenseRoyaume()
+    );
+}
+
 
 }

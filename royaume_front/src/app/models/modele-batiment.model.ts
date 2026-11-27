@@ -12,7 +12,7 @@ export interface ModeleBatiment {
 
   icone: string;
 
-  quantiteMax: number | null;
+  //quantiteMax: number | null;
 
   niveauRoyaumeRequis: number;
 
