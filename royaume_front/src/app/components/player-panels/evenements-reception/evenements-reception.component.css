@@ -1,0 +1,681 @@
+:host {
+  --parchment: #ece5d4;
+  --surface: #f8f5ec;
+  --forest: #193b30;
+  --gold: #a77b31;
+  --text-muted: #837d6d;
+  --border: #d8cdb5;
+
+  position: absolute;
+  top: 14px;
+  left: calc(var(--sidebar-width) + 14px);
+  bottom: 14px;
+
+  width: 600px;
+  max-width: calc(100% - var(--sidebar-width) - 28px);
+
+  z-index: 20;
+  display: block;
+}
+
+
+/* ========================================
+   STRUCTURE PRINCIPALE
+======================================== */
+
+.reception-panel {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+
+  background: var(--parchment);
+  color: var(--forest);
+
+  border: 1px solid var(--border);
+  border-radius: 6px;
+
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .3);
+
+  overflow: hidden;
+}
+
+
+/* ========================================
+   EN-TETE
+======================================== */
+
+.panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+  padding: 24px;
+
+  flex-shrink: 0;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+  display: block;
+
+  color: var(--gold);
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.panel-heading h1 {
+  margin: 6px 0;
+
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.panel-heading p {
+  margin: 0;
+
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+
+/* ========================================
+   CONTENU DEFILABLE
+======================================== */
+
+.panel-content {
+  display: flex;
+  flex-direction: column;
+
+  flex: 1;
+  min-height: 0;
+
+  gap: 26px;
+  padding: 22px 24px 24px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+  scrollbar-color: #b5a27d transparent;
+}
+
+
+/* ========================================
+   EN-TETES DES SECTIONS
+======================================== */
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-header h2 {
+  margin: 5px 0 0;
+
+  font-family: Georgia, serif;
+  font-size: 21px;
+  font-weight: 400;
+
+  color: var(--forest);
+}
+
+.section-counter {
+  padding: 7px 10px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  color: var(--gold);
+
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   PROPOSITIONS D'ECHANGE
+======================================== */
+
+.exchange-section,
+.messages-section {
+  flex-shrink: 0;
+}
+
+.exchange-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 14px;
+}
+
+
+/* Carte de proposition */
+
+.exchange-card {
+  padding: 18px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.exchange-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, .05);
+}
+
+
+/* Identité de l'expéditeur */
+
+.exchange-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  padding-bottom: 14px;
+
+  border-bottom: 1px solid var(--border);
+}
+
+.exchange-identity {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+  min-width: 0;
+}
+
+.exchange-symbol {
+  display: grid;
+  place-items: center;
+
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  background: var(--parchment);
+  border: 1px solid var(--border);
+
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.exchange-identity h3 {
+  margin: 0;
+
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.exchange-date {
+  display: block;
+
+  margin-top: 5px;
+
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+
+/* Statuts */
+
+.exchange-status {
+  padding: 6px 9px;
+
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+.exchange-status.pending {
+  color: #98702d;
+  background: #f0e7d0;
+  border: 1px solid #dfc995;
+}
+
+.exchange-status.accepted {
+  color: #53785c;
+  background: #e5ede3;
+  border: 1px solid #c4d5bf;
+}
+
+.exchange-status.refused {
+  color: #a25343;
+  background: #f2e5e0;
+  border: 1px solid #dfc0b6;
+}
+
+
+/* ========================================
+   DETAIL DES ECHANGES
+======================================== */
+
+.exchange-details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
+
+  align-items: stretch;
+
+  gap: 12px;
+  padding: 18px 0;
+}
+
+.trade-column {
+  min-width: 0;
+}
+
+.trade-label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.offered-label {
+  color: #53785c;
+}
+
+.requested-label {
+  color: #a25343;
+}
+
+
+/* Ressources */
+
+.trade-resources {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.trade-resource {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+  padding: 9px;
+
+  background: var(--parchment);
+  border: 1px solid var(--border);
+}
+
+.trade-resource-icon {
+  display: grid;
+  place-items: center;
+
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  background: var(--surface);
+  border-radius: 3px;
+}
+
+.trade-resource-icon img {
+  display: block;
+
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+}
+
+.trade-resource-info {
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+  min-width: 0;
+}
+
+.trade-resource-info span {
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.trade-resource-info strong {
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+
+/* Symbole d'échange */
+
+.trade-separator {
+  display: grid;
+  place-items: center;
+
+  color: var(--gold);
+  font-size: 21px;
+}
+
+
+/* ========================================
+   BOUTONS D'ACTION
+======================================== */
+
+.exchange-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+  padding-top: 14px;
+
+  border-top: 1px solid var(--border);
+}
+
+.exchange-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+  min-width: 112px;
+
+  padding: 10px 16px;
+
+  border: 1px solid transparent;
+  border-radius: 2px;
+
+  font-family: Georgia, serif;
+  font-size: 12px;
+
+  cursor: pointer;
+
+  transition: background .2s, transform .2s;
+}
+
+.exchange-actions button:hover {
+  transform: translateY(-1px);
+}
+
+.accept-button {
+  background: var(--forest);
+  color: var(--parchment);
+}
+
+.accept-button:hover {
+  background: #285344;
+}
+
+.refuse-button {
+  background: #a25343;
+  color: white;
+}
+
+.refuse-button:hover {
+  background: #853e32;
+}
+
+
+/* ========================================
+   MESSAGES RECUS
+======================================== */
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+}
+
+
+/* Bloc de message */
+
+.message-card {
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+  padding: 17px 18px;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+
+  cursor: pointer;
+
+  transition: border-color .2s, background .2s;
+}
+
+.message-card:hover {
+  border-color: var(--gold);
+}
+
+.message-card:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+
+/* Message non lu */
+
+.message-unread {
+  border-left: 3px solid var(--gold);
+}
+
+.message-unread .message-content {
+  color: var(--forest);
+}
+
+
+/* Message lu */
+
+.message-read {
+  border-left: 3px solid #a9b49d;
+}
+
+.message-read .message-content {
+  color: #77796f;
+}
+
+
+/* En-tête du message */
+
+.message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+.message-sender {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+  min-width: 0;
+}
+
+.sender-symbol {
+  color: var(--gold);
+  font-size: 17px;
+}
+
+.message-sender strong {
+  color: var(--forest);
+
+  font-family: Georgia, serif;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+
+/* Indicateur nouveau */
+
+.unread-indicator {
+  padding: 5px 8px;
+
+  background: #f0e7d0;
+  border: 1px solid #dfc995;
+
+  color: #98702d;
+
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+
+/* Texte du message */
+
+.message-content {
+  margin: 0;
+
+  font-family: Georgia, serif;
+  font-size: 13px;
+  line-height: 1.7;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* Pied du message */
+
+.message-footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 12px;
+  padding-top: 10px;
+
+  border-top: 1px solid var(--border);
+}
+
+.message-date {
+  color: var(--text-muted);
+
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+/* Indicateur Vu */
+
+.message-seen {
+  flex-shrink: 0;
+
+  color: #53785c;
+
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+
+/* ========================================
+   ETAT VIDE
+======================================== */
+
+.empty-state {
+  padding: 28px 16px;
+
+  background: var(--surface);
+  border: 1px dashed var(--border);
+
+  color: var(--text-muted);
+
+  font-family: Georgia, serif;
+  font-size: 13px;
+  text-align: center;
+}
+
+
+/* ========================================
+   RESPONSIVE
+======================================== */
+
+@media (max-width: 700px) {
+
+  :host {
+    left: calc(var(--sidebar-width) + 8px);
+    right: 8px;
+
+    width: auto;
+    max-width: none;
+  }
+
+  .panel-header {
+    padding: 18px;
+  }
+
+  .panel-heading h1 {
+    font-size: 24px;
+  }
+
+  .panel-content {
+    padding: 18px;
+  }
+
+  .exchange-details {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .trade-separator {
+    transform: rotate(90deg);
+  }
+
+  .exchange-actions button {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 8px;
+  }
+
+}
+
+@media (max-width: 420px) {
+
+  .exchange-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .message-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+:host {
+  width: 700px !important;
+  max-width: calc(100% - var(--sidebar-width) - 28px) !important;
+  flex: none !important;
+  right: auto !important;
+}

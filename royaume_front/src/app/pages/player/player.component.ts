@@ -2,6 +2,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { EvenementsReception }
+  from '../../components/player-panels/evenements-reception/evenements-reception.component';
 import { CarteRoyaumeComponent } from '../../components/carte-royaume/carte-royaume.component';
 
 import { KingdomOverviewComponent } from '../../components/player-panels/kingdom-overview/kingdom-overview.component';
@@ -9,7 +11,8 @@ import { KingdomOverviewComponent } from '../../components/player-panels/kingdom
 import { KingdomDevelopmentComponent } from '../../components/player-panels/kingdom-development/kingdom-development.component';
 
 import { KingdomBuildingsComponent } from '../../components/player-panels/kingdom-buildings/kingdom-buildings.component';
-
+import { ReglesDuJeuManuscriptComponent }
+  from '../../components/regles-du-jeu-manuscript/regles-du-jeu-manuscript.component';
 import {
   CarteDto,
   EmplacementCarteDto,
@@ -27,7 +30,6 @@ import { Royaume } from '../../models/royaume.model';
 import {
   AmeliorerRoyaumeService
 } from '../../services/royaume/ameliorer-royaume.service';
-
 @Component({
   selector: 'app-player',
   standalone: true,
@@ -35,7 +37,9 @@ import {
     CarteRoyaumeComponent,
     KingdomOverviewComponent,
     KingdomDevelopmentComponent,
-    KingdomBuildingsComponent
+    KingdomBuildingsComponent,
+    ReglesDuJeuManuscriptComponent,
+    EvenementsReception 
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css'

@@ -156,7 +156,7 @@
       </a>
 
       <a
-        class="nav-link-out"
+        class="nav-link"
         data-page="evenements"
         [class.is-active]="activePage === 'evenements'"
         (click)="togglePage('evenements')"
@@ -180,7 +180,7 @@
       </a>
 
       <a
-        class="nav-link-out"
+        class="nav-link"
         data-page="regles"
         [class.is-active]="activePage === 'regles'"
         (click)="togglePage('regles')"
@@ -278,5 +278,22 @@
     </app-kingdom-buildings>
 
   }
+
+  <!-- RÈGLES ET COMMANDES -->
+@if (activePage === 'regles') {
+
+  <app-regles-du-jeu-manuscript
+    class="player-rules-panel">
+  </app-regles-du-jeu-manuscript>
+
+}
+
+@if (activePage === 'evenements') {
+
+  <app-evenements-reception
+    class="player-evenements-panel">
+  </app-evenements-reception>
+
+}
 
 </div>
