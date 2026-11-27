@@ -20,12 +20,15 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import royaume.dao.IDAOCarte;
+import royaume.dao.IDAOEmplacementCarte;
 import royaume.dao.IDAOPartie;
 import royaume.dao.IDAOPopulation;
 import royaume.dao.IDAORoyaume;
 import royaume.dao.IDAOUtilisateur;
 import royaume.dto.request.RoyaumeRequest;
 import royaume.dto.response.RoyaumeResponse;
+import royaume.model.Carte;
 import royaume.model.Partie;
 import royaume.model.Royaume;
 import royaume.model.Utilisateur;
@@ -43,6 +46,10 @@ class RoyaumeServiceTest {
     private IDAOUtilisateur daoUtilisateur;
     @Mock
     private IDAOPopulation daoPopulation;
+    @Mock
+    private IDAOCarte daoCarte;
+    @Mock
+    private IDAOEmplacementCarte daoEmplacementCarte;
 
     @InjectMocks
     private RoyaumeService royaumeService;
@@ -61,10 +68,15 @@ class RoyaumeServiceTest {
         Utilisateur utilisateur = new Utilisateur();
         Population peuple = creerPeupleValide();
 
+        Carte carte = new Carte();
+        carte.setPartie(partie);
+        carte.genererEmplacements(4);
+
         when(daoRoyaume.existsByNom("Valoria")).thenReturn(false);
         when(daoPartie.findById(10)).thenReturn(Optional.of(partie));
         when(daoUtilisateur.findById(20)).thenReturn(Optional.of(utilisateur));
         when(daoPopulation.findById(1)).thenReturn(Optional.of(peuple));
+        when(daoCarte.findByPartieId(10)).thenReturn(Optional.of(carte));
         when(daoRoyaume.save(any(Royaume.class))).thenAnswer(inv -> {
             Royaume r = inv.getArgument(0);
             r.setId(100);

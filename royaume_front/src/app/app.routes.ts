@@ -7,7 +7,8 @@ import { PlayerComponent } from './pages/player/player.component';
 import { PlaceDuMarcheComponent } from './components/place-du-marche/place-du-marche.component';
 import { MenuAdverseComponent } from './components/menu-adverse/menu-adverse.component';
 import { VisuAttaques } from './components/visu-attaques/visu-attaques.component';
-
+import { PageLobby } from './pages/page-lobby/page-lobby.component';
+import { PageCreationRoyaume } from './pages/royaume/page-creation-royaume/page-creation-royaume.component';
 
 export const routes: Routes = [
   { path: 'login', component: PageLogin },
@@ -26,5 +27,6 @@ export const routes: Routes = [
   { path: 'attaques', component: VisuAttaques },
   { path: '', redirectTo: 'player', pathMatch: 'full' },
   { path: 'inscription', component: PageInscription },
-
+  { path: 'lobby', component: PageLobby },
+  { path: 'parties/:partieId/royaume/creation', component: PageCreationRoyaume },
 ];

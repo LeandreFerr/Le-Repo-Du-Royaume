@@ -1,3 +1,4 @@
+import { provideRouter } from '@angular/router';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { PageInscription } from './page-inscription.component';
 
@@ -6,7 +7,7 @@ describe('PageInscription', () => {
   let fixture: ComponentFixture<PageInscription>;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({ providers: [provideRouter([])],
       imports: [PageInscription],
     }).compileComponents();
 
