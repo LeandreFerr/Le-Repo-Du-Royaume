@@ -26,7 +26,7 @@ pipeline {
             steps {
                 dir('royaume_back') {
                     withSonarQubeEnv('sonar') {
-                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=royaume-back -Dsonar.projectName="Royaume Back (G2)"'
+                        sh 'mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=royaume-back -Dsonar.projectName="Royaume Back (G2)" -Dsonar.token=$SONAR_AUTH_TOKEN'
                     }
                 }
             }
