@@ -144,7 +144,7 @@ app-carte-royaume {
   min-height: 43px;
   padding: 0;
 
-  color: #c1ccc352;
+  color: #c1ccc32f;
   font-size: 0;
   text-decoration: none;
 
@@ -193,4 +193,20 @@ app-carte-royaume {
 
   border-radius: 50%;
   font-size: 8px;
+}
+
+/* ========================================
+   DÉCONNEXION
+   ======================================== */
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 12px 8px;
+
+  border-top: 1px solid rgba(202, 164, 82, .2);
+}
+
+.sidebar-footer app-bouton-deconnexion {
+  display: block;
+  width: 100%;
 }

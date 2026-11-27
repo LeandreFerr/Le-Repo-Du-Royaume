@@ -1,1 +1,15 @@
-<p>bouton-deconnexion works!</p>
+@if (session.utilisateur(); as u) {
+
+  <button
+    type="button"
+    class="logout-button"
+    [class.logout-admin]="variante === 'admin'"
+    (click)="deconnecter(u.id)"
+    [title]="'Déconnexion (' + u.pseudo + ')'"
+    aria-label="Se déconnecter">
+
+    <span class="logout-icon" aria-hidden="true"></span>
+
+  </button>
+
+}

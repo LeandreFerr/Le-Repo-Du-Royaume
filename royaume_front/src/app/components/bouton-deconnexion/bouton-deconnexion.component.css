@@ -1,0 +1,107 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+
+/* ========================================
+   BOUTON DE DÉCONNEXION — PLAYER
+   ======================================== */
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  min-height: 43px;
+  padding: 0;
+
+  color: #c1ccc3;
+  background: transparent;
+
+  border: none;
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  transition:
+    background .2s,
+    color .2s,
+    border-color .2s;
+}
+
+
+/* ========================================
+   ICÔNE SVG
+   ======================================== */
+
+.logout-icon {
+  display: block;
+
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  background-color: currentColor;
+
+  mask: url('/img/logout.svg') center / contain no-repeat;
+  -webkit-mask: url('/img/logout.svg') center / contain no-repeat;
+}
+
+
+/* ========================================
+   INTERACTIONS — PLAYER
+   ======================================== */
+
+.logout-button:hover {
+  color: #f0d08a;
+  background: rgba(255, 255, 255, .07);
+}
+
+.logout-button:active {
+  background: #214b3e;
+}
+
+.logout-button:focus-visible {
+  outline: 1px solid #bd8a2d;
+  outline-offset: -2px;
+}
+
+
+/* ========================================
+   VARIANTE — ADMIN
+   ======================================== */
+
+.logout-button.logout-admin {
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+
+  color: #fde68a;
+  background: #2b1f14;
+
+  border: 1px solid #6b4e2e;
+  border-radius: 6px;
+}
+
+.logout-admin .logout-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.logout-button.logout-admin:hover {
+  color: #fffbeb;
+  background: #594025;
+  border-color: #d9a74a;
+}
+
+.logout-button.logout-admin:active {
+  background: #80501b;
+}
+
+.logout-button.logout-admin:focus-visible {
+  outline: 1px solid #fde68a;
+  outline-offset: 2px;
+}

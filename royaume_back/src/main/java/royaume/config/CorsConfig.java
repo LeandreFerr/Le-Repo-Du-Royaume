@@ -20,7 +20,7 @@ public class CorsConfig {
         configuration.setAllowedOrigins(
             List.of(
                 "http://localhost:4200",
-                "http://localhost:8090"
+                "http://localhost:8080"
             )
         );
 
