@@ -54,11 +54,12 @@ public class OffreMarcheRestController {
     // =========================================
 
     @GetMapping("/offres")
-    public ResponseEntity<List<OffreMarcheResponse>> recupererOffres() {
+    public ResponseEntity<List<OffreMarcheResponse>> recupererOffres(
+            @RequestParam(required = false) Integer partieId,
+            @RequestParam(required = false) Integer royaumeId) {
 
         List<OffreMarcheResponse> offres =
-            marcheService.recupererOffresResponse();
-               
+            marcheService.recupererOffresResponse(partieId, royaumeId);
 
         return ResponseEntity.ok(offres);
     }

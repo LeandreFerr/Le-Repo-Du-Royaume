@@ -71,10 +71,13 @@ export class MarcheService {
       `${this.apiUrl}/offres`
     );
   }*/
-  recupererOffres(): Observable<OffreMarcheResponse[]> {
+  recupererOffres(royaumeId?: number | null): Observable<OffreMarcheResponse[]> {
 
-  const params = new HttpParams()
+  let params = new HttpParams()
     .set('_t', Date.now().toString());
+  if (royaumeId != null) {
+    params = params.set('royaumeId', royaumeId.toString());
+  }
 
   return this.http.get<OffreMarcheResponse[]>(
     `${this.apiUrl}/offres`,

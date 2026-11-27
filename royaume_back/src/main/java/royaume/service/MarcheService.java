@@ -63,24 +63,34 @@ public class MarcheService {
 
 
     @Transactional(readOnly = true)
-public List<OffreMarcheResponse> recupererOffresResponse() {
+    public List<OffreMarcheResponse> recupererOffresResponse() {
+        return recupererOffresResponse(null, null);
+    }
 
-    	
-    return offreMarcheDAO.findAll()
-        .stream()
-        .map(offre -> new OffreMarcheResponse(
-            offre.getId(),
-            offre.getDatePublication(),
-            offre.getStatut(),
-            offre.getVendeur().getId(),
-            offre.getVendeur().getNom(),
-            convertirQuantite(offre.getPropose()),
-            convertirQuantite(offre.getDemande())
-        ))
-        .toList();
-    
-    
-}
+    @Transactional(readOnly = true)
+    public List<OffreMarcheResponse> recupererOffresResponse(Integer partieId, Integer royaumeId) {
+        List<OffreMarche> offres;
+        if (partieId != null) {
+            offres = offreMarcheDAO.findByPartieId(partieId);
+        } else if (royaumeId != null) {
+            offres = offreMarcheDAO.findByRoyaumePartie(royaumeId);
+        } else {
+            offres = offreMarcheDAO.findAll();
+        }
+
+        return offres
+            .stream()
+            .map(offre -> new OffreMarcheResponse(
+                offre.getId(),
+                offre.getDatePublication(),
+                offre.getStatut(),
+                offre.getVendeur().getId(),
+                offre.getVendeur().getNom(),
+                convertirQuantite(offre.getPropose()),
+                convertirQuantite(offre.getDemande())
+            ))
+            .toList();
+    }
     private QuantiteRessourceDTO convertirQuantite(QuantiteRessource q) {
 	    if (q == null) return null;
 	    return new QuantiteRessourceDTO(q.getRessource(), q.getQuantite());

@@ -79,7 +79,7 @@ chargerOffres(): void {
   this.chargement = true;
   this.message = '';
 
-  this.marcheService.recupererOffres().subscribe({
+  this.marcheService.recupererOffres(this.idUtilisateurEnCours).subscribe({
 
     next: (offres) => {
 
@@ -126,7 +126,7 @@ chargerOffres(): void {
   this.chargement = true;
   this.message = '';
 
-  this.marcheService.recupererOffres().subscribe({
+  this.marcheService.recupererOffres(this.idUtilisateurEnCours).subscribe({
 
     next: (offres) => {
 
@@ -165,7 +165,7 @@ chargerOffres(): void {
     this.chargement = true;
     this.message = '';
 
-    this.marcheService.recupererOffres().subscribe({
+    this.marcheService.recupererOffres(this.idUtilisateurEnCours).subscribe({
 
       next: (offres) => {
 

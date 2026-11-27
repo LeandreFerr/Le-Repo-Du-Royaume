@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostBinding,
   Input,
   NgZone,
   OnChanges,
@@ -98,7 +99,13 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
   @Input() autoriserDeplacement = true;
   @Input() selectedEmplacementNumero: number | null = null;
   @Input() showLabels = true;
+  @Input() showControls = true;
   @Input() showBorders = true;
+
+  @HostBinding('class.is-static')
+  get isStatic(): boolean {
+    return !this.showControls;
+  }
   @Input() showRoutes = true;
   @Input() highlightMarketZone = false;
 
@@ -160,6 +167,9 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
 
   ngAfterViewInit(): void {
     this.updateCanvasSize();
+    if (!this.showControls) {
+      this.fitViewToMap();
+    }
     this.startAnimationLoop();
   }
 
@@ -228,11 +238,22 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   resetView(): void {
+    if (!this.showControls) {
+      this.fitViewToMap();
+      return;
+    }
     const minDim = Math.min(this.viewportWidth, this.viewportHeight);
     this.zoom = Math.max(0.5, Math.min(2.5, Number((minDim / 1050).toFixed(2)) || 0.85));
     this.panX = 0;
     this.panY = 0;
     this.setInclinaison(DEFAULT_TILT_DEG);
+  }
+
+  private fitViewToMap(): void {
+    const scale = Math.min(this.viewportWidth / 377, this.viewportHeight / 310);
+    this.zoom = Number((0.338 * scale).toFixed(4));
+    this.panX = Math.round(-3 * scale);
+    this.panY = Math.round(-4 * scale);
   }
 
   selectMarche(): void {
@@ -266,12 +287,18 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   onWheel(event: WheelEvent): void {
+    if (!this.showControls) {
+      return;
+    }
     event.preventDefault();
     const factor = event.deltaY < 0 ? 1.12 : 1 / 1.12;
     this.setZoom(this.zoom * factor);
   }
 
   onMouseDown(event: MouseEvent): void {
+    if (!this.showControls) {
+      return;
+    }
     const pos = this.getCanvasRelativeCoords(event);
 
     // Right click or Alt + Left click -> Tilt 2.5D
@@ -348,6 +375,9 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   onMouseMove(event: MouseEvent): void {
+    if (!this.showControls) {
+      return;
+    }
     const pos = this.getCanvasRelativeCoords(event);
     const params = this.getProjectionParams();
     const mapWidth = this.carte?.largeur ?? DEFAULT_CARTE_WIDTH;
@@ -591,6 +621,8 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
     const cssHeight =
       container && container.clientHeight > 0 ? container.clientHeight : this.viewportHeight;
 
+    const prevW = this.viewportWidth;
+    const prevH = this.viewportHeight;
     this.viewportWidth = Math.max(300, Math.round(cssWidth));
     this.viewportHeight = Math.max(260, Math.round(cssHeight));
 
@@ -601,6 +633,9 @@ export class CarteRoyaumeComponent implements OnInit, OnChanges, AfterViewInit, 
     if (canvas.width !== targetW || canvas.height !== targetH) {
       canvas.width = targetW;
       canvas.height = targetH;
+      if (!this.showControls && (prevW !== this.viewportWidth || prevH !== this.viewportHeight)) {
+        this.fitViewToMap();
+      }
     }
   }
 
