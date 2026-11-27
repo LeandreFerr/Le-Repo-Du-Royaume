@@ -29,6 +29,8 @@ import { PopulationService } from '../../../services/population.service';
 
 import { RoyaumeService } from '../../../services/royaume.service';
 
+import { UtilisateurService } from '../../../services/utilisateur/utilisateur.service';
+
 @Component({
   selector: 'app-page-creation-royaume',
   imports: [
@@ -59,7 +61,9 @@ export class PageCreationRoyaume implements OnInit {
    * Valeur provisoire pour le test.
    * Elle sera remplacée plus tard par l'utilisateur connecté.
    */
-  private readonly utilisateurIdTest = 1;
+  private readonly utilisateurIdService = 2;
+
+  // = utilisateurService.UtisateurConnecté()
 
   readonly populations =
     signal<PopulationResponse[]>([]);
@@ -180,7 +184,7 @@ export class PageCreationRoyaume implements OnInit {
         this.partieId,
 
       utilisateurId:
-        this.utilisateurIdTest
+        this.utilisateurIdService
     };
 
     this.creationEnCours.set(true);

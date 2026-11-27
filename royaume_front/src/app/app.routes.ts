@@ -59,8 +59,8 @@ export const routes: Routes = [
   },
 
 
-  { path: 'lobby', component: PageLobby },
-  { path: 'parties/:partieId/royaume/creation', component: PageCreationRoyaume },
+  { path: 'lobby', component: PageLobby, canActivate: [authGuard]},
+  { path: 'parties/:partieId/royaume/creation', component: PageCreationRoyaume, canActivate: [authGuard] },
 
 
 

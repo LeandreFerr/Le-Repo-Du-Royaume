@@ -77,7 +77,7 @@ public class DataInitializer {
 		            System.out.println("========== TEST JPA ==========");
 		            
 		            List<Population> populations = List.of(
-		            	    new Canards(null, "Canards", "Roi Coin-Coin", 1.5),
+		            	    new Canards(null, "Canards", "Roi Coin-Coin", 1.5),	
 		            	    new Teuteus(null, "Teuteus", "Roi Teuteu", 0.4),
 		            	    new Gobelins(null, "Gobelins", "Roi Gobelin", 1.9),
 		            	    new Princesses(null, "Princesses", "Reine des Princesses", 15.0),
