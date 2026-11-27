@@ -84,7 +84,7 @@
         Ressources
       </a>
 
-      <a class="nav-link-out" data-page="diplomatie" [class.is-active]="activePage === 'diplomatie'"
+      <a class="nav-link" data-page="diplomatie" [class.is-active]="activePage === 'diplomatie'"
         (click)="togglePage('diplomatie')" title="diplomatie">
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
           <path
@@ -158,6 +158,13 @@
 
   <app-kingdom-buildings [royaume]="royaume">
   </app-kingdom-buildings>
+
+  }
+
+  @if (activePage === 'diplomatie' && royaume) {
+
+  <app-session-entrainement [royaume]="royaume">
+  </app-session-entrainement>
 
   }
 

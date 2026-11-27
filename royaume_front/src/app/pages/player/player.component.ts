@@ -8,6 +8,8 @@ import { KingdomDevelopmentComponent } from '../../components/player-panels/king
 
 import { KingdomBuildingsComponent } from '../../components/player-panels/kingdom-buildings/kingdom-buildings.component';
 
+import { SessionEntrainement } from '../../components/session-entrainement/session-entrainement.component';
+
 import {
   CarteDto,
   EmplacementCarteDto,
@@ -30,7 +32,8 @@ import { RoyaumeService } from '../../services/royaume.service';
     CarteRoyaumeComponent,
     KingdomOverviewComponent,
     KingdomDevelopmentComponent,
-    KingdomBuildingsComponent
+    KingdomBuildingsComponent,
+    SessionEntrainement
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css',
