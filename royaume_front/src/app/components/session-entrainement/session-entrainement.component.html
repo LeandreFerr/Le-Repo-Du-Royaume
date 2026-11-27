@@ -30,23 +30,23 @@
           <span class="level-label">En entraînement</span>
           <span class="progression-value">{{ populationEnEntrainement }}</span>
         </div>
+        <div class="progression-heading">
+          <span class="level-label">Militaire</span>
+          <span class="progression-value">{{ populationMilitaire }}</span>
+        </div>
         <div class="global-progress-bar">
           <div
-            class="global-progress-fill"
-            [style.width.%]="(populationDisponible + populationEnEntrainement) > 0
-              ? (populationEnEntrainement / (populationDisponible + populationEnEntrainement)) * 100
-              : 0"
+            class="progress-segment-entrainement"
+            [style.width.%]="populationTotale > 0 ? (populationEnEntrainement / populationTotale) * 100 : 0"
+          ></div>
+          <div
+            class="progress-segment-militaire"
+            [style.width.%]="populationTotale > 0 ? (populationMilitaire / populationTotale) * 100 : 0"
           ></div>
         </div>
-        <p class="progression-description">
-          Recrues actuellement mobilisées dans les sessions actives.
-        </p>
       </div>
     </section>
 
-    @if (message) {
-      <p [class.erreur]="erreur">{{ message }}</p>
-    }
 
     <!-- GRILLE PRINCIPALE -->
     <div class="development-grid">
@@ -153,7 +153,9 @@
       </aside>
 
     </div>
-
+@if (message) {
+      <p class="message-retour toast-fixe" [class.erreur]="erreur">{{ message }}</p>
+    }
   </div>
 
 </div>

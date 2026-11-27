@@ -151,5 +151,13 @@ export class SessionEntrainement implements OnInit{
       },
     });
   }
+get populationTotale(): number {
+    return this.populationDisponible + this.populationEnEntrainement + this.populationMilitaire;
+  }
 
+  getMaxPourType(type: string): number {
+    const valeurActuelle = Number(this.quantitesAEntrainer[type]) || 0;
+    const autres = this.totalSelectionne - valeurActuelle;
+    return Math.max(0, this.populationDisponible - autres);
+  }
 }

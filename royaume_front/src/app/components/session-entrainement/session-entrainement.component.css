@@ -177,10 +177,20 @@
   overflow: hidden;
 }
 
-.global-progress-fill {
+.global-progress-bar {
+  display: flex;
+}
+
+.progress-segment-entrainement {
   height: 100%;
-  background: linear-gradient(90deg, #a77b31, #d7bb7b);
-  transition: width 0.4s ease;
+  background: #d7bb7b;
+  transition: width 0.25s ease;
+}
+
+.progress-segment-militaire {
+  height: 100%;
+  background: #6fa382;
+  transition: width 0.25s ease;
 }
 
 .progression-description {
@@ -219,7 +229,14 @@
   display: grid;
   grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
   gap: 16px;
-  align-items: stretch;
+  align-items: start;
+}
+.toast-fixe {
+  position: sticky;
+  bottom: 0;
+  align-self: flex-end;
+  z-index: 10;
+  box-shadow: 0 4px 14px #00000018;
 }
 
 .progression-card,
