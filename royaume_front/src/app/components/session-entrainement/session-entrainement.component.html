@@ -26,14 +26,7 @@
       </div>
 
       <div class="kingdom-progression">
-        <div class="progression-heading">
-          <span class="level-label">En entraînement</span>
-          <span class="progression-value">{{ populationEnEntrainement }}</span>
-        </div>
-        <div class="progression-heading">
-          <span class="level-label">Militaire</span>
-          <span class="progression-value">{{ populationMilitaire }}</span>
-        </div>
+        
         <div class="global-progress-bar">
           <div
             class="progress-segment-entrainement"
@@ -44,6 +37,21 @@
             [style.width.%]="populationTotale > 0 ? (populationMilitaire / populationTotale) * 100 : 0"
           ></div>
         </div>
+        <div class="population-legend">
+
+  <div class="population-category">
+    <span class="category-color" style="background: #d7bb7b;"></span>
+    <span class="category-name">En entraînement</span>
+    <strong class="category-value">{{ populationEnEntrainement }}</strong>
+  </div>
+
+  <div class="population-category">
+    <span class="category-color" style="background: #6fa382;"></span>
+    <span class="category-name">Militaires</span>
+    <strong class="category-value">{{ populationMilitaire }}</strong>
+  </div>
+
+</div>
       </div>
     </section>
 
@@ -76,26 +84,23 @@
                   </span>
                 </div>
 
-                <div class="condition-progress-bar">
-                  <div
-                    class="condition-progress-fill"
-                    [style.width.%]="populationDisponible > 0
-                      ? ((quantitesAEntrainer[troupe.code] || 0) / populationDisponible) * 100
-                      : 0"
-                  ></div>
+                <div class="slider-row">
+                  <input
+                    [id]="'qte-' + troupe.code"
+                    type="range"
+                    class="troop-slider"
+                    min="0"
+                    [max]="getMaxPourType(troupe.code)"
+                    step="1"
+                    [value]="quantitesAEntrainer[troupe.code]"
+                    [disabled]="actionEnCours || getMaxPourType(troupe.code) === 0"
+                    (input)="verifierQuantite(troupe.code, $any($event.target).value)"
+                  >
+                  <span class="slider-value">
+                    Sélection : <strong>{{ quantitesAEntrainer[troupe.code] }}</strong>
+                  </span>
                 </div>
               </div>
-
-              <input
-                [id]="'qte-' + troupe.code"
-                type="number"
-                min="0"
-                [max]="populationDisponible"
-                step="1"
-                [(ngModel)]="quantitesAEntrainer[troupe.code]"
-                (ngModelChange)="verifierQuantite(troupe.code, $event)"
-                [disabled]="populationDisponible === 0 || actionEnCours"
-              >
 
               <button
                 type="button"
