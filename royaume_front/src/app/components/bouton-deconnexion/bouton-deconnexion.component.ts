@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SessionService } from '../../services/session/session.service';
@@ -7,15 +7,12 @@ import { UtilisateurService } from '../../services/utilisateur/utilisateur.servi
 @Component({
   selector: 'app-bouton-deconnexion',
   standalone: true,
-  template: `
-    @if (session.utilisateur(); as u) {
-      <button type="button" (click)="deconnecter(u.id)">
-        Se déconnecter ({{ u.pseudo }})
-      </button>
-    }
-  `
+  templateUrl: './bouton-deconnexion.component.html',
+  styleUrl: './bouton-deconnexion.component.css'
 })
 export class BoutonDeconnexion {
+
+  @Input() variante: 'player' | 'admin' = 'player';
 
   constructor(
     protected session: SessionService,
