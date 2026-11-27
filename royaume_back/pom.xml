@@ -81,6 +81,7 @@
 		<!-- 
 		  Spring Security (commenté temporairement en attendant la mise en place de la sécurité et des
 		utilisateurs)
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
