@@ -1,6 +1,8 @@
 
 package royaume.service;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -9,16 +11,17 @@ import jakarta.transaction.Transactional;
 import royaume.dao.IDAOBatiment;
 import royaume.dao.IDAOChantierConstruction;
 import royaume.dao.IDAORoyaume;
+import royaume.dto.response.AmeliorationBatimentResponse;
 import royaume.dto.response.BatimentResponse;
+import royaume.dto.response.ReparationBatimentResponse;
 import royaume.model.Ressource;
 import royaume.model.Royaume;
 import royaume.model.batiment.Batiment;
 import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
+import royaume.model.batiment.ChantierConstruction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
-import royaume.dao.IDAOChantierConstruction;
-import royaume.model.batiment.ChantierConstruction;
 @Service
 @Transactional
 public class BatimentService {
@@ -333,4 +336,64 @@ private BatimentResponse convertirEnResponse(Batiment b) {
         chateau != null ? chateau.getBonusDefenseRoyaume() : null
     );
 }
+
+    // =========================================
+    // CATALOGUE DES BATIMENTS
+    // =========================================
+
+    public List<BatimentResponse> getCatalogueBatiments() {
+
+        return batimentDAO.findAll()
+            .stream()
+            .map(this::convertirEnResponse)
+            .toList();
+    }
+
+    // =========================================
+    // PREVISUALISATION AMELIORATION
+    // =========================================
+
+    public AmeliorationBatimentResponse getAmeliorationBatiment(
+            Integer id) {
+
+        Batiment batiment = trouverParId(id);
+
+        int niveauSuivant = batiment.getNiveau() + 1;
+
+        int niveauChateauRequis =
+            batiment.getRoyaume()
+                .getChateau()
+                .getNiveauPalierDebloque();
+
+        return new AmeliorationBatimentResponse(
+            batiment.getId(),
+            batiment.getNiveau(),
+            niveauSuivant,
+            niveauChateauRequis,
+            batiment.getCoutAmelioration(),
+            batiment instanceof Chateau
+                ? 0
+                : batiment.getTempsConstructionBase(),
+            1
+        );
+    }
+
+    // =========================================
+    // PREVISUALISATION REPARATION
+    // =========================================
+
+    public ReparationBatimentResponse getReparationBatiment(
+            Integer id) {
+
+        Batiment batiment = trouverParId(id);
+
+        return new ReparationBatimentResponse(
+            batiment.getId(),
+            batiment.getPointsDeVie(),
+            batiment.getPointsDeVieMax(),
+            batiment.getTempsConstructionBase(),
+            1
+        );
+    }
+
 }

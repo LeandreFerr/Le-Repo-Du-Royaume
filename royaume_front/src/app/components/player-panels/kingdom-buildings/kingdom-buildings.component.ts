@@ -1472,21 +1472,6 @@ retirerOuvriersChantier(
   });
 
 }
-getTypeChantier(
-  batiment: Batiment,
-  chantier: ChantierConstructionResponse
-): string {
-
-  if (chantier.amelioration) {
-    return 'Amélioration';
-  }
-
-  if ((batiment.montantReparationEnCours ?? 0) > 0) {
-    return 'Réparation';
-  }
-
-  return 'Construction';
-}
 
 getNomBatimentChantier(
   chantier: ChantierConstructionResponse
@@ -1499,22 +1484,21 @@ getNomBatimentChantier(
   return batiment?.nom ?? `Bâtiment #${chantier.batimentId}`;
 
 }
-
-
-getTypeChantierParId(
+getTypeChantier(
   chantier: ChantierConstructionResponse
 ): string {
+
+  if (chantier.amelioration) {
+    return 'Amélioration';
+  }
 
   const batiment = this.royaume.batiments.find(
     b => b.id === chantier.batimentId
   );
 
-if ((batiment?.montantReparationEnCours ?? 0) > 0) {
-      return 'Réparation';
+  if ((batiment?.montantReparationEnCours ?? 0) > 0) {
+    return 'Réparation';
   }
 
   return 'Construction';
-
-}
-
-}
+}}

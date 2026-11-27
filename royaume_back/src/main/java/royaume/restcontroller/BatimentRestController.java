@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import java.util.List;
+import royaume.dto.response.AmeliorationBatimentResponse;
+import royaume.dto.response.ReparationBatimentResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import royaume.dto.request.AmeliorationBatimentRequest;
@@ -168,40 +170,41 @@ private BatimentResponse convertirEnResponse(Batiment b) {
         chateau == null ? null : chateau.getBonusDefenseRoyaume()
     );
 }
-
-// =========================================
-// CATALOGUE DES BÂTIMENTS
-// =========================================
-
-@GetMapping("/catalogue")
-public ResponseEntity<List<BatimentResponse>> getCatalogue() {
-
-    return ResponseEntity.ok(
-        batimentService.getCatalogueBatiments()
-    );
-}
     // =========================================
-// PRÉVISUALISATION AMÉLIORATION
-// =========================================
+    // CATALOGUE DES BATIMENTS
+    // =========================================
 
-@GetMapping("/{id}/amelioration")
-public ResponseEntity<BatimentResponse> getAmelioration(
-        @PathVariable @Positive Integer id) {
+    @GetMapping("/catalogue")
+    public ResponseEntity<List<BatimentResponse>> getCatalogue() {
 
-    return ResponseEntity.ok(
-        batimentService.getAmeliorationBatiment(id)
-    );
-}
-// =========================================
-// PRÉVISUALISATION RÉPARATION
-// =========================================
+        return ResponseEntity.ok(
+            batimentService.getCatalogueBatiments()
+        );
+    }
 
-@GetMapping("/{id}/reparation")
-public ResponseEntity<BatimentResponse> getReparation(
-        @PathVariable @Positive Integer id) {
+    // =========================================
+    // PREVISUALISATION AMELIORATION
+    // =========================================
 
-    return ResponseEntity.ok(
-        batimentService.getReparationBatiment(id)
-    );
-}
+    @GetMapping("/{id}/amelioration")
+    public ResponseEntity<AmeliorationBatimentResponse> getAmelioration(
+            @PathVariable @Positive Integer id) {
+
+        return ResponseEntity.ok(
+            batimentService.getAmeliorationBatiment(id)
+        );
+    }
+
+    // =========================================
+    // PREVISUALISATION REPARATION
+    // =========================================
+
+    @GetMapping("/{id}/reparation")
+    public ResponseEntity<ReparationBatimentResponse> getReparation(
+            @PathVariable @Positive Integer id) {
+
+        return ResponseEntity.ok(
+            batimentService.getReparationBatiment(id)
+        );
+    }
 }
