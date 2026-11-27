@@ -210,3 +210,306 @@ app-carte-royaume {
   display: block;
   width: 100%;
 }
+
+/* ========================================
+   ÉTATS VERROUILLÉS & STATUT PARTIE
+   ======================================== */
+
+.nav-link.is-locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.partie-status-pill {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 7px 14px;
+  background: rgba(18, 25, 21, 0.88);
+  border: 1px solid rgba(189, 138, 45, 0.55);
+  border-radius: 999px;
+  color: #f0d08a;
+  font-size: 0.8rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  max-width: calc(100% - 220px);
+}
+
+.status-dot-live {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.22);
+  border: 1px solid #4ade80;
+  color: #bbf7d0;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.status-hint {
+  color: #cbd5c9;
+  font-size: 0.72rem;
+}
+
+.lock-toast {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: rgba(35, 22, 12, 0.95);
+  border: 1px solid #fbbf24;
+  color: #fde68a;
+  font-size: 0.85rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* ========================================
+   SALON D'ATTENTE SUR LA CARTE
+   ======================================== */
+
+.lobby-waiting-overlay {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 30;
+  width: 390px;
+  max-width: calc(100% - 36px);
+  max-height: calc(100% - 36px);
+  overflow-y: auto;
+  padding: 18px 20px;
+  border-radius: 10px;
+  background: rgba(15, 25, 20, 0.93);
+  border: 2px solid #bd8a2d;
+  color: #f5ebd6;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.lobby-waiting-overlay.is-minimized {
+  width: auto;
+}
+
+.waiting-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.waiting-badge {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid #f59e0b;
+  color: #fde68a;
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.waiting-header h2 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  color: #fde68a;
+}
+
+.waiting-meta {
+  margin: 4px 0 0;
+  font-size: 0.76rem;
+  color: #c1ccc3;
+}
+
+.waiting-meta code {
+  color: #fbbf24;
+}
+
+.btn-toggle-salon {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  border-radius: 5px;
+  border: 1px solid #bd8a2d;
+  background: #214b3e;
+  color: #f0d08a;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+
+.waiting-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 12px 0 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
+}
+
+.waiting-progress strong {
+  color: #fbbf24;
+  font-size: 0.95rem;
+}
+
+.waiting-slots-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.waiting-slot-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px dashed rgba(189, 138, 45, 0.35);
+  background: rgba(0, 0, 0, 0.25);
+  font-size: 0.78rem;
+}
+
+.waiting-slot-item.is-occupied {
+  border-style: solid;
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(33, 75, 62, 0.45);
+}
+
+.waiting-slot-item.is-mine {
+  border-color: #fbbf24;
+  background: rgba(180, 83, 9, 0.28);
+}
+
+.slot-num {
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.slot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.slot-info span {
+  font-size: 0.72rem;
+  color: #cbd5c9;
+}
+
+.moi-tag {
+  color: #fde68a;
+}
+
+.slot-empty {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.waiting-footer {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(189, 138, 45, 0.3);
+}
+
+.waiting-ready-msg,
+.waiting-wait-msg,
+.waiting-error {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.waiting-ready-msg {
+  color: #86efac;
+}
+
+.waiting-wait-msg {
+  color: #d6c7ae;
+}
+
+.waiting-error {
+  color: #fca5a5;
+}
+
+.btn-start-partie {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 6px;
+  border: 2px solid #fbbf24;
+  background: linear-gradient(180deg, #b45309 0%, #78350f 100%);
+  color: #fffbeb;
+  font-family: Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.btn-start-partie:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+.btn-start-partie:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ========================================
+   SURIMPRESSIONS MODALES (MARCHÉ, ATTAQUES, RÈGLES)
+   ======================================== */
+
+.overlay-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 940;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 6, 4, 0.75);
+  backdrop-filter: blur(3px);
+}
+
+.overlay-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 2px solid #bd8a2d;
+  background: #1a130d;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.75);
+}
+
+.overlay-modal-card.overlay-modal-wide {
+  max-width: 1150px;
+}
+
+.overlay-close-btn {
+  position: sticky;
+  top: 10px;
+  float: right;
+  margin: 10px 12px 0 0;
+  z-index: 10;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid #bd8a2d;
+  background: #2b1f14;
+  color: #fde68a;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}

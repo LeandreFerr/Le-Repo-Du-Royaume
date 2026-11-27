@@ -1,4 +1,3 @@
-
 <div class="player-layout">
 
   <!-- SIDEBAR -->
@@ -21,10 +20,10 @@
         class="nav-link"
         data-page="royaume"
         [class.is-active]="activePage === 'royaume'"
+        [class.is-locked]="estEnAttente"
         (click)="togglePage('royaume')"
         title="Vue du royaume">
 
-        <!-- Conserver ici le SVG Vue du royaume -->
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
           <polygon points="154.43 135.02 154.43 89.65 122.3 100.53 122.3 196.83 154.43 185.96 202.61 169.65 213.33 166.04 234.75 158.79 270 146.86 270 206.04 234.75 217.96 213.33 225.22 202.61 228.83 160.23 243.16 154.43 318.64 154.24 320.98 152.52 343.35 150.59 368.52 154.43 367.22 202.61 350.92 202.61 304.62 213.33 301.01 234.75 293.76 270 281.83 270 303.62 234.75 315.55 224.04 319.17 224.04 365.47 213.33 369.1 202.61 372.71 154.43 389.01 148.88 390.88 125.43 398.82 122.3 399.89 122.3 353.59 83.48 366.71 83.48 485.68 270 485.68 270 511.23 18.54 511.23 18.54 485.68 59.37 485.68 59.37 353.07 83.48 344.92 122.3 331.8 130.8 328.92 136.77 251.1 137.58 240.6 122.3 222.55 105.38 202.55 102.89 199.59 102.89 85.3 122.3 78.75 154.43 67.87 175.85 60.62 175.86 60.62 191.74 66.44 191.74 100.62 202.61 96.94 213.33 93.33 213.33 47.96 234.75 40.7 270 28.77 270 50.56 234.75 62.49 234.75 107.86 213.33 115.11 202.61 118.72 154.43 135.02"/>
           <polygon points="521.46 485.68 521.46 511.23 270 511.23 270 281.83 305.25 293.76 337.39 304.62 337.39 350.92 389.41 368.52 385.76 320.98 385.57 318.64 384.51 304.87 368.66 299.62 372.12 346.43 348.29 338.18 348.29 293.99 270 264.51 270 206.04 305.25 217.96 326.67 225.22 337.39 228.83 379.77 243.16 417.7 196.83 385.57 185.96 337.39 169.65 326.67 166.04 305.25 158.79 270 146.86 270 28.77 305.25 40.7 326.67 47.96 326.67 93.33 337.39 96.94 348.26 100.62 348.26 66.44 364.14 60.62 364.15 60.62 385.57 67.87 417.7 78.75 437.11 85.3 437.11 199.59 434.62 202.55 417.7 222.55 402.42 240.6 403.23 251.1 407.95 312.62 409.2 328.92 417.7 331.8 456.52 344.92 480.63 353.07 480.63 485.68 521.46 485.68"/>
@@ -37,17 +36,16 @@
         class="nav-link"
         data-page="developpement"
         [class.is-active]="activePage === 'developpement'"
+        [class.is-locked]="estEnAttente"
         (click)="togglePage('developpement')"
         title="Développement">
 
-        <!-- Conserver ici le SVG Développement -->
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
           <path
             d="M441.92,387.27c-7.69-16.87-22.11-28.24-38.64-28.24h-44.54v-28c-9.27,3.72-18.68,6.63-28.24,8.74v19.26h-145.85c-.38,0-.77,0-1.15.01-4.48.15-8.8,1.13-12.86,2.83-.05.01-.12.04-.18.07-10.39,4.41-19.07,13.52-24.45,25.33-3.76,8.25-5.9,17.8-5.9,27.99h-17.79V154.71c0-10.19-2.5-19.74-6.86-27.98h191.4c8.47,0,15.9,5.26,20.07,13.18,6.22-5.44,12.77-10.69,19.55-15.75.88-.66,1.78-1.33,2.7-2-9.4-14.33-24.86-23.68-42.32-23.68H70.42c-19.26,0-36.06,11.37-45.01,28.25-4.37,8.24-6.86,17.79-6.86,27.98,0,31.06,23.23,56.24,51.88,56.24h23.64v204.3c0,10.19,4.37,19.74,12.01,27.99,4.39,4.75,9.88,9.06,16.24,12.81,9.1,5.35,20.01,9.55,32.09,12.2.08.03.18.04.26.05.8.18,1.59.34,2.39.49,2.07.37,4.19.55,6.34.55,2.46,0,4.89-.25,7.23-.71,5-.97,9.72-2.98,14.02-5.81,6.99-4.58,12.85-11.37,16.95-19.59,4.09-8.17,6.44-17.74,6.44-27.99,0-9.14-1.87-17.74-5.18-25.27-.4-.92-.82-1.83-1.26-2.72h201.68c11.6,0,21,12.53,21,27.99s-9.4,27.99-21,27.99h-179.99c-7.51,16.49-21.44,27.7-37.49,28.22-.38.01-.77.01-1.15.01h218.63c16.53,0,30.96-11.37,38.64-28.24,3.76-8.25,5.9-17.8,5.9-27.99s-2.14-19.74-5.9-27.99ZM70.42,182.7c-13.05,0-23.64-12.53-23.64-27.99s10.58-27.98,23.64-27.98,23.64,12.52,23.64,27.98-10.58,27.99-23.64,27.99Z" />
           <path
             d="M521.46,68.53c-1.87,17.01-6.04,42.55-16.49,71.9-7.12,20-17.27,42.01-30.23,63.69l-60.33,10.57,48.16,8.52c-10.41,15.22-22.21,29.94-35.33,43.32l-42.75,1.77,30.75,9.76c-28.76,25.94-63.09,45.11-102.34,50.15-13.86,1.78-26.26,1.52-36.27.59l-57.27,57.27-15.47-15.46,57.27-57.27c-.95-10.01-1.21-22.4.56-36.31,4.57-35.64,20.82-67.24,43.21-94.29,2.39-2.9,4.86-5.74,7.4-8.52l5.57,17.57,1.02-24.59c2.95-3.03,5.97-5.99,9.06-8.88,8.61-8.07,17.71-15.62,27.08-22.61,2.87-2.14,5.77-4.23,8.68-6.27l2.29,12.97,2.9-16.5c3.28-2.22,6.62-4.39,9.95-6.47,23.93-15,48.51-26.56,70.64-34.47,29.34-10.46,54.91-14.61,71.92-16.47l-32.26,32.26c-12.77,2.43-32.05,7.1-54.51,16.69-19.03,8.11-40.63,19.88-61.53,34.73l-7.54,43.03-5.85-33.01c-11.75,9.29-23.03,19.55-33.21,30.69l-2.13,51.3-11.2-35.33c-14.47,19.07-25.35,40.23-30.12,63.06-3.32,15.91-2.91,28.98-2.16,37.06l208.23-208.23,32.27-32.25Z" />
         </svg>
-
 
         Développement
       </a>
@@ -56,10 +54,10 @@
         class="nav-link"
         data-page="batiments"
         [class.is-active]="activePage === 'batiments'"
+        [class.is-locked]="estEnAttente"
         (click)="togglePage('batiments')"
         title="Bâtiments">
 
-        <!-- Conserver ici le SVG Bâtiments -->
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
          <path
             d="M492.37,390.19h-12.82v-68.84h7.32c13.16,0,21.95-12.47,11.73-23.47l-79.15-79.84c-3.42-3.9-7.32-5.85-11.73-5.85h-41c-5.37,0-9.79,1.69-13.21,5.11l-77.63,80.58c-9.53,9.53-3.68,23.47,10.26,23.47h2.9v68.84h-15.37v-57.11c-19.05-13.21-22.21-27.84-9.53-43.99l76.94-80.58-38.1-39.53v-50.57c0-5.85-2.94-8.79-8.79-8.79h-35.89c-5.89,0-8.79,2.94-8.79,8.79v30.79l-92.31-16.84c-6.84-1.47-12.47.48-16.84,5.85l-106.26,119.42c-8.05,11-.74,23.42,13.94,23.42h11.69v109.16h-12.08c-5.59,0-10.61,2.25-14.25,5.93-3.64,3.64-5.89,8.7-5.89,14.25,0,11.13,9.01,20.13,20.13,20.13h444.72c5.54,0,10.61-2.25,14.25-5.89,3.64-3.64,5.89-8.7,5.89-14.25,0-11.13-9.01-20.18-20.13-20.18ZM237.77,390.19H94.93v-141.37l64.47-75.47,78.37,84.26v132.58ZM441.45,390.19h-119.42v-77.63l59.32-59.36,60.1,59.36v77.63Z" />
@@ -67,18 +65,32 @@
             d="M188.67,285.45v38.1c0,4.03-3.25,7.32-7.32,7.32h-36.63c-4.03,0-7.32-3.29-7.32-7.32v-38.1c0-4.07,3.29-7.32,7.32-7.32h36.63c4.07,0,7.32,3.25,7.32,7.32Z" />
         </svg>
 
-
         Bâtiments
       </a>
 
       <a
-        class="nav-link-out"
-        data-page="ressources"
-        [class.is-active]="activePage === 'ressources'"
-        (click)="togglePage('ressources')"
-        title="Ressources">
+        class="nav-link"
+        data-page="chateau"
+        [class.is-active]="salleChateauOuverte"
+        [class.is-locked]="estEnAttente"
+        (click)="togglePage('chateau')"
+        title="Salle du Château (Personnage du peuple)">
 
-        <!-- SVG original Ressources -->
+        <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm-5 9a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v4h-2v6h-2v-4h-2v4H9v-6H7v-4Z"/>
+        </svg>
+
+        Salle du Château
+      </a>
+
+      <a
+        class="nav-link"
+        data-page="ressources"
+        [class.is-active]="marcheOuvert"
+        [class.is-locked]="estEnAttente"
+        (click)="togglePage('ressources')"
+        title="Place du Marché">
+
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
          <g>
               <g>
@@ -114,55 +126,19 @@
               <path
                 d="M82.95,127.74c21.6,21.6,19.11,48.29,18.83,50.82-2.54.28-29.24,2.79-50.84-18.81-21.6-21.6-19.09-48.31-18.79-50.82,2.51-.3,29.2-2.79,50.8,18.81Z" />
             </g>
-         
         </svg>
 
-        Ressources
+        Marché
       </a>
 
       <a
-        class="nav-link-out"
-        data-page="diplomatie"
-        [class.is-active]="activePage === 'diplomatie'"
-        (click)="togglePage('diplomatie')"
-        title="Diplomatie">
-
-        <!-- SVG original Diplomatie -->
-        <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
-           <path
-            d="M395.6,327.16l33.41-31.74-57.97-126.45-77.23-21.46-22.57,14.23-33.39-15.6-65.97,21.45h-.01l-86.03-43.33L18.54,252.8l82.72,39.76h.01l.02.02,34.84,26.85-1.62,2.24c-5.34,7.31-3.74,17.55,3.56,22.9,5.46,3.98,12.55,4.1,18.02.86-2.48,6.71-.35,14.5,5.71,18.94,6.55,4.78,15.45,3.99,21.07-1.49-4.27,7.18-2.45,16.54,4.44,21.57,6.18,4.53,14.49,4.07,20.13-.61-2.54,6.73-.42,14.58,5.67,19.03,7.31,5.33,17.55,3.73,22.89-3.57l1.36-1.86,16.9,13.02c4.62,3.56,10.11,5.31,15.57,5.31,6.69,0,13.34-2.62,18.33-7.75l4.99-5.14c4.55,3.4,9.89,5.08,15.22,5.08,6.84,0,13.65-2.78,18.71-8.24l6.71-7.23c2.27.65,4.61.96,6.94.96,6.6,0,13.2-2.54,18.17-7.57l1.49-1.51c4.41-4.46,7.01-10.44,7.34-16.67,6.06-.34,12.02-2.84,16.6-7.41l5.63-5.64c4.98-4.97,7.69-11.86,7.47-18.88-.09-2.97-.73-5.89-1.82-8.61ZM79.85,262.47l49.34-98.66,24.32,10.29-45.82,102.38-27.83-14.01ZM377.92,342.61l-5.64,5.64c-3.15,3.15-8.27,3.32-11.63.37l-1.58-1.38-35.73-31.39-25.05-21.99-11.23,12.79,25.05,22,35.73,31.37c1.78,1.57,2.8,3.72,2.89,6.09.08,2.37-.79,4.6-2.46,6.29l-1.49,1.5c-3.15,3.2-8.28,3.38-11.66.42l-56.08-49.25-11.23,12.79,51.48,45.21-4.7,5.07c-3.15,3.4-8.36,3.68-11.86.6l-44.04-38.67-11.23,12.79,32.82,28.82-4.33,4.46c-3.02,3.11-7.88,3.46-11.3.82l-17.93-13.82c.5-1.59.75-3.25.75-4.88,0-5.05-2.34-10.03-6.73-13.24-5.58-4.08-12.88-4.11-18.38-.64l-.07-.06c2.12-2.92,3.14-6.29,3.14-9.63,0-5.05-2.33-10.04-6.72-13.24-6.55-4.78-15.47-3.99-21.08,1.5,1.54-2.6,2.29-5.48,2.29-8.34,0-5.06-2.34-10.04-6.73-13.25-6.52-4.77-15.39-3.99-21,1.43.17-.93.25-1.88.25-2.83,0-5.05-2.34-10.03-6.73-13.24-5.7-4.16-13.17-4.11-18.73-.42l-25.27-19.47,44.54-99.53,70.48-22.9,15.65,9.24-20.11,12.67-38.81,54.32,8.87,8.33c12.14,11.4,30.88,11.97,43.69,1.33l20.94-17.42,52.05,45.94,58.52,51.38c1.79,1.58,2.81,3.74,2.89,6.13.08,2.37-.81,4.61-2.48,6.29ZM373.95,240.45c-13.73,6.93-30.29,4.83-41.84-5.31l-38.31-33.64-16.31,7.93c-8.15,3.97-17.47,4.74-26.17,2.19l-15.84-8.01,5.24-6.56,53.07-31.18,71.9,23.02,20.77,45.24-12.52,6.32Z" />
-          <polygon points="380.55 160.86 443.01 294.51 521.46 259.64 454.63 124.25 380.55 160.86" />
-        </svg>
-
-
-        Diplomatie
-      </a>
-
-      <a
-        class="nav-link-out"
-        data-page="classement"
-        [class.is-active]="activePage === 'classement'"
-        (click)="togglePage('classement')"
-        title="Classement">
-
-        <!-- SVG original Classement -->
-        <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
-         <path
-            d="M428.14,113.52v-56.68H111.86v56.68H18.54v11.66c0,54.89,15.69,97.25,46.64,125.91,23.52,21.77,55.81,34.79,93.66,37.83,18.33,25.2,41.04,44.22,66.39,54.63v38.11l-20.12,20.12h-21.44l-39.66,39.67v41.71h251.98v-41.71l-39.67-39.67h-21.43l-20.12-20.12v-38.11c25.35-10.41,48.06-29.44,66.39-54.63,37.86-3.05,70.13-16.06,93.64-37.83,30.96-28.65,46.65-71.01,46.65-125.91v-11.66h-93.32ZM81.02,233.97c-23.84-22.07-36.9-54.72-38.89-97.13h69.76c.6,47.31,12.04,91.02,31,126.54-24.92-4.55-45.68-14.4-61.88-29.41ZM175.97,272.88c-26.31-37.47-40.79-87.22-40.79-140.09v-52.63h134.82v249.04c-35.14,0-68.54-20-94.03-56.32ZM270,459.84h-102.67v-8.74l25.99-26.01h76.68v34.74ZM238.08,401.78l10.47-10.47v-40.81c7.01,1.33,14.18,2.02,21.45,2.02s14.44-.69,21.45-2.02v40.81l10.47,10.47h-63.84ZM458.96,233.97c-16.2,14.99-36.94,24.84-61.86,29.41,18.96-35.51,30.4-79.23,31-126.54h69.76c-1.99,42.41-15.05,75.06-38.9,97.13Z" />
-        </svg>
-
- 
-        Classement
-      </a>
-
-      <a
-        class="nav-link-out"
+        class="nav-link"
         data-page="evenements"
-        [class.is-active]="activePage === 'evenements'"
+        [class.is-active]="evenementsOuvert"
+        [class.is-locked]="estEnAttente"
         (click)="togglePage('evenements')"
-        title="Événements">
+        title="Suivi des attaques">
 
-        <!-- SVG original Événements -->
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
            <path
             d="M448.84,123.56h-57.09v-20.77c0-14.94-12.13-27.07-27.05-27.07s-27.07,12.13-27.07,27.07v20.77h-133.39v-20.77c0-14.94-12.13-27.07-27.05-27.07s-27.07,12.13-27.07,27.07v20.77h-58.96l-25.87,25.87v314.86h409.42V149.42l-25.87-25.87ZM354.25,102.79c0-5.76,4.68-10.45,10.45-10.45s10.43,4.68,10.43,10.45v61.57c0,5.75-4.68,10.43-10.43,10.43s-10.45-4.68-10.45-10.43v-61.57ZM166.74,102.79c0-5.76,4.68-10.45,10.45-10.45s10.43,4.68,10.43,10.45v61.57c0,5.75-4.68,10.43-10.43,10.43s-10.45-4.68-10.45-10.43v-61.57ZM440.17,429.74H99.83v-212.65h340.33v212.65Z" />
@@ -174,12 +150,10 @@
           <rect x="338.27" y="340.92" width="52.85" height="52.85" />
         </svg>
 
-
-        Événements
-        <span class="nav-count">3</span>
+        Attaques
       </a>
 
-      <a class="nav-link-out" data-page="regles" [class.is-active]="activePage === 'regles'"
+      <a class="nav-link" data-page="regles" [class.is-active]="reglesOuvertes"
         (click)="togglePage('regles')" title="Règles et commandes">
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
            <path
@@ -194,85 +168,245 @@
     </div>
   </header>
 
-
   <!-- CONTENU PRINCIPAL -->
   <main class="player-main">
 
     <!-- CHARGEMENT -->
     @if (chargement && !royaume) {
-
       <div class="loading-message">
         Chargement de votre royaume...
       </div>
-
     }
 
     <!-- ERREUR -->
     @if (erreur) {
-
       <div class="error-message">
         {{ erreur }}
       </div>
-
-      <button
-        type="button"
-        (click)="chargerDonneesRoyaume()">
+      <button type="button" (click)="chargerDonneesRoyaume()">
         Réessayer
       </button>
-
     }
 
     <!-- CARTE DU ROYAUME -->
     @if (royaume) {
-
       <app-carte-royaume
         class="player-world-map"
         [carte]="carte"
         [seed]="seed"
-        archetype="VALLEE_ROYALE"
+        [archetype]="archetype"
         [inclinaison]="40"
         [autoriserDeplacement]="false"
         [selectedEmplacementNumero]="selectedEmplacementNumero"
         [showLabels]="true"
         [showBorders]="true"
         [showRoutes]="true"
-        (emplacementSelectionne)="onEmplacementSelectionne($event)">
+        (emplacementSelectionne)="onEmplacementSelectionne($event)"
+        (marcheSelectionne)="onMarcheSelectionne()">
       </app-carte-royaume>
+    }
 
+    <!-- BANDEAU PARTIE EN COURS -->
+    @if (partie && !estEnAttente && !salleChateauOuverte) {
+      <div class="partie-status-pill" data-testid="partie-en-cours-badge">
+        <span>⚔️ <strong>{{ partie.nom }}</strong></span>
+        <span>· {{ archetypeLabel }}</span>
+        <span class="status-dot-live">En cours</span>
+        <span class="status-hint">Cliquez sur votre royaume (Salle du Château), un adversaire ou le Marché</span>
+      </div>
+    }
+
+    <!-- MESSAGE VERROUILLAGE EN ATTENTE -->
+    @if (messageVerrouillage) {
+      <div class="lock-toast" data-testid="lock-toast">
+        ⏳ {{ messageVerrouillage }}
+      </div>
+    }
+
+    <!-- SALON D'ATTENTE SUR LA CARTE (PARTIE EN_ATTENTE) -->
+    @if (partie && estEnAttente) {
+      <section
+        class="lobby-waiting-overlay"
+        [class.is-minimized]="salonReduit"
+        data-testid="waiting-room-panel">
+        <header class="waiting-header">
+          <div>
+            <span class="waiting-badge">⏳ Salon d'attente</span>
+            <h2>{{ partie.nom }}</h2>
+            <p class="waiting-meta">
+              {{ archetypeLabel }} · Seed : <code>{{ seed }}</code>
+            </p>
+          </div>
+          <button
+            type="button"
+            class="btn-toggle-salon"
+            (click)="basculerSalonReduit()"
+            data-testid="toggle-salon-btn">
+            {{ salonReduit ? 'Déplier le salon' : 'Voir la carte' }}
+          </button>
+        </header>
+
+        @if (!salonReduit) {
+          <div class="waiting-progress">
+            <span>Places occupées :</span>
+            <strong data-testid="waiting-slots-counter">
+              {{ partie.royaumes.length }} / {{ partie.maxJoueurs }}
+            </strong>
+          </div>
+
+          <ul class="waiting-slots-list" data-testid="waiting-slots-list">
+            @for (slot of slotsSalon; track slot.numero) {
+              <li
+                class="waiting-slot-item"
+                [class.is-occupied]="slot.occupe"
+                [class.is-mine]="slot.estMoi">
+                <span class="slot-num">#{{ slot.numero }}</span>
+                @if (slot.occupe) {
+                  <div class="slot-info">
+                    <strong>
+                      {{ slot.nomRoyaume }}
+                      @if (slot.estMoi) {
+                        <span class="moi-tag">(Vous)</span>
+                      }
+                    </strong>
+                    <span>
+                      {{ slot.pseudoJoueur || 'Souverain' }}
+                      @if (slot.peupleNom) {
+                        · {{ slot.peupleNom }}
+                      }
+                    </span>
+                  </div>
+                } @else {
+                  <span class="slot-empty">Emplacement libre — En attente d'un joueur...</span>
+                }
+              </li>
+            }
+          </ul>
+
+          @if (erreurDemarrage) {
+            <p class="waiting-error">{{ erreurDemarrage }}</p>
+          }
+
+          <footer class="waiting-footer">
+            @if (estPartieComplete) {
+              <p class="waiting-ready-msg">
+                Toutes les places sont remplies ! N'importe quel joueur peut lancer la partie.
+              </p>
+              <button
+                type="button"
+                class="btn-start-partie"
+                [disabled]="demarrageEnCours"
+                (click)="demarrerPartie()"
+                data-testid="start-partie-btn">
+                {{ demarrageEnCours ? 'Démarrage en cours...' : '⚔️ Démarrer la partie' }}
+              </button>
+            } @else {
+              <p class="waiting-wait-msg" data-testid="waiting-remaining-msg">
+                En attente de {{ placesRestantes }} joueur(s) supplémentaire(s)... Les actions de jeu sont verrouillées jusqu'au lancement.
+              </p>
+            }
+          </footer>
+        }
+      </section>
     }
 
   </main>
 
-
-  <!-- VUE DU ROYAUME -->
-  @if (activePage === 'royaume' && royaume) {
-
+  <!-- PANNEAUX LATÉRAUX JOUEUR (DÉVERROUILLÉS EN_COURS) -->
+  @if (!estEnAttente && activePage === 'royaume' && royaume) {
     <app-kingdom-overview
       [royaume]="royaume"
       [paliers]="paliers">
     </app-kingdom-overview>
-
   }
 
-
-  <!-- DÉVELOPPEMENT -->
-  @if (activePage === 'developpement' && royaume) {
-
+  @if (!estEnAttente && activePage === 'developpement' && royaume) {
     <app-kingdom-development
       [royaume]="royaume"
       (royaumeModifie)="onRoyaumeModifie()">
     </app-kingdom-development>
-
   }
 
-
-  <!-- BÂTIMENTS -->
-  @if (activePage === 'batiments' && royaume) {
-
+  @if (!estEnAttente && activePage === 'batiments' && royaume) {
     <app-kingdom-buildings
       [royaume]="royaume">
     </app-kingdom-buildings>
+  }
 
+  <!-- SURIMPRESSION : SALLE DU CHÂTEAU (TP PIKACHU) -->
+  @if (!estEnAttente && salleChateauOuverte && royaume) {
+    <app-menus-salle-du-chateau
+      [royaumeId]="royaumeId"
+      [peupleNom]="royaume.peuple?.nom"
+      [modeModal]="true"
+      (fermer)="fermerSalleDuChateau()"
+      (royaumeModifie)="onRoyaumeModifie()">
+    </app-menus-salle-du-chateau>
+  }
+
+  <!-- SURIMPRESSION : MENU ROYAUME ADVERSE -->
+  @if (!estEnAttente && menuAdverseOuvert && cibleAdverse && partie) {
+    <app-menu-adverse
+      [monRoyaumeId]="royaumeId"
+      [monUtilisateurId]="utilisateurConnecteId"
+      [partieId]="partie.id"
+      [royaumeAdverse]="cibleAdverse"
+      [modeModal]="true"
+      (fermer)="fermerMenuAdverse()"
+      (actionEffectuee)="onRoyaumeModifie()">
+    </app-menu-adverse>
+  }
+
+  <!-- SURIMPRESSION : PLACE DU MARCHÉ -->
+  @if (!estEnAttente && marcheOuvert && royaume) {
+    <div class="overlay-modal-backdrop" (click)="fermerMarche()">
+      <div class="overlay-modal-card" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="overlay-close-btn"
+          aria-label="Fermer le marché"
+          (click)="fermerMarche()"
+          data-testid="fermer-marche-btn">
+          ✕
+        </button>
+        <app-place-du-marche
+          [monRoyaumeId]="royaumeId"
+          (offreModifiee)="onRoyaumeModifie()">
+        </app-place-du-marche>
+      </div>
+    </div>
+  }
+
+  <!-- SURIMPRESSION : SUIVI DES ATTAQUES -->
+  @if (!estEnAttente && evenementsOuvert && royaume) {
+    <div class="overlay-modal-backdrop" (click)="fermerEvenements()">
+      <div class="overlay-modal-card" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="overlay-close-btn"
+          aria-label="Fermer les attaques"
+          (click)="fermerEvenements()">
+          ✕
+        </button>
+        <app-visu-attaques [royaumeId]="royaumeId"></app-visu-attaques>
+      </div>
+    </div>
+  }
+
+  <!-- SURIMPRESSION : RÈGLES DU JEU -->
+  @if (reglesOuvertes) {
+    <div class="overlay-modal-backdrop" (click)="fermerRegles()">
+      <div class="overlay-modal-card overlay-modal-wide" (click)="$event.stopPropagation()">
+        <button
+          type="button"
+          class="overlay-close-btn"
+          aria-label="Fermer les règles"
+          (click)="fermerRegles()">
+          ✕
+        </button>
+        <app-regles-du-jeu-manuscript></app-regles-du-jeu-manuscript>
+      </div>
+    </div>
   }
 
 </div>
