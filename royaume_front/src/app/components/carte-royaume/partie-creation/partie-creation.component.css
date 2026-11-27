@@ -1,6 +1,7 @@
 :host {
   display: block;
   width: 100%;
+  min-height: 100dvh;
 }
 
 
@@ -14,12 +15,20 @@
   align-items: center;
   justify-content: center;
 
+  width: 100%;
   min-height: 100dvh;
+
+  padding: 40px 24px;
+  box-sizing: border-box;
+
+  background: #092f29;
+
+  color: #f0d08a;
 }
 
 /* Masquer le titre déjà présent dans la page */
 
-.creation-partie > h1 {
+.creation-partie>h1 {
   display: none;
 }
 
@@ -28,7 +37,7 @@
    BOUTON DE CRÉATION
    ======================================== */
 
-.creation-partie > button {
+.creation-partie>button {
   width: 100%;
   max-width: 280px;
   min-height: 52px;
@@ -60,7 +69,7 @@
     transform .2s;
 }
 
-.creation-partie > button:hover {
+.creation-partie>button:hover {
   background: #2e5b4c;
   color: #fff2d4;
   border-color: #f0d08a;
@@ -68,7 +77,7 @@
   transform: translateY(-2px);
 }
 
-.creation-partie > button:active {
+.creation-partie>button:active {
   transform: translateY(0);
 }
 
@@ -89,7 +98,7 @@
   padding: 24px;
   box-sizing: border-box;
 
-  background: rgba(5, 18, 15, .8);
+  background: transparent;
   backdrop-filter: blur(5px);
 
   animation: apparition-fond .2s ease-out;
@@ -111,11 +120,9 @@
   box-sizing: border-box;
   overflow-y: auto;
 
-  background: radial-gradient(
-    ellipse at center,
-    #f2e7d0 0%,
-    #e5d5b5 100%
-  );
+  background: radial-gradient(ellipse at center,
+      #f2e7d0 0%,
+      #e5d5b5 100%);
 
   color: #443522;
 
@@ -135,7 +142,7 @@
    TITRE DE LA POPUP
    ======================================== */
 
-.popup-contenu > h2 {
+.popup-contenu>h2 {
   position: relative;
 
   margin: 0 0 30px;
@@ -149,7 +156,7 @@
   color: #443522;
 }
 
-.popup-contenu > h2::after {
+.popup-contenu>h2::after {
   content: '';
 
   position: absolute;
@@ -159,15 +166,13 @@
   width: 100%;
   height: 1px;
 
-  background: linear-gradient(
-    90deg,
-    transparent,
-    #b28a46,
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      #b28a46,
+      transparent);
 }
 
-.popup-contenu > h2::before {
+.popup-contenu>h2::before {
   content: '';
 
   position: absolute;
@@ -281,7 +286,7 @@
 
 /* Erreur générale renvoyée par le serveur */
 
-.popup-contenu form > .erreur {
+.popup-contenu form>.erreur {
   padding: 12px 14px;
 
   background: rgba(166, 75, 64, .08);
@@ -410,6 +415,7 @@ button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .popup-fond,
   .popup-contenu {
     animation: none;
@@ -436,7 +442,7 @@ button:focus-visible {
     max-height: calc(100dvh - 32px);
   }
 
-  .popup-contenu > h2 {
+  .popup-contenu>h2 {
     font-size: 22px;
   }
 
