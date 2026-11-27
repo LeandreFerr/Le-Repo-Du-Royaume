@@ -5,7 +5,6 @@ import royaume.model.Ressource;
 
 public record BatimentResponse(
 
-    // Attributs communs
     Integer id,
     String nom,
     int niveau,
@@ -14,17 +13,13 @@ public record BatimentResponse(
     boolean enConstruction,
     int montantReparationEnCours,
 
-    // Relation
     Integer royaumeId,
 
-    // BatimentProduction
     Ressource typeRessource,
     Integer productionBaseHeure,
 
-    // Maison
     Double bonusPropre,
 
-    // Chateau
     Integer niveauPalierDebloque,
     Double bonusDefenseRoyaume
 

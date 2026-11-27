@@ -1,6 +1,5 @@
 import { TypeBatiment } from './batiment.model';
 import { Ressource, QuantiteRessource } from './ressource.model';
-
 export interface ModeleBatiment {
 
   id: number;
@@ -22,5 +21,10 @@ export interface ModeleBatiment {
   tempsConstructionSecondes: number;
 
   ouvriersMinimum: number;
+
+  // Paramètres nécessaires à la création
+  pointsDeVie?: number;
+
+  productionBaseHeure?: number;
 
 }

@@ -7,6 +7,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.transaction.Transactional;
 import royaume.dao.IDAOBatiment;
+import royaume.dao.IDAOChantierConstruction;
 import royaume.dao.IDAORoyaume;
 import royaume.dto.response.BatimentResponse;
 import royaume.model.Ressource;
@@ -16,21 +17,24 @@ import royaume.model.batiment.BatimentFactory;
 import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
-
+import royaume.dao.IDAOChantierConstruction;
+import royaume.model.batiment.ChantierConstruction;
 @Service
 @Transactional
 public class BatimentService {
 
     private final IDAORoyaume royaumeDAO;
     private final IDAOBatiment batimentDAO;
-
+    private final IDAOChantierConstruction chantierDAO;
     public BatimentService(
-            IDAORoyaume royaumeDAO,
-            IDAOBatiment batimentDAO) {
+        IDAORoyaume royaumeDAO,
+        IDAOBatiment batimentDAO,
+        IDAOChantierConstruction chantierDAO) {
 
-        this.royaumeDAO = royaumeDAO;
-        this.batimentDAO = batimentDAO;
-    }
+    this.royaumeDAO = royaumeDAO;
+    this.batimentDAO = batimentDAO;
+    this.chantierDAO = chantierDAO;
+}
 
     // =========================================
     // RECUPERATION DU ROYAUME PAR ID
@@ -66,64 +70,85 @@ public class BatimentService {
     // MAISON
     // Même nom + même royaume = pas de doublon
     // =========================================
+public Maison creerMaison(
+        Integer royaumeId,
+        Integer id,
+        String nom,
+        int ouvriers) {
 
-    public Maison creerMaison(
-            Integer royaumeId,
-            Integer id,
-            String nom,
-            int ouvriers) {
+    Royaume royaume = recupererRoyaume(royaumeId);
 
-        Royaume royaume = recupererRoyaume(royaumeId);
+    return batimentDAO
+        .findByRoyaume_IdAndNom(royaumeId, nom)
+        .orElseGet(() -> {
 
-        return batimentDAO
-            .findByRoyaume_IdAndNom(royaumeId, nom)
-            .orElseGet(() -> {
+            Maison maison = BatimentFactory.creerMaison(
+                royaume, id, nom, ouvriers
+            );
 
-                Maison maison = BatimentFactory.creerMaison(
-                    royaume, id, nom, ouvriers
-                );
+            // 1. Sauvegarder le bâtiment
+            Maison maisonEnregistree = batimentDAO.save(maison);
 
-                return batimentDAO.save(maison);
-            });
-    }
+            // 2. Récupérer le chantier créé par la Factory
+            ChantierConstruction chantier = maisonEnregistree.getChantier();
+
+            // 3. Sauvegarder le chantier
+            if (chantier != null) {
+                chantierDAO.save(chantier);
+            }
+
+            return maisonEnregistree;
+        });
+}
 
     // =========================================
     // BATIMENT DE PRODUCTION
     // Même ressource + même royaume = pas de doublon
     // =========================================
+public BatimentProduction creerBatimentProduction(
+        Integer royaumeId,
+        Integer id,
+        String nom,
+        int pointsDeVie,
+        Ressource typeRessource,
+        int productionBaseHeure,
+        int ouvriers) {
 
-    public BatimentProduction creerBatimentProduction(
-            Integer royaumeId,
-            Integer id,
-            String nom,
-            int pointsDeVie,
-            Ressource typeRessource,
-            int productionBaseHeure,
-            int ouvriers) {
+    Royaume royaume = recupererRoyaume(royaumeId);
 
-        Royaume royaume = recupererRoyaume(royaumeId);
+    return batimentDAO
+        .findByRoyaume_IdAndTypeRessource(
+            royaumeId, typeRessource
+        )
+        .orElseGet(() -> {
 
-        return batimentDAO
-            .findByRoyaume_IdAndTypeRessource(
-                royaumeId, typeRessource
-            )
-            .orElseGet(() -> {
+            BatimentProduction batiment =
+                BatimentFactory.creerBatimentProduction(
+                    royaume,
+                    id,
+                    nom,
+                    pointsDeVie,
+                    typeRessource,
+                    productionBaseHeure,
+                    ouvriers
+                );
 
-                BatimentProduction batiment =
-                    BatimentFactory.creerBatimentProduction(
-                        royaume,
-                        id,
-                        nom,
-                        pointsDeVie,
-                        typeRessource,
-                        productionBaseHeure,
-                        ouvriers
-                    );
+            // 1. Sauvegarder le bâtiment
+            BatimentProduction batimentEnregistre =
+                batimentDAO.save(batiment);
 
-                return batimentDAO.save(batiment);
-            });
-    }
+            // 2. Récupérer le chantier
+            ChantierConstruction chantier =
+                batimentEnregistre.getChantier();
 
+            // 3. Sauvegarder le chantier
+            if (chantier != null) {
+                chantierDAO.save(chantier);
+            }
+
+            return batimentEnregistre;
+        });
+}
 // =========================================
 // RECUPERATION D'UN BATIMENT
 // =========================================
@@ -278,33 +303,34 @@ public Batiment reparerBatiment(
     // CONVERSION DTO
     // =========================================
 
-    private BatimentResponse convertirEnResponse(Batiment b) {
+private BatimentResponse convertirEnResponse(Batiment b) {
 
-        BatimentProduction prod =
-            b instanceof BatimentProduction bp ? bp : null;
+    BatimentProduction prod =
+        b instanceof BatimentProduction bp ? bp : null;
 
-        Maison maison =
-            b instanceof Maison m ? m : null;
+    Maison maison =
+        b instanceof Maison m ? m : null;
 
-        Chateau chateau =
-            b instanceof Chateau c ? c : null;
+    Chateau chateau =
+        b instanceof Chateau c ? c : null;
 
-        return new BatimentResponse(
-            b.getId(),
-            b.getNom(),
-            b.getNiveau(),
-            b.getPointsDeVie(),
-            b.getPointsDeVieMax(),
-            b.isEnConstruction(),
-            b.getMontantReparationEnCours(),
-            b.getRoyaume().getId(),
-            prod == null ? null : prod.getTypeRessource(),
-            prod == null ? null : prod.getProductionBaseHeure(),
-            maison == null ? null : maison.getBonusPropre(),
-            chateau == null ? null : chateau.getNiveauPalierDebloque(),
-            chateau == null ? null : chateau.getBonusDefenseRoyaume()
-        );
-    }
+    return new BatimentResponse(
+        b.getId(),
+        b.getNom(),
+        b.getNiveau(),
+        b.getPointsDeVie(),
+        b.getPointsDeVieMax(),
+        b.isEnConstruction(),
+        b.getMontantReparationEnCours(),
+        b.getRoyaume().getId(),
 
+        prod != null ? prod.getTypeRessource() : null,
+        prod != null ? prod.getProductionBaseHeure() : null,
+
+        maison != null ? maison.getBonusPropre() : null,
+
+        chateau != null ? chateau.getNiveauPalierDebloque() : null,
+        chateau != null ? chateau.getBonusDefenseRoyaume() : null
+    );
 }
-
+}

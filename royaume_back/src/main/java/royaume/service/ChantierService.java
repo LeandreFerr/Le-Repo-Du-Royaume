@@ -128,4 +128,17 @@ public class ChantierService {
             chantier.isAmelioration()
         );
     }
+
+    // =========================================
+// RECUPERATION PAR ROYAUME
+// =========================================
+
+public List<ChantierConstructionResponse> trouverParRoyaumeId(
+        Integer royaumeId) {
+
+    return chantierDAO.findByRoyaume_Id(royaumeId)
+        .stream()
+        .map(this::convertirEnResponse)
+        .toList();
+}
 }

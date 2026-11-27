@@ -72,4 +72,16 @@ public class ChantierRestController {
             chantierService.retirerOuvriers(id, nombre)
         );
     }
+
+
+@GetMapping("/royaume/{royaumeId}")
+public ResponseEntity<List<ChantierConstructionResponse>>
+        trouverParRoyaume(
+            @PathVariable @Positive Integer royaumeId) {
+
+    return ResponseEntity.ok(
+        chantierService.trouverParRoyaumeId(royaumeId)
+    );
+}
+
 }

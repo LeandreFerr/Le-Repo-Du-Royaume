@@ -15,7 +15,7 @@ List<ChantierConstruction> findByDateFinPrevueLessThanEqual(
 
     Optional<ChantierConstruction> findByBatiment_Id(Integer batimentId);
 
-    
+    List<ChantierConstruction> findByRoyaume_Id(Integer royaumeId);
 }
 
    //save(ChantierConstruction chantier);

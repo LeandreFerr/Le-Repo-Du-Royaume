@@ -1,4 +1,4 @@
-
+import { Ressource } from "../models/ressource.model";
 export interface BatimentResponse {
   id: number;
   nom: string;
@@ -8,8 +8,8 @@ export interface BatimentResponse {
   enConstruction: boolean;
   montantReparationEnCours: number;
   royaumeId: number;
-
-  typeRessource: string | null;
+  typeRessource: Ressource | null;
+  //typeRessource: string | null;
   productionBaseHeure: number | null;
 
   bonusPropre: number | null;

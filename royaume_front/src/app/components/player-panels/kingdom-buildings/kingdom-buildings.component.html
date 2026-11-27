@@ -1223,122 +1223,112 @@
       </section>
 
 
-      <!-- ========================================
-           COLONNE DES CHANTIERS
-           ======================================== -->
+      
+<!-- ========================================
+     COLONNE DES CHANTIERS
+     ======================================== -->
 
-      <aside class="construction-card">
+<aside class="construction-card">
+
+  <span class="section-label">
+    Travaux du domaine
+  </span>
+
+  <h2>Chantiers en cours</h2>
+
+  <div class="construction-list">
+
+    @for (chantier of chantiers; track chantier.id) {
+
+      <article class="construction-item">
+
+        <!-- Type de chantier -->
 
         <span class="section-label">
-          Travaux du domaine
+          {{ chantier.amelioration
+            ? 'Amélioration'
+            : getTypeChantierParId(chantier) }}
         </span>
 
-        <h2>Chantiers en cours</h2>
+        <!-- Nom du bâtiment -->
 
-        <div class="construction-list">
+        <h3>
+          {{ getNomBatimentChantier(chantier) }}
+        </h3>
 
-          @for (batiment of chantiersActifs; track batiment.id) {
+        <!-- Progression -->
 
-          @if (batiment.chantier; as chantier) {
+        <div class="construction-progress">
 
-          <article class="construction-item">
+          <span>Avancement estimé</span>
 
-            <span class="section-label">
+          <strong>
+            {{ getProgressionChantier(chantier) | number:'1.0-0' }} %
+          </strong>
 
-              {{ getTypeChantier(batiment, chantier) }}
+        </div>
 
+        <div class="construction-bar">
+
+          <div
+            class="construction-fill"
+            [style.width.%]="getProgressionChantier(chantier)">
+          </div>
+
+        </div>
+
+        <!-- Compte à rebours -->
+
+        <div class="construction-timer">
+
+          @if (getTempsRestantChantier(chantier) > 0) {
+
+            <span>Temps restant</span>
+
+            <strong>
+              {{ formaterDuree(getTempsRestantChantier(chantier)) }}
+            </strong>
+
+          } @else {
+
+            <span class="construction-pending">
+              En attente de confirmation
             </span>
-
-            <h3>{{ batiment.nom }}</h3>
-
-
-            <!-- Progression -->
-
-            <div class="construction-progress">
-
-              <span>Avancement estimé</span>
-
-              <strong>
-
-                {{ getProgressionChantier(chantier) | number:'1.0-0' }} %
-
-              </strong>
-
-            </div>
-
-            <div class="construction-bar">
-
-              <div class="construction-fill" [style.width.%]="getProgressionChantier(chantier)">
-              </div>
-
-            </div>
-
-
-            <!-- Compte à rebours -->
-
-            <div class="construction-timer">
-
-              @if (getTempsRestantChantier(chantier) > 0) {
-
-              <span>Temps restant</span>
-
-              <strong>
-
-                {{ formaterDuree(getTempsRestantChantier(chantier)) }}
-
-              </strong>
-
-              } @else {
-
-              <span class="construction-pending">
-
-                En attente de confirmation
-
-              </span>
-
-              }
-
-            </div>
-
-
-            <!-- Ouvriers assignés -->
-
-            <div class="construction-workers">
-
-              <img src="/img/population.svg" alt="">
-
-              <div>
-
-                <span>Ouvriers assignés</span>
-
-                <strong>
-
-                  {{ chantier.ouvriersAssignes }}
-
-                </strong>
-
-              </div>
-
-            </div>
-
-          </article>
-
-          }
-
-          } @empty {
-
-          <p class="empty-message">
-            Aucun chantier en cours.
-          </p>
 
           }
 
         </div>
 
-      </aside>
+        <!-- Ouvriers assignés -->
 
-    </div>
+        <div class="construction-workers">
+
+          <img src="/img/population.svg" alt="">
+
+          <div>
+
+            <span>Ouvriers assignés</span>
+
+            <strong>
+              {{ chantier.ouvriersAssignes | number:'1.0-0' }}
+            </strong>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    } @empty {
+
+      <p class="empty-message">
+        Aucun chantier en cours.
+      </p>
+
+    }
 
   </div>
+
+</aside>
 
 </section>
