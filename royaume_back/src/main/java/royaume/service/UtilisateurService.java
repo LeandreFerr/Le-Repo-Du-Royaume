@@ -21,6 +21,7 @@ public class UtilisateurService {
         this.utilisateurDAO = utilisateurDAO;
     }
 
+    @Transactional
     public UtilisateurResponse login(UtilisateurRequest request) {
 
         if (request.pseudo() == null || request.pseudo().isBlank()
@@ -83,6 +84,7 @@ public class UtilisateurService {
         utilisateurDAO.save(utilisateur);
     }
 
+    @Transactional
     public UtilisateurResponse getUtilisateurById(Integer id) {
 
         Utilisateur utilisateur = utilisateurDAO.findById(id)
