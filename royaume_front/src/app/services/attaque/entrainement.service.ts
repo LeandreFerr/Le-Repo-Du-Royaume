@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 
 export class SessionEntrainementService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/entrainement';
+  private apiUrl = 'http://localhost:8080/api/sessions-entrainement';
 
   entrainer(royaumeId: number, type: string, quantite:number): Observable<any> {
     return this.http.post<any>(this.apiUrl, {

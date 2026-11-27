@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, inject} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SessionEntrainementService } from '../../services/attaque/entrainement.service';
+import { RoyaumeService } from '../../services/royaume.service';
 import { Royaume } from '../../models/royaume.model';
 
 @Component({
@@ -13,6 +14,8 @@ import { Royaume } from '../../models/royaume.model';
 })
 export class SessionEntrainement implements OnInit{
   private entrainementService = inject(SessionEntrainementService);
+  private royaumeService = inject(RoyaumeService);
+  private cdr = inject(ChangeDetectorRef);
   
   @Input({ required: true }) royaume!: Royaume;
 
@@ -44,11 +47,21 @@ export class SessionEntrainement implements OnInit{
   }
 
   get populationDisponible(): number {
-    return this.royaume.populationDisponible;
+    return this.royaume?.populationDisponible ?? 0;
   }
 
   get populationEnEntrainement(): number {
-    return this.royaume.populationEnEntrainement;
+    return this.sessionsEnCours
+      .filter((s) => !s?.finalisee)
+      .reduce((total, s) => total + (Number(s?.quantite) || 0), 0);
+  }
+
+  get populationMilitaire(): number {
+    const r = this.royaume as any;
+    if (typeof r?.populationMilitaire === 'number') {
+      return r.populationMilitaire;
+    }
+    return this.garnison.reduce((total, c) => total + (Number(c?.quantite) || 0), 0);
   }
 
   getGarnisonParType(type: string): number {
@@ -63,29 +76,39 @@ export class SessionEntrainement implements OnInit{
   chargerDonnees(): void {
     if (!this.royaume?.id) return;
     this.chargement = true;
+    this.cdr.detectChanges();
 
     this.entrainementService.getGarnison(this.royaume.id).subscribe({
-      next: (data) => (this.garnison = data),
+      next: (data) => {
+        this.garnison = data ?? [];
+        this.cdr.detectChanges();
+      },
       error: () => {
         this.erreur = true;
         this.message = 'Erreur lors du chargement de la garnison.';
+        this.cdr.detectChanges();
       },
     });
 
     this.entrainementService.getSessions(this.royaume.id, false).subscribe({
       next: (data) => {
-        this.sessionsEnCours = data;
+        this.sessionsEnCours = (data ?? []).filter((s) => !s?.finalisee);
         this.chargement = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.erreur = true;
         this.message = 'Erreur lors du chargement des sessions en cours.';
         this.chargement = false;
+        this.cdr.detectChanges();
       },
     });
 
     this.entrainementService.getSessions(this.royaume.id, true).subscribe({
-      next: (data) => (this.sessionsFinalisees = data),
+      next: (data) => {
+        this.sessionsFinalisees = data ?? [];
+        this.cdr.detectChanges();
+      },
       error: () => {},
     });
   }
@@ -101,30 +124,32 @@ export class SessionEntrainement implements OnInit{
     const quantite = Number(this.quantitesAEntrainer[type]) || 0;
     if (quantite <= 0) return;
 
+    this.quantitesAEntrainer[type] = 0;
     this.actionEnCours = true;
     this.message = '';
     this.erreur = false;
+    this.cdr.detectChanges();
 
     this.entrainementService.entrainer(this.royaume.id, type, quantite).subscribe({
       next: (sessionCreee) => {
-        this.sessionsEnCours.push(sessionCreee);
-        this.royaume.populationDisponible -= quantite;
-        this.royaume.populationEnEntrainement += quantite;
-        this.quantitesAEntrainer[type] = 0;
+        if (sessionCreee && !sessionCreee.finalisee) {
+          this.sessionsEnCours = [...this.sessionsEnCours, sessionCreee];
+        }
+        this.royaume.populationDisponible = Math.max(0, this.royaume.populationDisponible - quantite);
 
         this.message = `Entraînement lancé : ${quantite} ${type}.`;
         this.actionEnCours = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.erreur = true;
-        this.message = err?.error?.message || "Entraînement impossible : population ou ressources insuffisantes.";
+        this.message =
+          err?.error?.message ||
+          "Entraînement impossible : population ou ressources insuffisantes.";
         this.actionEnCours = false;
+        this.cdr.detectChanges();
       },
     });
   }
+
 }
-
-
-
-
-
