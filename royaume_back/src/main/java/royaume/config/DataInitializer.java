@@ -153,6 +153,8 @@ public class DataInitializer {
 
 			Carte carteEnCours = new Carte();
 			carteEnCours.setPartie(partieEnCours);
+			carteEnCours.setArchetype("VALLEE_ROYALE");
+			carteEnCours.setSeed("demo-en-cours");
 			carteEnCours.genererEmplacements(10);
 			carteEnCours = carteDAO.saveAndFlush(carteEnCours);
 
@@ -173,6 +175,8 @@ public class DataInitializer {
 
 			Carte carteOuverte = new Carte();
 			carteOuverte.setPartie(partieOuverte);
+			carteOuverte.setArchetype("LAC_CENTRAL");
+			carteOuverte.setSeed("demo-salon-ouvert");
 			carteOuverte.genererEmplacements(10);
 			carteDAO.saveAndFlush(carteOuverte);
 

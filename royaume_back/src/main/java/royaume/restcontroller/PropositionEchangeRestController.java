@@ -50,6 +50,7 @@ public ResponseEntity<PropositionEchangeResponse> creerProposition(
     PropositionEchange echange =
         propositionService.creerProposition(
             request.expediteurId(),
+            request.destinataireId(),
             offerte,
             demandee
         );

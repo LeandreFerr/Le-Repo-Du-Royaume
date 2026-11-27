@@ -31,6 +31,8 @@ public class Carte {
     private int hauteur = 100;
     private int centreX = 50;
     private int centreY = 50;
+    private String archetype = "VALLEE_ROYALE";
+    private String seed = "royaume-1";
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "partie_id", unique = true)
@@ -265,6 +267,22 @@ public class Carte {
 
     public EmplacementCarte getEmplacementMarche() {
         return emplacementMarche;
+    }
+
+    public String getArchetype() {
+        return archetype;
+    }
+
+    public void setArchetype(String archetype) {
+        this.archetype = (archetype != null && !archetype.isBlank()) ? archetype.trim() : "VALLEE_ROYALE";
+    }
+
+    public String getSeed() {
+        return seed;
+    }
+
+    public void setSeed(String seed) {
+        this.seed = (seed != null && !seed.isBlank()) ? seed.trim() : "royaume-1";
     }
 
     // =========================================================================

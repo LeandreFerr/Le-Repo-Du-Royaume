@@ -41,11 +41,12 @@ class PartieServiceTest {
 
     @Test
     void creer_devraitSauvegarderEtRetournerPartieResponse() {
-        PartieRequest request = new PartieRequest("Partie Test", 1.5, 4);
+        PartieRequest request = new PartieRequest("Partie Test", 1.5, 4, "LAC_CENTRAL", "seed-lac-42");
         Partie saved = new Partie("Partie Test", 1.5, 4);
         saved.setId(1);
 
         when(daoPartie.save(any(Partie.class))).thenReturn(saved);
+        when(daoCarte.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         PartieResponse response = partieService.creer(request);
 
@@ -56,6 +57,36 @@ class PartieServiceTest {
         assertEquals(4, response.maxJoueurs());
         assertEquals(StatutPartie.EN_ATTENTE, response.statut());
         verify(daoPartie).save(any(Partie.class));
+        verify(daoCarte).save(org.mockito.ArgumentMatchers.argThat(c ->
+                "LAC_CENTRAL".equals(c.getArchetype())
+                && "seed-lac-42".equals(c.getSeed())
+                && c.getEmplacements().size() == 4));
+    }
+
+    @Test
+    void trouverParRoyaumeId_devraitRetournerPartieContenantLeRoyaume() {
+        Partie partie = new Partie("Alpha", 1.0, 4);
+        partie.setId(12);
+        royaume.model.Royaume r = new royaume.model.Royaume();
+        r.setId(77);
+        partie.inscrireRoyaume(r);
+
+        when(daoPartie.findAll()).thenReturn(List.of(partie));
+
+        PartieResponse response = partieService.trouverParRoyaumeId(77);
+
+        assertEquals(12, response.id());
+        assertEquals("Alpha", response.nom());
+    }
+
+    @Test
+    void trouverParRoyaumeId_devraitLever404_quandAucunRoyaumeCorrespond() {
+        when(daoPartie.findAll()).thenReturn(List.of());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> partieService.trouverParRoyaumeId(888));
+
+        assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     }
 
     @Test

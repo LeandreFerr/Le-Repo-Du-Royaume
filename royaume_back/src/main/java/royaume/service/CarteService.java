@@ -46,6 +46,14 @@ public class CarteService {
 
         Carte carte = new Carte();
         carte.setPartie(partie);
+        if (request.archetype() != null && !request.archetype().isBlank()) {
+            carte.setArchetype(request.archetype());
+        }
+        if (request.seed() != null && !request.seed().isBlank()) {
+            carte.setSeed(request.seed());
+        } else {
+            carte.setSeed("partie-" + partie.getId());
+        }
         carte.genererEmplacements(request.nombreEmplacements());
 
         Carte carteSauvegardee = daoCarte.save(carte);
@@ -119,7 +127,9 @@ public class CarteService {
                 carte.getCentreY(),
                 carte.getPartie() != null ? carte.getPartie().getId() : null,
                 emplacements,
-                emplacementMarche
+                emplacementMarche,
+                carte.getArchetype(),
+                carte.getSeed()
         );
     }
 }

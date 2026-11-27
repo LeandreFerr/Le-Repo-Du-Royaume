@@ -49,6 +49,11 @@ public class PartieRestController {
         return ResponseEntity.ok(partieService.trouverParStatut(statut));
     }
 
+    @GetMapping ("/royaume/{royaumeId}")
+    public ResponseEntity<PartieResponse> trouverParRoyaume(@PathVariable @Positive Integer royaumeId) {
+        return ResponseEntity.ok(partieService.trouverParRoyaumeId(royaumeId));
+    }
+
     @PostMapping 
     public ResponseEntity<PartieResponse> creer(@Valid @RequestBody PartieRequest partieRequest) {
         PartieResponse response = partieService.creer(partieRequest);

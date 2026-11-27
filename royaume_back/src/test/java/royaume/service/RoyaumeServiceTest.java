@@ -162,14 +162,21 @@ class RoyaumeServiceTest {
         Partie partie = new Partie("P", 1.0, 4);
         partie.setId(10);
         Royaume r = new Royaume(5, "Eldoria", creerPeupleValide());
+        Utilisateur u = new Utilisateur();
+        u.setId(42);
+        u.setPseudo("SireArthur");
+        u.setRoyaume(r);
         partie.inscrireRoyaume(r);
 
         when(daoPartie.findById(10)).thenReturn(Optional.of(partie));
+        when(daoUtilisateur.findAll()).thenReturn(List.of(u));
 
         List<RoyaumeResponse> result = royaumeService.trouverParPartie(10);
 
         assertEquals(1, result.size());
         assertEquals("Eldoria", result.get(0).nom());
+        assertEquals("SireArthur", result.get(0).pseudoJoueur());
+        assertEquals(42, result.get(0).utilisateurId());
     }
 
     @Test

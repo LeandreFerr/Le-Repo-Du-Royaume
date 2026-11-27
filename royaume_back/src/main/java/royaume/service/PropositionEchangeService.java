@@ -48,9 +48,18 @@ public class PropositionEchangeService {
             Integer expediteurId,
             QuantiteRessource offerte,
             QuantiteRessource demandee) {
+        return creerProposition(expediteurId, ID_ROYAUME_ADVERSE, offerte, demandee);
+    }
 
+    public PropositionEchange creerProposition(
+            Integer expediteurId,
+            Integer destinataireId,
+            QuantiteRessource offerte,
+            QuantiteRessource demandee) {
+
+        Integer cibleId = destinataireId != null ? destinataireId : ID_ROYAUME_ADVERSE;
         Royaume expediteur = recupererRoyaume(expediteurId);
-        Royaume destinataire = recupererRoyaume(ID_ROYAUME_ADVERSE);
+        Royaume destinataire = recupererRoyaume(cibleId);
 
         if (expediteur.getId().equals(destinataire.getId())) {
             throw new RuntimeException(

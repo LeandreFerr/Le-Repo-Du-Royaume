@@ -20,5 +20,6 @@ public record RoyaumeResponse(
     List<ContingentTroupeResponse> garnison, // ajout pour militaire
     List<BatimentResponse> batiments,
     Integer x,
-    Integer y
+    Integer y,
+    Integer utilisateurId
 ) {}

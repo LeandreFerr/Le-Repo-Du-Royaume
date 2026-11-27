@@ -189,7 +189,12 @@ public class RoyaumeService {
 
         Integer x = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordX();
         Integer y = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordY();
-        String pseudoJoueur = daoUtilisateur.findAll().stream().filter(u -> u.getRoyaume() != null && u.getRoyaume().getId().equals(royaume.getId())).map(Utilisateur::getPseudo).findFirst().orElse("Inconnu");
+        Utilisateur proprietaire = daoUtilisateur.findAll().stream()
+                .filter(u -> u.getRoyaume() != null && royaume.getId() != null && royaume.getId().equals(u.getRoyaume().getId()))
+                .findFirst()
+                .orElse(null);
+        String pseudoJoueur = proprietaire != null ? proprietaire.getPseudo() : "Inconnu";
+        Integer utilisateurId = proprietaire != null ? proprietaire.getId() : null;
 
        return new RoyaumeResponse(
     royaume.getId(),
@@ -215,7 +220,8 @@ public class RoyaumeService {
     garnison,
     batiments,
     x,
-    y
+    y,
+    utilisateurId
 );}
 
 private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {

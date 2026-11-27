@@ -7,14 +7,21 @@ import jakarta.validation.constraints.Positive;
 
 public record CarteRequest(
 
-    @NotNull 
-    @Positive 
+    @NotNull
+    @Positive
     Integer partieId,
 
-    @Min(value  = 1)
+    @Min(value = 1)
     @Max(value = 10)
-    int nombreEmplacements
-    
+    int nombreEmplacements,
+
+    String archetype,
+
+    String seed
+
 ) {
 
+    public CarteRequest(Integer partieId, int nombreEmplacements) {
+        this(partieId, nombreEmplacements, null, null);
+    }
 }

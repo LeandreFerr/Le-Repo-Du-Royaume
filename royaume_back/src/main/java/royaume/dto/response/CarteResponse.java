@@ -2,7 +2,7 @@ package royaume.dto.response;
 
 import java.util.List;
 
-public record CarteResponse( 
+public record CarteResponse(
         Integer id,
         int largeur,
         int hauteur,
@@ -10,7 +10,9 @@ public record CarteResponse(
         int centreY,
         Integer partieId,
         List<EmplacementCarteResponse> emplacements,
-        EmplacementCarteResponse emplacementMarche
+        EmplacementCarteResponse emplacementMarche,
+        String archetype,
+        String seed
 ) {
 
 }

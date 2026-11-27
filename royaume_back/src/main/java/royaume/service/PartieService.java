@@ -43,8 +43,16 @@ public class PartieService {
 
         Carte carte = new Carte();
         carte.setPartie(partie);
+        if (partieRequest.archetype() != null && !partieRequest.archetype().isBlank()) {
+            carte.setArchetype(partieRequest.archetype());
+        }
+        if (partieRequest.seed() != null && !partieRequest.seed().isBlank()) {
+            carte.setSeed(partieRequest.seed());
+        } else {
+            carte.setSeed("partie-" + partie.getId());
+        }
         carte.genererEmplacements(
-                partieRequest.maxJoueurs());
+                partieRequest.maxJoueurs(), true);
 
         daoCarte.save(carte);
 
@@ -64,6 +72,15 @@ public class PartieService {
 
     public List<PartieResponse> trouverParStatut(StatutPartie statut) {
         return daoPartie.findByStatut(statut).stream().map(p -> convertirEnResponse(p)).toList();
+    }
+
+    public PartieResponse trouverParRoyaumeId(Integer royaumeId) {
+        return daoPartie.findAll().stream()
+                .filter(p -> p.getRoyaumes().stream().anyMatch(r -> royaumeId.equals(r.getId())))
+                .findFirst()
+                .map(this::convertirEnResponse)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Aucune partie trouvée pour le royaume id=" + royaumeId + "."));
     }
 
     @Transactional
