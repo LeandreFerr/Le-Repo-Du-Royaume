@@ -10,6 +10,10 @@ import { VisuAttaques } from './components/visu-attaques/visu-attaques.component
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { playerGuard } from './guards/player.guard';
+import { PageLobby } from './pages/page-lobby/page-lobby.component';
+import { PageCreationRoyaume } from './pages/royaume/page-creation-royaume/page-creation-royaume.component';
+
+
 
 
 import { inject } from '@angular/core';
@@ -53,11 +57,19 @@ export const routes: Routes = [
         .then(m => m.MenusSalleDuChateauComponent),
   },
 
+
+  { path: 'lobby', component: PageLobby },
+  { path: 'parties/:partieId/royaume/creation', component: PageCreationRoyaume },
+
+
+
   // redirection basique 
   { path: '', redirectTo: accueil, pathMatch: 'full' },
 
   // URL inconnue
   { path: '**', redirectTo: accueil },
+
+
 
 
 ];

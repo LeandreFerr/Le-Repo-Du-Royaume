@@ -56,5 +56,6 @@ public class UtilisateurRestController {
         // Récupération de l'utilisateur
         UtilisateurResponse utilisateur = utilisateurService.getUtilisateurById(id);
         return ResponseEntity.ok(utilisateur);
+
     }
 }

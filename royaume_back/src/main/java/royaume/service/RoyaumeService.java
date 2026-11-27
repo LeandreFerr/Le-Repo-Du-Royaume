@@ -24,55 +24,124 @@ import royaume.model.batiment.BatimentProduction;
 import royaume.model.batiment.Chateau;
 import royaume.model.batiment.Maison;
 import royaume.model.peuple.Population;
+import royaume.dao.IDAOCarte;
+import royaume.dao.IDAOEmplacementCarte;
+import royaume.model.Carte;
+import royaume.model.EmplacementCarte;
 
-@Service 
-@Transactional (readOnly = true)
+@Service
+@Transactional(readOnly = true)
 public class RoyaumeService {
 
     private final IDAORoyaume daoRoyaume;
     private final IDAOPartie daoPartie;
     private final IDAOUtilisateur daoUtilisateur;
     private final IDAOPopulation daoPopulation;
+    private final IDAOCarte daoCarte;
+    private final IDAOEmplacementCarte daoEmplacementCarte;
 
     public RoyaumeService(
-        IDAORoyaume daoRoyaume,
-        IDAOPartie daoPartie,
-        IDAOUtilisateur daoUtilisateur,
-        IDAOPopulation daoPopulation
-    ) {
+            IDAORoyaume daoRoyaume,
+            IDAOPartie daoPartie,
+            IDAOUtilisateur daoUtilisateur,
+            IDAOPopulation daoPopulation,
+            IDAOCarte daoCarte,
+            IDAOEmplacementCarte daoEmplacementCarte) {
+
         this.daoRoyaume = daoRoyaume;
         this.daoPartie = daoPartie;
         this.daoUtilisateur = daoUtilisateur;
         this.daoPopulation = daoPopulation;
+        this.daoCarte = daoCarte;
+        this.daoEmplacementCarte = daoEmplacementCarte;
     }
 
-
-    @Transactional 
+    @Transactional
     public RoyaumeResponse creer(RoyaumeRequest royaumeRequest) {
-        if (daoRoyaume.existsByNom(royaumeRequest.nom())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Un royaume avec le nom '" + royaumeRequest.nom() + "' existe déjà.");
-        }
-        Partie partie = daoPartie.findById(royaumeRequest.partieId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La partie id=" + royaumeRequest.partieId() + " n'existe pas."));
-        Utilisateur utilisateur = daoUtilisateur.findById(royaumeRequest.utilisateurId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "L'utilisateur id=" + royaumeRequest.utilisateurId() + " n'existe pas."));
-        Population peuple = daoPopulation.findById(royaumeRequest.peupleId())
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Le peuple id=" + royaumeRequest.peupleId() + " n'existe pas."));
 
-        Royaume royaume = daoRoyaume.save(new Royaume(null, royaumeRequest.nom(), peuple));
-        partie.inscrireRoyaume(royaume);
+        if (daoRoyaume.existsByNom(royaumeRequest.nom())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Un royaume avec le nom '"
+                            + royaumeRequest.nom()
+                            + "' existe déjà.");
+        }
+
+        Partie partie = daoPartie.findById(
+                royaumeRequest.partieId()).orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "La partie id="
+                                        + royaumeRequest.partieId()
+                                        + " n'existe pas."));
+
+        Utilisateur utilisateur = daoUtilisateur.findById(
+                royaumeRequest.utilisateurId()).orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "L'utilisateur id="
+                                        + royaumeRequest.utilisateurId()
+                                        + " n'existe pas."));
+
+        if (utilisateur.getRoyaume() != null) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "Cet utilisateur possède déjà un royaume.");
+        }
+
+        Population peuple = daoPopulation.findById(
+                royaumeRequest.peupleId()).orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Le peuple id="
+                                        + royaumeRequest.peupleId()
+                                        + " n'existe pas."));
+
+        Carte carte = daoCarte.findByPartieId(
+                royaumeRequest.partieId()).orElseThrow(
+                        () -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "Aucune carte n'existe pour cette partie."));
+
+        Royaume royaume = new Royaume(
+                null,
+                royaumeRequest.nom(),
+                peuple);
+
+        royaume = daoRoyaume.save(royaume);
+
+        try {
+            partie.inscrireRoyaume(royaume);
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    exception.getMessage());
+        }
+
+        EmplacementCarte emplacement;
+
+        try {
+            emplacement = carte.placerRoyaume(royaume);
+        } catch (IllegalArgumentException | IllegalStateException exception) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    exception.getMessage());
+        }
+
         utilisateur.setRoyaume(royaume);
+
+        daoEmplacementCarte.save(emplacement);
+        daoUtilisateur.save(utilisateur);
+        daoPartie.save(partie);
 
         return convertirEnResponse(royaume);
     }
 
     public RoyaumeResponse trouverParId(Integer id) {
         return convertirEnResponse(
-            daoRoyaume.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Le royaume id=" + id + " n'existe pas.")
-                )
-        );
+                daoRoyaume.findById(id)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND, "Le royaume id=" + id + " n'existe pas.")));
     }
 
     public List<RoyaumeResponse> trouverTous() {
@@ -81,19 +150,18 @@ public class RoyaumeService {
 
     public List<RoyaumeResponse> trouverParPartie(Integer partieId) {
         Partie partie = daoPartie.findById(partieId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "La partie id=" + partieId + " n'existe pas."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "La partie id=" + partieId + " n'existe pas."));
         return partie.getRoyaumes().stream().map(RoyaumeService::convertirEnResponse).toList();
     }
 
-    @Transactional 
+    @Transactional
     public void supprimer(Integer id) {
         Royaume royaume = daoRoyaume.findById(id)
-            .orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Le royaume id=" + id + " n'existe pas.")
-            );
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Le royaume id=" + id + " n'existe pas."));
         daoRoyaume.delete(royaume);
     }
-
 
     public static RoyaumeResponse convertirEnResponse(Royaume royaume) {
         if (royaume == null) {
@@ -101,43 +169,42 @@ public class RoyaumeService {
         }
 
         List<QuantiteRessourceDTO> ressources = royaume.getRessources() == null
-            ? List.of()
-            : royaume.getRessources().stream()
-                .map(r -> new QuantiteRessourceDTO(r.getRessource(), r.getQuantite()))
-                .toList();
+                ? List.of()
+                : royaume.getRessources().stream()
+                        .map(r -> new QuantiteRessourceDTO(r.getRessource(), r.getQuantite()))
+                        .toList();
 
         List<ContingentTroupeResponse> garnison = royaume.getGarnison() == null
-            ? List.of()
-            : royaume.getGarnison().stream()
-                .map(c -> new ContingentTroupeResponse(c.getType(), c.getQuantite()))
-                .toList();
+                ? List.of()
+                : royaume.getGarnison().stream()
+                        .map(c -> new ContingentTroupeResponse(c.getType(), c.getQuantite()))
+                        .toList();
 
         List<BatimentResponse> batiments = royaume.getBatiments() == null
-            ? List.of()
-            : royaume.getBatiments().stream()
-                .map(b -> convertirBatimentEnResponse(b, royaume.getId()))
-                .toList();
+                ? List.of()
+                : royaume.getBatiments().stream()
+                        .map(b -> convertirBatimentEnResponse(b, royaume.getId()))
+                        .toList();
 
         Integer x = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordX();
         Integer y = royaume.getEmplacement() == null ? null : royaume.getEmplacement().getCoordY();
 
         return new RoyaumeResponse(
-            royaume.getId(),
-            royaume.getNom(),
-            royaume.getPeuple() == null ? null : royaume.getPeuple().getNom(),
-            royaume.getNiveau(),
-            royaume.getPopulationDisponible(),
-            royaume.getPopulationOuvriere(),
-            royaume.getPopulationEnEntrainement(),
-            royaume.getPopulationMilitaire(),
-            royaume.isEnRuine(),
-            royaume.getBonusCroissance(),
-            ressources,
-            garnison,
-            batiments,
-            x,
-            y
-        );
+                royaume.getId(),
+                royaume.getNom(),
+                royaume.getPeuple() == null ? null : royaume.getPeuple().getNom(),
+                royaume.getNiveau(),
+                royaume.getPopulationDisponible(),
+                royaume.getPopulationOuvriere(),
+                royaume.getPopulationEnEntrainement(),
+                royaume.getPopulationMilitaire(),
+                royaume.isEnRuine(),
+                royaume.getBonusCroissance(),
+                ressources,
+                garnison,
+                batiments,
+                x,
+                y);
     }
 
     private static BatimentResponse convertirBatimentEnResponse(Batiment b, Integer royaumeId) {
@@ -146,20 +213,19 @@ public class RoyaumeService {
         Chateau chateau = b instanceof Chateau c ? c : null;
 
         return new BatimentResponse(
-            b.getId(),
-            b.getNom(),
-            b.getNiveau(),
-            b.getPointsDeVie(),
-            b.getPointsDeVieMax(),
-            b.isEnConstruction(),
-            b.getMontantReparationEnCours(),
-            royaumeId,
-            prod == null ? null : prod.getTypeRessource(),
-            prod == null ? null : prod.getProductionBaseHeure(),
-            maison == null ? null : maison.getBonusPropre(),
-            chateau == null ? null : chateau.getNiveauPalierDebloque(),
-            chateau == null ? null : chateau.getBonusDefenseRoyaume()
-        );
+                b.getId(),
+                b.getNom(),
+                b.getNiveau(),
+                b.getPointsDeVie(),
+                b.getPointsDeVieMax(),
+                b.isEnConstruction(),
+                b.getMontantReparationEnCours(),
+                royaumeId,
+                prod == null ? null : prod.getTypeRessource(),
+                prod == null ? null : prod.getProductionBaseHeure(),
+                maison == null ? null : maison.getBonusPropre(),
+                chateau == null ? null : chateau.getNiveauPalierDebloque(),
+                chateau == null ? null : chateau.getBonusDefenseRoyaume());
     }
 
 }

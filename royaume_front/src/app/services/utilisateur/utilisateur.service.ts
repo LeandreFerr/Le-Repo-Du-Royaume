@@ -56,8 +56,9 @@ export class UtilisateurService {
 
 
   getUtilisateurById(id: number): Observable<UtilisateurResponse> {
-  return this.http.get<UtilisateurResponse>(
-    `${this.apiUrl}/${id}`
-  );
-}
+    return this.http.get<UtilisateurResponse>(
+      `${this.apiUrl}/${id}`
+    );
+  }
+
 }
