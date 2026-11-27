@@ -254,3 +254,41 @@
   </div>
 
 </div>
+<!-- =====================================================
+     MODALE ATTAQUE
+====================================================== -->
+
+<div
+  id="modalAttaque"
+  class="modal"
+  [class.ouverte]="modalAttaque"
+  (click)="fermerModales()"
+>
+
+  <div
+    class="bulle fenetre-attaque"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="titreAttaque"
+    (click)="$event.stopPropagation()"
+  >
+
+    <button
+      type="button"
+      class="fermer"
+      aria-label="Fermer"
+      (click)="fermerModales()"
+    >
+      X
+    </button>
+
+    @if (modalAttaque) {
+      <app-attaque-adverse
+        [attaquantId]="attaquantId"
+        [defenseurId]="defenseurId"
+      ></app-attaque-adverse>
+    }
+
+  </div>
+
+</div>
