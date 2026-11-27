@@ -7,24 +7,57 @@ import { PlayerComponent } from './pages/player/player.component';
 import { PlaceDuMarcheComponent } from './components/place-du-marche/place-du-marche.component';
 import { MenuAdverseComponent } from './components/menu-adverse/menu-adverse.component';
 import { VisuAttaques } from './components/visu-attaques/visu-attaques.component';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
+import { playerGuard } from './guards/player.guard';
+
+
+import { inject } from '@angular/core';
+import { SessionService } from './services/session/session.service';
+
+
+// accueil redirige suivant admin ou player
+// Si pas de session, alors redirige vers login
+const accueil = () => {
+  const utilisateur = inject(SessionService).utilisateur();
+  if (!utilisateur) {
+    return '/login';
+  }
+  return utilisateur.admin ? '/admin' : '/player';
+};
+
 
 
 export const routes: Routes = [
-  { path: 'login', component: PageLogin },
-  { path: 'parties/creation', component: PartieCreation },
-  { path: 'player', component: PlayerComponent },
-  { path: 'admin', component: AdminComponent },
+
+  // Publique
+  { path: 'login', component: PageLogin, canActivate: [playerGuard] },
+  { path: 'inscription', component: PageInscription, canActivate: [playerGuard] },
+
+  { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
+
+
+  // user connecté
+  { path: 'parties/creation', component: PartieCreation, canActivate: [authGuard] },
+  { path: 'player', component: PlayerComponent, canActivate: [authGuard] },
+  { path: 'place-du-marche', component: PlaceDuMarcheComponent, canActivate: [authGuard] },
+  { path: 'menu-adverse', component: MenuAdverseComponent, canActivate: [authGuard] },
+  { path: 'attaques', component: VisuAttaques, canActivate: [authGuard] },
+
   { path: 'carte-sandbox', redirectTo: 'admin', pathMatch: 'full' },
   {
     path: 'pikachu/menus-salle-du-chateau',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./components/pikachu/menus-salle-du-chateau/menus-salle-du-chateau.component')
         .then(m => m.MenusSalleDuChateauComponent),
   },
-  { path: 'place-du-marche', component: PlaceDuMarcheComponent },
-  { path: 'menu-adverse', component: MenuAdverseComponent },
-  { path: 'attaques', component: VisuAttaques },
-  { path: '', redirectTo: 'player', pathMatch: 'full' },
-  { path: 'inscription', component: PageInscription },
+
+  // redirection basique 
+  { path: '', redirectTo: accueil, pathMatch: 'full' },
+
+  // URL inconnue
+  { path: '**', redirectTo: accueil },
+
 
 ];
