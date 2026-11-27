@@ -4,6 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { UtilisateurService } from '../../services/utilisateur/utilisateur.service';
+import { SessionService } from '../../services/session/session.service';
 
 @Component({
   selector: 'app-page-inscription',
@@ -21,6 +22,7 @@ export class PageInscription {
   constructor(
     private fb: FormBuilder,
     private utilisateurService: UtilisateurService,
+    private session: SessionService,
     private router: Router
   ) {
     this.formInscription = this.fb.group({
@@ -39,19 +41,20 @@ export class PageInscription {
 
     const { pseudo, email, password } = this.formInscription.getRawValue();
 
-    this.utilisateurService.inscrire({ pseudo: pseudo!, email: email!, password: password! }).subscribe({
+    this.utilisateurService
+      .inscrire({ pseudo: pseudo!, email: email!, password: password! })
+      .subscribe({
+        next: (utilisateur) => {
+          this.erreur = '';
+          this.session.enregistrer(utilisateur);
+          this.router.navigate(['/']);
+        },
 
-      next: () => {
-        this.erreur = '';
-        // Étape suivante : choix du peuple et du royaume. En attendant, retour au login.
-        this.router.navigate(['/login']);
-      },
-
-      error: (err: HttpErrorResponse) => {
-        this.erreur = err.status === 409
-          ? (err.error?.message ?? 'Pseudo ou email déjà utilisé.')
-          : 'Inscription impossible, réessayez.';
-      }
-    });
+        error: (err: HttpErrorResponse) => {
+          this.erreur = err.status === 409
+            ? (err.error?.message ?? 'Pseudo ou email déjà utilisé.')
+            : 'Inscription impossible, réessayez.';
+        }
+      });
   }
 }

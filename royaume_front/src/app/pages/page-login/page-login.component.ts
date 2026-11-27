@@ -53,7 +53,7 @@ export class PageLogin {
       next: (utilisateur: UtilisateurResponse) => {
         this.session.enregistrer(utilisateur);
         this.erreur = '';
-        this.router.navigate([utilisateur.admin ? '/admin' : '/player']);
+        this.router.navigate(['/']);
       },
 
       error: () => {

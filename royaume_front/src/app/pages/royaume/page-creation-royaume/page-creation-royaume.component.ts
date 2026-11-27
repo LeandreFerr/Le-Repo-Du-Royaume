@@ -21,7 +21,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 
 import { PopulationResponse } from '../../../models/population-response';
-  
+
 
 import { RoyaumeCreationRequest } from '../../../models/royaume-creation-request';
 
@@ -29,7 +29,8 @@ import { PopulationService } from '../../../services/population.service';
 
 import { RoyaumeService } from '../../../services/royaume.service';
 
-import { UtilisateurService } from '../../../services/utilisateur/utilisateur.service';
+import { UtilisateurResponse, UtilisateurService } from '../../../services/utilisateur/utilisateur.service';
+import { SessionService } from '../../../services/session/session.service';
 
 @Component({
   selector: 'app-page-creation-royaume',
@@ -51,6 +52,12 @@ export class PageCreationRoyaume implements OnInit {
   private readonly royaumeService =
     inject(RoyaumeService);
 
+  private readonly utilisateurService =
+    inject(UtilisateurService);
+
+  private readonly session =
+    inject(SessionService);
+
   private readonly route =
     inject(ActivatedRoute);
 
@@ -61,9 +68,18 @@ export class PageCreationRoyaume implements OnInit {
    * Valeur provisoire pour le test.
    * Elle sera remplacée plus tard par l'utilisateur connecté.
    */
-  private readonly utilisateurIdService = 2;
+  // private readonly utilisateurIdService = 2;
 
-  // = utilisateurService.UtisateurConnecté()
+
+  // = utilisateurService.UtisateurConnecté() 
+
+  private get utilisateurConnecte(): UtilisateurResponse | null {
+    return this.session.utilisateur();
+  }
+
+  private get utilisateurId(): number {
+    return this.utilisateurConnecte?.id ?? 0;
+  }
 
   readonly populations =
     signal<PopulationResponse[]>([]);
@@ -160,6 +176,11 @@ export class PageCreationRoyaume implements OnInit {
   }
 
   creerRoyaume(): void {
+    if (this.utilisateurConnecte === null) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (this.partieId <= 0) {
       this.messageErreur.set(
         'La partie sélectionnée est invalide.'
@@ -184,7 +205,7 @@ export class PageCreationRoyaume implements OnInit {
         this.partieId,
 
       utilisateurId:
-        this.utilisateurIdService
+        this.utilisateurId
     };
 
     this.creationEnCours.set(true);
@@ -199,12 +220,25 @@ export class PageCreationRoyaume implements OnInit {
       )
       .subscribe({
         next: (royaume) => {
-          console.log(
-            'Royaume créé :',
-            royaume
-          );
+          console.log('Royaume créé :', royaume);
 
+          // 1. On navigue tout de suite, quoi qu'il arrive
           this.router.navigate(['/lobby']);
+
+          // 2. On rafraîchit la session en tâche de fond
+          this.utilisateurService
+            .getUtilisateurById(this.utilisateurId)
+            .subscribe({
+              next: (utilisateur) => {
+                this.session.enregistrer(utilisateur);
+              },
+              error: (erreur) => {
+                console.error(
+                  'Rafraîchissement de session impossible :',
+                  erreur
+                );
+              }
+            });
         },
 
         error: (erreur: HttpErrorResponse) => {

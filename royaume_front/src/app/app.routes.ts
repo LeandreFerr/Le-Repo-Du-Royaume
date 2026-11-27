@@ -20,14 +20,17 @@ import { inject } from '@angular/core';
 import { SessionService } from './services/session/session.service';
 
 
-// accueil redirige suivant admin ou player
+// accueil redirige suivant admin, joueur avec royaume, ou joueur sans royaume
 // Si pas de session, alors redirige vers login
 const accueil = () => {
   const utilisateur = inject(SessionService).utilisateur();
   if (!utilisateur) {
     return '/login';
   }
-  return utilisateur.admin ? '/admin' : '/player';
+  if (utilisateur.admin) {
+    return '/admin';
+  }
+  return utilisateur.royaumeId ? '/player' : '/lobby';
 };
 
 

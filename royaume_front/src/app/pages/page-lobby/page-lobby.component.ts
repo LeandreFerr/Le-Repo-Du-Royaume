@@ -1,13 +1,15 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
+
 import { PartieResponse } from '../../models/partie-response';
 import { Partie } from '../../services/partie.service';
-import { Router } from '@angular/router';
+import { BoutonDeconnexion } from '../../components/bouton-deconnexion/bouton-deconnexion.component';
 
 @Component({
   selector: 'app-page-lobby',
-  imports: [RouterLink],
+  standalone: true,
+  imports: [RouterLink, BoutonDeconnexion],
   templateUrl: './page-lobby.component.html',
   styleUrl: './page-lobby.component.css'
 })
@@ -15,10 +17,11 @@ export class PageLobby implements OnInit {
 
   private readonly partieService = inject(Partie);
 
+  private readonly router = inject(Router);
+
   readonly parties = signal<PartieResponse[]>([]);
   readonly chargement = signal(false);
   readonly messageErreur = signal<string | null>(null);
-  private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.chargerPartiesEnAttente();
@@ -67,5 +70,4 @@ export class PageLobby implements OnInit {
       'creation'
     ]);
   }
-  
 }

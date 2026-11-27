@@ -1,11 +1,15 @@
 <section class="page-lobby">
 
-  <header>
-    <h1>Lobby des parties</h1>
+  <header class="lobby-header">
+    <div>
+      <h1>Lobby des parties</h1>
 
-    <p>
-      Choisis une partie en attente ou crée une nouvelle partie.
-    </p>
+      <p>
+        Choisis une partie en attente ou crée une nouvelle partie.
+      </p>
+    </div>
+
+    <app-bouton-deconnexion />
   </header>
 
   <div class="actions-lobby">
@@ -14,11 +18,7 @@
       Créer une partie
     </a>
 
-    <button
-      type="button"
-      (click)="chargerPartiesEnAttente()"
-      [disabled]="chargement()"
-    >
+    <button type="button" (click)="chargerPartiesEnAttente()" [disabled]="chargement()">
       Actualiser
     </button>
 
@@ -26,84 +26,80 @@
 
   @if (chargement()) {
 
-    <p>
-      Chargement des parties...
-    </p>
+  <p>
+    Chargement des parties...
+  </p>
 
   } @else if (messageErreur()) {
 
-    <p class="erreur">
-      {{ messageErreur() }}
-    </p>
+  <p class="erreur">
+    {{ messageErreur() }}
+  </p>
 
   } @else if (parties().length === 0) {
 
-    <p>
-      Aucune partie n'est actuellement en attente.
-    </p>
+  <p>
+    Aucune partie n'est actuellement en attente.
+  </p>
 
   } @else {
 
-    <table>
+  <table>
 
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Joueurs</th>
-          <th>Places disponibles</th>
-          <th>Vitesse</th>
-          <th>Statut</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Joueurs</th>
+        <th>Places disponibles</th>
+        <th>Vitesse</th>
+        <th>Statut</th>
+        <th>Action</th>
+      </tr>
+    </thead>
 
-      <tbody>
+    <tbody>
 
-        @for (partie of parties(); track partie.id) {
+      @for (partie of parties(); track partie.id) {
 
-          <tr>
+      <tr>
 
-            <td>
-              {{ partie.nom }}
-            </td>
+        <td>
+          {{ partie.nom }}
+        </td>
 
-            <td>
-              {{ partie.royaumes.length }}
-              /
-              {{ partie.maxJoueurs }}
-            </td>
+        <td>
+          {{ partie.royaumes.length }}
+          /
+          {{ partie.maxJoueurs }}
+        </td>
 
-            <td>
-              {{ partie.maxJoueurs - partie.royaumes.length }}
-            </td>
+        <td>
+          {{ partie.maxJoueurs - partie.royaumes.length }}
+        </td>
 
-            <td>
-              {{ partie.vitesseJeu }}
-            </td>
+        <td>
+          {{ partie.vitesseJeu }}
+        </td>
 
-            <td>
-              En attente
-            </td>
+        <td>
+          En attente
+        </td>
 
-            <td>
-              <button
-                type="button"
-                (click)="rejoindre(partie)"
-                [disabled]="
+        <td>
+          <button type="button" (click)="rejoindre(partie)" [disabled]="
                   partie.royaumes.length >= partie.maxJoueurs
-                "
-              >
-                Rejoindre
-              </button>
-            </td>
+                ">
+            Rejoindre
+          </button>
+        </td>
 
-          </tr>
+      </tr>
 
-        }
+      }
 
-      </tbody>
+    </tbody>
 
-    </table>
+  </table>
 
   }
 
