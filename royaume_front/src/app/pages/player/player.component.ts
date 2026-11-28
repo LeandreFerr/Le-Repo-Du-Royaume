@@ -26,6 +26,7 @@ import { ReglesDuJeuManuscriptComponent } from '../../components/regles-du-jeu-m
 import { VisuAttaques } from '../../components/visu-attaques/visu-attaques.component';
 
 import { SessionEntrainement } from '../../components/session-entrainement/session-entrainement.component';
+import { ClassementRoyaumes } from '../../components/classement-royaumes/classement-royaumes.component';
 
 import {
   ARCHETYPES_CARTE,
@@ -64,6 +65,7 @@ import { SessionService } from '../../services/session/session.service';
     ReglesDuJeuManuscriptComponent,
     SessionEntrainement,
     EvenementsReception,
+    ClassementRoyaumes
   ],
   templateUrl: './player.component.html',
   styleUrl: './player.component.css',

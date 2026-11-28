@@ -181,6 +181,23 @@
         Attaques
       </a>
 
+      <a
+        class="nav-link"
+        data-page="classement"
+        [class.is-active]="activePage === 'classement'"
+        (click)="togglePage('classement')"
+        title="Classement">
+
+        <!-- SVG original Classement -->
+        <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
+         <path
+            d="M428.14,113.52v-56.68H111.86v56.68H18.54v11.66c0,54.89,15.69,97.25,46.64,125.91,23.52,21.77,55.81,34.79,93.66,37.83,18.33,25.2,41.04,44.22,66.39,54.63v38.11l-20.12,20.12h-21.44l-39.66,39.67v41.71h251.98v-41.71l-39.67-39.67h-21.43l-20.12-20.12v-38.11c25.35-10.41,48.06-29.44,66.39-54.63,37.86-3.05,70.13-16.06,93.64-37.83,30.96-28.65,46.65-71.01,46.65-125.91v-11.66h-93.32ZM81.02,233.97c-23.84-22.07-36.9-54.72-38.89-97.13h69.76c.6,47.31,12.04,91.02,31,126.54-24.92-4.55-45.68-14.4-61.88-29.41ZM175.97,272.88c-26.31-37.47-40.79-87.22-40.79-140.09v-52.63h134.82v249.04c-35.14,0-68.54-20-94.03-56.32ZM270,459.84h-102.67v-8.74l25.99-26.01h76.68v34.74ZM238.08,401.78l10.47-10.47v-40.81c7.01,1.33,14.18,2.02,21.45,2.02s14.44-.69,21.45-2.02v40.81l10.47,10.47h-63.84ZM458.96,233.97c-16.2,14.99-36.94,24.84-61.86,29.41,18.96-35.51,30.4-79.23,31-126.54h69.76c-1.99,42.41-15.05,75.06-38.9,97.13Z" />
+        </svg>
+
+ 
+        Classement
+      </a>
+
       <a class="nav-link" data-page="regles" [class.is-active]="reglesOuvertes"
         (click)="togglePage('regles')" title="Règles et commandes">
         <svg class="nav-icon" viewBox="0 0 540 540" aria-hidden="true">
@@ -373,6 +390,12 @@
       class="player-evenements-panel"
       [destinataireId]="royaumeId">
     </app-evenements-reception>
+  }
+
+  @if (!estEnAttente && activePage === 'classement' && royaume) {
+    <app-classement-royaumes
+      [royaume]="royaume">
+    </app-classement-royaumes>
   }
 
   <!-- SURIMPRESSION : SALLE DU CHÂTEAU (TP PIKACHU) -->
